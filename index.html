@@ -1,210 +1,675 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Description" content="面向汽车工程师的专业NVH与EPS数据分析工具。无需MATLAB授权，浏览器直接运行。">
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.6">
-  <style type="text/css">
-    body {background-color: #080b10}
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px 'Courier New'; color: #17bbff; -webkit-text-stroke: #17bbff}
-    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'PingFang SC'; color: #486082; -webkit-text-stroke: #486082}
-    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'PingFang SC Semibold'; color: #080b10; -webkit-text-stroke: #080b10; background-color: #17bbff}
-    p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px 'Helvetica Neue'; color: #bccadc; -webkit-text-stroke: #bccadc; min-height: 18.0px}
-    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px 'Courier New'; color: #17bbff; -webkit-text-stroke: #17bbff}
-    p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 16.0px 'PingFang SC'; color: #486082; -webkit-text-stroke: #486082}
-    p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; color: #080b10; -webkit-text-stroke: #080b10; background-color: #17bbff}
-    p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px 'PingFang SC'; color: #bccadc; -webkit-text-stroke: #bccadc}
-    p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px 'Courier New'; color: #2c3e55; -webkit-text-stroke: #2c3e55; background-color: #1ee38f; min-height: 12.0px}
-    p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px 'PingFang SC'; color: #2c3e55; -webkit-text-stroke: #2c3e55}
-    p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px 'Courier New'; color: #2c3e55; -webkit-text-stroke: #2c3e55}
-    p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px 'PingFang SC'; color: #486082; -webkit-text-stroke: #486082}
-    p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px 'Courier New'; color: #17bbff; -webkit-text-stroke: #17bbff}
-    p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 22.0px 'Helvetica Neue'; color: #bccadc; -webkit-text-stroke: #bccadc}
-    p.p18 {margin: 0.0px 0.0px 28.0px 0.0px; font: 14.0px 'PingFang SC'; color: #486082; -webkit-text-stroke: #486082}
-    p.p20 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px 'Courier New'; color: #1ee38f; -webkit-text-stroke: #1ee38f}
-    p.p21 {margin: 0.0px 0.0px 28.0px 0.0px; font: 14.0px 'Helvetica Neue'; color: #486082; -webkit-text-stroke: #486082}
-    p.p23 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px 'PingFang SC Semibold'; color: #bccadc; -webkit-text-stroke: #bccadc}
-    p.p24 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'PingFang SC'; color: #486082; -webkit-text-stroke: #486082; background-color: #0c1119}
-    p.p25 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'PingFang SC Semibold'; color: #486082; -webkit-text-stroke: #486082}
-    p.p26 {margin: 0.0px 0.0px 0.0px 0.0px; font: 36.0px 'Courier New'; color: #bccadc; -webkit-text-stroke: #bccadc}
-    p.p27 {margin: 0.0px 0.0px 24.0px 0.0px; font: 12.0px 'PingFang SC'; color: #2c3e55; -webkit-text-stroke: #2c3e55}
-    p.p28 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px 'Helvetica Neue'; color: #6d6d6d; -webkit-text-stroke: #6d6d6d; min-height: 18.0px}
-    p.p30 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.0px 'PingFang SC Semibold'; color: #bccadc; -webkit-text-stroke: #bccadc}
-    p.p31 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px 'PingFang SC Semibold'; color: #080b10; -webkit-text-stroke: #080b10; background-color: #17bbff}
-    p.p33 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.0px 'PingFang SC Semibold'; color: #080b10; -webkit-text-stroke: #080b10; background-color: #17bbff}
-    p.p34 {margin: 0.0px 0.0px 0.0px 0.0px; font: 24.0px 'PingFang SC'; color: #486082; -webkit-text-stroke: #486082}
-    p.p36 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 13.0px 'PingFang SC Semibold'; color: #486082; -webkit-text-stroke: #486082}
-    p.p38 {margin: 0.0px 0.0px 0.0px 0.0px; color: #bccadc; -webkit-text-stroke: #bccadc}
-    p.p39 {margin: 0.0px 0.0px 24.0px 0.0px; font: 14.0px 'PingFang SC'; color: #486082; -webkit-text-stroke: #486082}
-    p.p40 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'PingFang SC'; color: #2c3e55; -webkit-text-stroke: #2c3e55}
-    p.p41 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'PingFang SC'; color: #bccadc; -webkit-text-stroke: #bccadc}
-    p.p42 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px 'Helvetica Neue'; color: #bccadc; -webkit-text-stroke: #bccadc; background-color: #080b10; min-height: 17.0px}
-    p.p43 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; color: #080b10; -webkit-text-stroke: #080b10; background-color: #17bbff}
-    p.p44 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 11.0px 'PingFang SC'; color: #2c3e55; -webkit-text-stroke: #2c3e55}
-    p.p45 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Courier New'; color: #486082; -webkit-text-stroke: #486082}
-    li.li2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Helvetica Neue'; color: #486082}
-    li.li3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'PingFang SC'; color: #486082; -webkit-text-stroke: #486082}
-    li.li19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'PingFang SC'; color: #bccadc; -webkit-text-stroke: #bccadc; background-color: #080b10}
-    li.li22 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Helvetica Neue'; color: #bccadc; -webkit-text-stroke: #bccadc; background-color: #080b10}
-    li.li29 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Helvetica Neue'; color: #bccadc; -webkit-text-stroke: #bccadc}
-    li.li32 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Helvetica Neue'; color: #bccadc; -webkit-text-stroke: #bccadc; background-color: #0c1119}
-    li.li35 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'PingFang SC'; color: #bccadc; -webkit-text-stroke: #bccadc}
-    span.s1 {font-kerning: none; color: #486082; background-color: rgba(8, 11, 16, 0.88); -webkit-text-stroke: 0px #486082}
-    span.s2 {font-kerning: none; background-color: rgba(8, 11, 16, 0.88)}
-    span.s3 {background-color: rgba(8, 11, 16, 0.88)}
-    span.s4 {font: 13.0px 'PingFang SC'; font-kerning: none; background-color: rgba(8, 11, 16, 0.88); -webkit-text-stroke: 0px #486082}
-    span.s5 {font: 13.0px 'Helvetica Neue'; background-color: rgba(8, 11, 16, 0.88); -webkit-text-stroke: 0px #000000}
-    span.s6 {font: 13.0px '.AppleSimplifiedChineseFont'; font-kerning: none}
-    span.s7 {font-kerning: none}
-    span.s8 {font: 40.0px '.PingFang UI SC'; font-kerning: none; color: #bccadc; -webkit-text-stroke: 0px #bccadc}
-    span.s9 {font-kerning: none; color: #bccadc; -webkit-text-stroke: 0px #bccadc}
-    span.s10 {font: 40.0px 'PingFang SC'; font-kerning: none}
-    span.s11 {font: 16.0px 'Helvetica Neue'; font-kerning: none}
-    span.s12 {font: 14.0px '.AppleSimplifiedChineseFont'; font-kerning: none}
-    span.s13 {font: 11.0px 'PingFang SC'; font-kerning: none}
-    span.s14 {font-kerning: none; background-color: #0c1119}
-    span.s15 {font: 24.0px 'PingFang SC'; font-kerning: none; background-color: #0c1119}
-    span.s16 {font: 15.0px 'Helvetica Neue'; font-kerning: none; background-color: #0c1119}
-    span.s17 {font-kerning: none; background-color: rgba(23, 187, 255, 0.1)}
-    span.s18 {font: 10.0px 'PingFang SC'; font-kerning: none; background-color: rgba(23, 187, 255, 0.1)}
-    span.s19 {font-kerning: none; background-color: #080b10}
-    span.s20 {font: 14.0px 'Helvetica Neue'; font-kerning: none; background-color: #080b10}
-    span.s21 {font: 13.0px 'Helvetica Neue'; -webkit-text-stroke: 0px #000000}
-    span.s22 {font: 13.0px 'Helvetica Neue'; font-kerning: none}
-    span.s23 {font: 15.0px 'Helvetica Neue'; font-kerning: none}
-    span.s24 {font-kerning: none; background-color: rgba(30, 227, 143, 0.1)}
-    span.s25 {font: 10.0px 'PingFang SC'; font-kerning: none; background-color: rgba(30, 227, 143, 0.1)}
-    span.s26 {font: 14.0px 'PingFang SC'; font-kerning: none; background-color: #080b10}
-    span.s27 {-webkit-text-stroke: 0px #000000}
-    span.s28 {font: 13.0px 'PingFang SC'; font-kerning: none}
-    span.s29 {font: 13.0px '.CJK Symbols Fallback SC'; font-kerning: none}
-    span.s30 {font: 24.0px 'PingFang SC'; font-kerning: none}
-    span.s31 {font: 15.0px '.AppleSimplifiedChineseFont'; font-kerning: none; background-color: #0c1119}
-    span.s32 {font: 13.0px 'Helvetica Neue'; font-kerning: none; background-color: #0c1119}
-    span.s33 {font: 12.0px 'Apple Color Emoji'; font-kerning: none}
-    span.s34 {font: 12.0px 'Courier New'; font-kerning: none}
-    span.s35 {font: 13.0px '.AppleSimplifiedChineseFont'; font-kerning: none; background-color: #080b10}
-    span.s36 {font: 18.0px 'Courier New'; font-kerning: none; background-color: #080b10}
-    span.s37 {font: 13.0px 'Courier New'; font-kerning: none; color: #486082; background-color: #080b10; -webkit-text-stroke: 0px #486082}
-    span.s38 {font: 13.0px 'PingFang SC'; font-kerning: none; color: #486082; background-color: #080b10; -webkit-text-stroke: 0px #486082}
-    span.s39 {background-color: #080b10; -webkit-text-stroke: 0px #000000}
-    span.s40 {font: 13.0px 'PingFang SC'; font-kerning: none; background-color: #080b10}
-    span.s41 {font: 15.0px 'Helvetica Neue'; font-kerning: none; background-color: #080b10}
-    span.s42 {font: 10.0px 'PingFang SC'; font-kerning: none}
-    span.s43 {font: 13.0px '.AppleSimplifiedChineseFont'; font-kerning: none; background-color: #0c1119}
-    span.s44 {font: 18.0px 'Courier New'; font-kerning: none; background-color: #0c1119}
-    span.s45 {font: 13.0px 'Courier New'; font-kerning: none; color: #486082; background-color: #0c1119; -webkit-text-stroke: 0px #486082}
-    span.s46 {font: 13.0px 'PingFang SC'; font-kerning: none; color: #486082; background-color: #0c1119; -webkit-text-stroke: 0px #486082}
-    span.s47 {font: 12.0px 'Helvetica Neue'; font-kerning: none; background-color: #0c1119}
-    span.s48 {font-kerning: none; color: #bccadc; background-color: #080b10; -webkit-text-stroke: 0px #bccadc}
-    span.s49 {font: 13.0px 'Courier New'; font-kerning: none; background-color: #080b10}
-    span.s50 {font: 13.0px 'Helvetica Neue'; background-color: #080b10; -webkit-text-stroke: 0px #000000}
-    span.s51 {font: 13.0px 'Helvetica Neue'; font-kerning: none; background-color: #080b10}
-    span.s52 {font: 24.0px 'Helvetica Neue'; font-kerning: none}
-    span.s53 {font: 22.0px 'PingFang SC'; font-kerning: none}
-    span.s54 {font: 14.0px 'Helvetica Neue'; font-kerning: none}
-    span.s55 {font: 12.0px 'Helvetica Neue'; font-kerning: none}
-    span.s56 {font: 12.0px '.CJK Symbols Fallback SC'; font-kerning: none}
-    ul.ul1 {list-style-type: disc}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NVH Tools — 汽车工程师专业分析工具</title>
+<meta name="description" content="面向汽车工程师的专业NVH与EPS数据分析工具。无需MATLAB授权，浏览器直接运行。">
+<style>
+  :root {
+    --bg:      #070c14;
+    --bg1:     #0d1521;
+    --bg2:     #131f30;
+    --border:  #1e2d42;
+    --border2: #263650;
+    --text:    #c8d4e3;
+    --muted:   #5a7494;
+    --dim:     #3a5068;
+    --accent:  #00c8ff;
+    --accent2: #0090cc;
+    --green:   #00e5a0;
+    --amber:   #f5a623;
+    --mono:    'JetBrains Mono', 'Courier New', monospace;
+    --sans:    -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px; height: 56px;
+    background: rgba(7,12,20,0.88);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+  }
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--muted); }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none; font-size: 13px;
+    letter-spacing: 0.04em; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta {
+    background: var(--accent); color: var(--bg);
+    padding: 7px 18px; border-radius: 4px;
+    font-size: 13px; font-weight: 600;
+    text-decoration: none; letter-spacing: 0.03em;
+    transition: background 0.2s;
+  }
+  .nav-cta:hover { background: #33d4ff; }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative; min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 80px 24px 60px;
+    overflow: hidden;
+  }
+  #hero-canvas {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    opacity: 0.35; pointer-events: none;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    isolation: isolate;
+  }
+  .hero-eyebrow {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--accent); letter-spacing: 0.18em;
+    text-transform: uppercase; margin-bottom: 20px;
+    position: relative; z-index: 1;
+  }
+  .hero-title {
+    font-size: clamp(32px, 5vw, 58px);
+    font-weight: 700; line-height: 1.15;
+    text-align: center; max-width: 760px;
+    position: relative; letter-spacing: -0.02em;
+    z-index: 1;
+  }
+  .hero-title .hl { color: var(--accent); }
+  .hero-sub {
+    margin-top: 20px; max-width: 520px;
+    text-align: center; color: var(--muted);
+    font-size: 16px; line-height: 1.7;
+    position: relative; z-index: 1;
+  }
+  .hero-actions {
+    margin-top: 36px; display: flex; gap: 12px;
+    flex-wrap: wrap; justify-content: center;
+    position: relative; z-index: 1;
+  }
+  .btn-primary {
+    background: var(--accent); color: var(--bg);
+    padding: 12px 28px; border-radius: 4px;
+    font-size: 14px; font-weight: 700;
+    text-decoration: none; letter-spacing: 0.03em;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-primary:hover { background: #33d4ff; transform: translateY(-1px); }
+  .btn-ghost {
+    border: 1px solid var(--border2); color: var(--text);
+    padding: 12px 28px; border-radius: 4px;
+    font-size: 14px; text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .hero-badges {
+    margin-top: 48px; display: flex; gap: 24px;
+    flex-wrap: wrap; justify-content: center;
+    position: relative; z-index: 1;
+  }
+  .badge {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 11px;
+    color: var(--dim); letter-spacing: 0.06em;
+  }
+  .badge-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+    flex-shrink: 0;
+  }
+
+  /* ── SECTION COMMON ── */
+  section { padding: 96px 24px; }
+  .container { max-width: 1040px; margin: 0 auto; }
+  .section-label {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--accent); letter-spacing: 0.18em;
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .section-title {
+    font-size: clamp(24px, 3vw, 36px);
+    font-weight: 700; line-height: 1.2;
+    letter-spacing: -0.02em; margin-bottom: 16px;
+  }
+  .section-sub {
+    color: var(--muted); max-width: 540px;
+    font-size: 15px; line-height: 1.8;
+  }
+
+  /* ── PRODUCTS ── */
+  #products { background: var(--bg1); }
+  .products-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 2px; margin-top: 56px;
+    border: 1px solid var(--border); border-radius: 8px;
+    overflow: hidden;
+  }
+  .product-card {
+    background: var(--bg); padding: 40px 36px;
+    position: relative; overflow: hidden;
+    transition: background 0.2s;
+  }
+  .product-card:hover { background: var(--bg2); }
+  .product-card + .product-card { border-left: 1px solid var(--border); }
+  .product-tag {
+    display: inline-block;
+    font-family: var(--mono); font-size: 10px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 2px;
+    margin-bottom: 20px;
+  }
+  .tag-nvh { background: rgba(0,200,255,0.1); color: var(--accent); border: 1px solid rgba(0,200,255,0.2); }
+  .tag-eps { background: rgba(0,229,160,0.1); color: var(--green); border: 1px solid rgba(0,229,160,0.2); }
+  .product-name {
+    font-size: 22px; font-weight: 700;
+    letter-spacing: -0.01em; margin-bottom: 10px;
+  }
+  .product-desc {
+    color: var(--muted); font-size: 14px;
+    line-height: 1.8; margin-bottom: 28px;
+  }
+  .feature-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .feature-list li {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 13px; color: var(--text);
+  }
+  .feature-list li::before {
+    content: '→'; color: var(--accent);
+    font-family: var(--mono); flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .product-card.eps .feature-list li::before { color: var(--green); }
+  .product-soon {
+    position: absolute; top: 20px; right: 20px;
+    font-family: var(--mono); font-size: 10px;
+    color: var(--amber); letter-spacing: 0.1em;
+    border: 1px solid rgba(245,166,35,0.3);
+    padding: 2px 8px; border-radius: 2px;
+  }
+
+  /* ── WHY ── */
+  .why-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1px; margin-top: 56px;
+    border: 1px solid var(--border); border-radius: 8px;
+    overflow: hidden;
+  }
+  .why-item {
+    background: var(--bg1); padding: 32px 28px;
+  }
+  .why-item + .why-item { border-left: 1px solid var(--border); }
+  .why-num {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--dim); letter-spacing: 0.1em;
+    margin-bottom: 16px;
+  }
+  .why-title {
+    font-size: 15px; font-weight: 600;
+    margin-bottom: 10px; color: var(--text);
+  }
+  .why-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+  /* ── PRICING ── */
+  #pricing { background: var(--bg1); }
+  .pricing-note {
+    margin-top: 16px;
+    font-family: var(--mono); font-size: 12px;
+    color: var(--muted); letter-spacing: 0.04em;
+    padding: 12px 16px;
+    border: 1px solid var(--border); border-radius: 4px;
+    display: inline-block;
+  }
+  .pricing-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px; margin-top: 48px;
+  }
+  .plan-card {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 32px 28px;
+    position: relative; transition: border-color 0.2s;
+  }
+  .plan-card:hover { border-color: var(--border2); }
+  .plan-card.featured {
+    border-color: var(--accent);
+    background: linear-gradient(160deg, rgba(0,200,255,0.04) 0%, var(--bg) 60%);
+  }
+  .plan-badge {
+    position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
+    background: var(--accent); color: var(--bg);
+    font-family: var(--mono); font-size: 10px;
+    font-weight: 700; letter-spacing: 0.1em;
+    padding: 3px 14px; border-radius: 0 0 6px 6px;
+  }
+  .plan-name {
+    font-size: 13px; font-weight: 600;
+    color: var(--muted); letter-spacing: 0.06em;
+    text-transform: uppercase; margin-bottom: 16px;
+  }
+  .plan-price {
+    font-family: var(--mono); font-size: 36px;
+    font-weight: 700; color: var(--text);
+    line-height: 1; margin-bottom: 4px;
+  }
+  .plan-price .currency { font-size: 18px; vertical-align: top; margin-top: 6px; display: inline-block; }
+  .plan-price .period { font-size: 13px; color: var(--muted); font-weight: 400; }
+  .plan-desc { font-size: 12px; color: var(--dim); margin-bottom: 24px; min-height: 32px; }
+  .plan-divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+  .plan-features { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+  .plan-features li { font-size: 13px; color: var(--text); display: flex; gap: 8px; align-items: flex-start; }
+  .plan-features li::before { content: '✓'; color: var(--green); flex-shrink: 0; font-weight: 700; }
+  .plan-cta {
+    display: block; text-align: center;
+    padding: 10px; border-radius: 4px;
+    font-size: 13px; font-weight: 600;
+    text-decoration: none; transition: all 0.2s;
+    letter-spacing: 0.03em;
+  }
+  .plan-cta-outline {
+    border: 1px solid var(--border2); color: var(--text);
+  }
+  .plan-cta-outline:hover { border-color: var(--accent); color: var(--accent); }
+  .plan-cta-filled {
+    background: var(--accent); color: var(--bg);
+  }
+  .plan-cta-filled:hover { background: #33d4ff; }
+  .plan-cta-ghost {
+    border: 1px solid var(--border); color: var(--muted);
+  }
+  .plan-cta-ghost:hover { border-color: var(--border2); color: var(--text); }
+
+  /* ── CONTACT ── */
+  .contact-wrap {
+    margin-top: 56px;
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 48px 40px;
+    display: flex; gap: 48px; align-items: flex-start;
+  }
+  .contact-left { flex: 1; }
+  .contact-title { font-size: 22px; font-weight: 700; margin-bottom: 12px; }
+  .contact-desc { color: var(--muted); font-size: 14px; line-height: 1.8; margin-bottom: 24px; }
+  .contact-info { display: flex; flex-direction: column; gap: 12px; }
+  .contact-row {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--mono); font-size: 12px; color: var(--text);
+  }
+  .contact-row-label { color: var(--dim); width: 56px; flex-shrink: 0; }
+  .contact-right { flex: 1; }
+  .contact-form { display: flex; flex-direction: column; gap: 12px; }
+  .form-input {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 4px; padding: 11px 14px;
+    color: var(--text); font-size: 14px; font-family: var(--sans);
+    outline: none; transition: border-color 0.2s; width: 100%;
+  }
+  .form-input::placeholder { color: var(--dim); }
+  .form-input:focus { border-color: var(--accent); }
+  textarea.form-input { resize: vertical; min-height: 100px; }
+  .form-submit {
+    background: var(--accent); color: var(--bg);
+    border: none; border-radius: 4px;
+    padding: 12px; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: background 0.2s;
+    font-family: var(--sans); letter-spacing: 0.03em;
+  }
+  .form-submit:hover { background: #33d4ff; }
+  .form-note { font-size: 11px; color: var(--dim); text-align: center; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 40px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .footer-brand {
+    font-family: var(--mono); font-size: 13px;
+    color: var(--muted); letter-spacing: 0.06em;
+  }
+  .footer-copy { font-size: 12px; color: var(--dim); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 720px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    .products-grid, .why-grid, .pricing-grid { grid-template-columns: 1fr; }
+    .product-card + .product-card { border-left: none; border-top: 1px solid var(--border); }
+    .why-item + .why-item { border-left: none; border-top: 1px solid var(--border); }
+    .contact-wrap { flex-direction: column; padding: 28px 20px; }
+    footer { padding: 24px 20px; flex-direction: column; text-align: center; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
 </head>
 <body>
-<p class="p1"><span class="s1">//</span><span class="s2"> NVH-TOOLS</span></p>
-<ul class="ul1">
-  <li class="li2"><span class="s3"></span><span class="s4">工具</span></li>
-  <li class="li3"><span class="s5"></span><span class="s2">为什么选择</span></li>
-  <li class="li2"><span class="s3"></span><span class="s4">定价</span></li>
-  <li class="li2"><span class="s3"></span><span class="s4">联系</span></li>
-</ul>
-<p class="p4"><span class="s6"><b>获取访问权限</b><b></b></span></p>
-<p class="p5"><span class="s7"></span><br></p>
-<p class="p6"><span class="s7">AUTOMOTIVE ENGINEERING TOOLS</span></p>
-<h1 style="margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 40.0px 'Helvetica Neue'; color: #17bbff; -webkit-text-stroke: #17bbff"><span class="s8"><b>专为汽车工程师设计的</b></span><span class="s9"><b><br>
-</b></span><span class="s7"><b>NVH </b></span><span class="s10"><b>与</b></span><span class="s7"><b> EPS </b></span><span class="s10"><b>分析工具</b><b></b></span></h1>
-<p class="p8"><span class="s7">无需</span><span class="s11"> MATLAB License</span><span class="s7">，无需</span><span class="s11"> APE</span><span class="s7">，浏览器直接打开，数据全程留在本地。</span><span class="s11"> </span><span class="s7">路试现场到办公室分析，一套工具覆盖全流程。</span></p>
-<p class="p9"><span class="s12"><b>查看工具</b><b></b></span></p>
-<p class="p10"><span class="s7">申请试用Black_General</span></p>
-<p class="p11"><span class="s7"></span><br></p>
-<p class="p12"><span class="s7">数据不离开本地</span></p>
-<p class="p11"><span class="s7"></span><br></p>
-<p class="p12"><span class="s7">浏览器直接运行</span></p>
-<p class="p11"><span class="s7"></span><br></p>
-<p class="p13"><span class="s13">支持鸿蒙</span><span class="s7"> / iOS / Windows</span></p>
-<p class="p6"><span class="s14">TOOLS</span></p>
-<h2 style="margin: 0.0px 0.0px 16.0px 0.0px; color: #bccadc; -webkit-text-stroke: #bccadc"><span class="s15"><b>两款专业工具</b><b></b></span></h2>
-<p class="p15"><span class="s14">针对汽车转向与整车</span><span class="s16"> NVH </span><span class="s14">两个高频分析场景独立设计，互相补充。</span></p>
-<p class="p16"><span class="s17">NVH · </span><span class="s18">实时采集</span></p>
-<p class="p17"><span class="s19"><b>NVH Waterfall</b><b></b></span></p>
-<p class="p18"><span class="s19">用手机麦克风替代专业传声器，路试现场实时生成</span><span class="s20"> 3D </span><span class="s19">瀑布图谱。</span><span class="s20"> </span><span class="s19">在没有</span><span class="s20"> Head Acoustics </span><span class="s19">仪器的情况下，快速定位整车噪声阶次与频段。</span></p>
-<ul class="ul1">
-  <li class="li19"><span class="s21"></span><span class="s7">实时</span><span class="s22"> STFT </span><span class="s7">瀑布图，频率分辨率可调</span><span class="s23"> </span><span class="s7">阶次跟踪叠加显示（需配合转速信号）</span><span class="s23"> </span><span class="s7">支持手机、平板、</span><span class="s22">PC </span><span class="s7">多端运行</span><span class="s23"> </span><span class="s7">鸿蒙</span><span class="s22"> / iOS / Android </span><span class="s7">浏览器全兼容</span><span class="s23"> </span><span class="s7">音频数据全程留在设备本地，不上传</span></li>
-</ul>
-<p class="p20"><span class="s24">EPS · </span><span class="s25">数据分析</span></p>
-<p class="p17"><span class="s19"><b>EPS Analyzer</b><b></b></span></p>
-<p class="p21"><span class="s26">直接读取</span><span class="s19"> .mf4 </span><span class="s26">与</span><span class="s19"> .mat </span><span class="s26">测试文件，替代</span><span class="s19"> MATLAB </span><span class="s26">完成</span><span class="s19"> EPS </span><span class="s26">电机电流谐波、</span><span class="s19"> NVH </span><span class="s26">阶次、</span><span class="s19">Bode </span><span class="s26">频响等核心分析，结果导出为</span><span class="s19"> PNG / CSV</span><span class="s26">。</span></p>
-<ul class="ul1">
-  <li class="li22"><span class="s27"></span><span class="s7">MDF4 / MAT </span><span class="s28">文件直接解析，无需转换</span><span class="s23"> </span><span class="s7">FFT </span><span class="s29">·</span><span class="s7"> THD </span><span class="s29">·</span><span class="s7"> STFT </span><span class="s29">·</span><span class="s7"> </span><span class="s28">阶次分析四合一</span><span class="s23"> </span><span class="s7">Bode </span><span class="s28">图</span><span class="s7"> FRF </span><span class="s28">频响分析与</span><span class="s7"> PT1/PT2 </span><span class="s28">拟合</span><span class="s23"> </span><span class="s7">8</span><span class="s28">极</span><span class="s7">12</span><span class="s28">槽</span><span class="s7"> PMSM </span><span class="s28">谐波阶次自动标注</span><span class="s23"> </span><span class="s28">完全离线运行，公司数据安全可控</span></li>
-</ul>
-<p class="p6"><span class="s7">WHY</span></p>
-<h2 style="margin: 0.0px 0.0px 16.0px 0.0px; color: #bccadc; -webkit-text-stroke: #bccadc"><span class="s30"><b>为什么工程师选择这套工具</b><b></b></span></h2>
-<p class="p13"><span class="s14">01</span></p>
-<p class="p23"><span class="s31"><b>不依赖昂贵授权</b><b></b></span></p>
-<p class="p3"><span class="s32">MATLAB </span><span class="s14">年授权数万元，</span><span class="s32">APE </span><span class="s14">设备更贵。这套工具按人</span><span class="s32">/</span><span class="s14">年收费，个人也能承担。</span></p>
-<p class="p13"><span class="s14">02</span></p>
-<p class="p23"><span class="s31"><b>数据安全，不出本机</b><b></b></span></p>
-<p class="p3"><span class="s14">所有分析在浏览器本地完成。</span><span class="s32">.mf4 / .mat </span><span class="s14">文件不会上传到任何服务器，满足</span><span class="s32"> Tier1 </span><span class="s14">数据管控要求。</span></p>
-<p class="p13"><span class="s14">03</span></p>
-<p class="p23"><span class="s31"><b>工程师写给工程师</b><b></b></span></p>
-<p class="p3"><span class="s14">开发者有</span><span class="s32"> 10 </span><span class="s14">年</span><span class="s32"> EPS </span><span class="s14">系统工程背景，工具直接覆盖实际痛点，不是通用分析软件的复刻。</span></p>
-<p class="p6"><span class="s14">PRICING</span></p>
-<h2 style="margin: 0.0px 0.0px 16.0px 0.0px; color: #bccadc; -webkit-text-stroke: #bccadc"><span class="s15"><b>定价</b><b></b></span></h2>
-<p class="p15"><span class="s14">订阅即解锁两款工具完整功能。定价策略持续优化中，早期用户可获得优惠价格。</span></p>
-<p class="p24"><span class="s33">⚡</span><span class="s34"> </span><span class="s7">公测期间：联系开发者可获得</span><span class="s34"> 14 </span><span class="s7">天完整功能试用，无需付款。</span></p>
-<p class="p25"><span class="s35"><b>个人</b><b></b></span></p>
-<p class="p26"><span class="s36"><b>¥</b></span><span class="s19"><b>-- </b></span><span class="s37">/ </span><span class="s38">月</span></p>
-<p class="p27"><span class="s19">定价方案制定中</span></p>
-<p class="p28"><span class="s7"></span><br></p>
-<ul class="ul1">
-  <li class="li29"><span class="s39"></span><span class="s19">NVH Waterfall </span><span class="s40">完整功能</span><span class="s41"> </span><span class="s19">EPS Analyzer </span><span class="s40">完整功能</span><span class="s41"> </span><span class="s40">单设备授权</span><span class="s41"> </span><span class="s40">邮件技术支持</span></li>
-</ul>
-<p class="p30"><span class="s35"><b>联系获取试用</b><b></b></span></p>
-<p class="p31"><span class="s42"><b>推荐</b><b></b></span></p>
-<p class="p25"><span class="s43"><b>团队</b><b></b></span></p>
-<p class="p26"><span class="s44"><b>¥</b></span><span class="s14"><b>-- </b></span><span class="s45">/ </span><span class="s46">年</span></p>
-<p class="p27"><span class="s47">5 </span><span class="s14">人以内团队，统一管理</span></p>
-<p class="p28"><span class="s7"></span><br></p>
-<ul class="ul1">
-  <li class="li32"><span class="s27"></span><span class="s7">NVH Waterfall </span><span class="s28">完整功能</span><span class="s23"> </span><span class="s7">EPS Analyzer </span><span class="s28">完整功能</span><span class="s23"> </span><span class="s7">5 </span><span class="s28">个账号席位</span><span class="s23"> </span><span class="s28">优先技术支持</span><span class="s23"> </span><span class="s28">新功能优先体验</span></li>
-</ul>
-<p class="p33"><span class="s6"><b>联系洽谈</b><b></b></span></p>
-<p class="p25"><span class="s35"><b>企业</b><b></b></span></p>
-<p class="p34"><span class="s48"><b>定制</b></span><span class="s49"> </span><span class="s40">报价</span></p>
-<p class="p27"><span class="s19">部门或公司级采购</span></p>
-<p class="p28"><span class="s7"></span><br></p>
-<ul class="ul1">
-  <li class="li35"><span class="s50"></span><span class="s19">无限席位授权</span><span class="s41"> </span><span class="s19">私有化部署支持</span><span class="s41"> </span><span class="s19">定制功能开发</span><span class="s41"> </span><span class="s19">驻场培训支持</span><span class="s41"> </span><span class="s51">NDA </span><span class="s19">保密协议</span></li>
-</ul>
-<p class="p36"><span class="s35"><b>联系洽谈</b><b></b></span></p>
-<p class="p6"><span class="s7">CONTACT</span></p>
-<h2 style="margin: 0.0px 0.0px 16.0px 0.0px; font: 24.0px 'PingFang SC'; color: #bccadc; -webkit-text-stroke: #bccadc"><span class="s7"><b>申请试用</b></span><span class="s52"><b> / </b></span><span class="s7"><b>联系开发者</b><b></b></span></h2>
-<p class="p38"><span class="s53"><b>直接联系</b><b></b></span></p>
-<p class="p39"><span class="s7">公测阶段欢迎</span><span class="s54"> EPS / NVH </span><span class="s7">工程师申请试用。</span><span class="s54"><br>
-</span><span class="s7">留下你的联系方式，通常</span><span class="s54"> 1 </span><span class="s7">个工作日内回复，提供试用链接和激活码。</span></p>
-<p class="p40"><span class="s7">微信</span></p>
-<p class="p41"><span class="s7">Black_General</span></p>
-<p class="p40"><span class="s7">邮箱</span></p>
-<p class="p41"><span class="s7">ponyuf1003@gmail.com</span></p>
-<p class="p40"><span class="s7">响应</span></p>
-<p class="p41"><span class="s34">1 </span><span class="s7">个工作日内</span></p>
-<p class="p42"><span class="s7"></span><br></p>
-<p class="p42"><span class="s7"></span><br></p>
-<p class="p42"><span class="s7"></span><br></p>
-<p class="p43"><span class="s12"><b>提交申请</b><b></b></span></p>
-<p class="p44"><span class="s7">提交信息仅用于联系，不会用于其他用途</span></p>
-<p class="p45"><span class="s7">// NVH-TOOLS · </span><span class="s28">汽车工程师专业分析工具</span></p>
-<p class="p40"><span class="s55">© 2026 </span><span class="s56">·</span><span class="s55"> </span><span class="s7">数据全程本地处理，安全可控</span></p>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#"><span>//</span> NVH-TOOLS</a>
+  <ul class="nav-links">
+    <li><a href="#products">工具</a></li>
+    <li><a href="#why">为什么选择</a></li>
+    <li><a href="#pricing">定价</a></li>
+    <li><a href="#contact">联系</a></li>
+  </ul>
+  <a class="nav-cta" href="#contact">获取访问权限</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-eyebrow">Automotive Engineering Tools</div>
+  <h1 class="hero-title">
+    专为汽车工程师设计的<br>
+    <span class="hl">NVH 与 EPS 分析工具</span>
+  </h1>
+  <p class="hero-sub">
+    无需 MATLAB License，无需 APE，浏览器直接打开，数据全程留在本地。
+    路试现场到办公室分析，一套工具覆盖全流程。
+  </p>
+  <div class="hero-actions">
+    <a class="btn-primary" href="#products">查看工具</a>
+    <a class="btn-ghost" href="#contact">申请试用</a>
+  </div>
+  <div class="hero-badges">
+    <span class="badge"><span class="badge-dot"></span>数据不离开本地</span>
+    <span class="badge"><span class="badge-dot"></span>浏览器直接运行</span>
+    <span class="badge"><span class="badge-dot"></span>支持鸿蒙 / iOS / Windows</span>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section id="products">
+  <div class="container">
+    <div class="section-label">Tools</div>
+    <h2 class="section-title">两款专业工具</h2>
+    <p class="section-sub">针对汽车转向与整车 NVH 两个高频分析场景独立设计，互相补充。</p>
+
+    <div class="products-grid">
+      <!-- NVH Waterfall -->
+      <div class="product-card">
+        <div class="product-tag tag-nvh">NVH · 实时采集</div>
+        <div class="product-name">NVH Waterfall</div>
+        <p class="product-desc">
+          用手机麦克风替代专业传声器，路试现场实时生成 3D 瀑布图谱。
+          在没有 Head Acoustics 仪器的情况下，快速定位整车噪声阶次与频段。
+        </p>
+        <ul class="feature-list">
+          <li>实时 STFT 瀑布图，频率分辨率可调</li>
+          <li>阶次跟踪叠加显示（需配合转速信号）</li>
+          <li>支持手机、平板、PC 多端运行</li>
+          <li>鸿蒙 / iOS / Android 浏览器全兼容</li>
+          <li>音频数据全程留在设备本地，不上传</li>
+        </ul>
+      </div>
+
+      <!-- EPS Analyzer -->
+      <div class="product-card eps">
+        <div class="product-tag tag-eps">EPS · 数据分析</div>
+        <div class="product-name">EPS Analyzer</div>
+        <p class="product-desc">
+          直接读取 .mf4 与 .mat 测试文件，替代 MATLAB 完成 EPS 电机电流谐波、
+          NVH 阶次、Bode 频响等核心分析，结果导出为 PNG / CSV。
+        </p>
+        <ul class="feature-list">
+          <li>MDF4 / MAT 文件直接解析，无需转换</li>
+          <li>FFT · THD · STFT · 阶次分析四合一</li>
+          <li>Bode 图 FRF 频响分析与 PT1/PT2 拟合</li>
+          <li>8极12槽 PMSM 谐波阶次自动标注</li>
+          <li>完全离线运行，公司数据安全可控</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section id="why">
+  <div class="container">
+    <div class="section-label">Why</div>
+    <h2 class="section-title">为什么工程师选择这套工具</h2>
+    <div class="why-grid">
+      <div class="why-item">
+        <div class="why-num">01</div>
+        <div class="why-title">不依赖昂贵授权</div>
+        <p class="why-desc">MATLAB 年授权数万元，APE 设备更贵。这套工具按人/年收费，个人也能承担。</p>
+      </div>
+      <div class="why-item">
+        <div class="why-num">02</div>
+        <div class="why-title">数据安全，不出本机</div>
+        <p class="why-desc">所有分析在浏览器本地完成。.mf4 / .mat 文件不会上传到任何服务器，满足 Tier1 数据管控要求。</p>
+      </div>
+      <div class="why-item">
+        <div class="why-num">03</div>
+        <div class="why-title">工程师写给工程师</div>
+        <p class="why-desc">开发者有 10 年 EPS 系统工程背景，工具直接覆盖实际痛点，不是通用分析软件的复刻。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="container">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-title">定价</h2>
+    <p class="section-sub">订阅即解锁两款工具完整功能。定价策略持续优化中，早期用户可获得优惠价格。</p>
+    <div class="pricing-note">⚡ 公测期间：联系开发者可获得 14 天完整功能试用，无需付款。</div>
+
+    <div class="pricing-grid">
+      <!-- 个人 -->
+      <div class="plan-card">
+        <div class="plan-name">个人</div>
+        <div class="plan-price">
+          <span class="currency">¥</span>-- <span class="period">/ 月</span>
+        </div>
+        <p class="plan-desc">定价方案制定中</p>
+        <hr class="plan-divider">
+        <ul class="plan-features">
+          <li>NVH Waterfall 完整功能</li>
+          <li>EPS Analyzer 完整功能</li>
+          <li>单设备授权</li>
+          <li>邮件技术支持</li>
+        </ul>
+        <a href="#contact" class="plan-cta plan-cta-outline">联系获取试用</a>
+      </div>
+
+      <!-- 团队（推荐） -->
+      <div class="plan-card featured">
+        <div class="plan-badge">推荐</div>
+        <div class="plan-name">团队</div>
+        <div class="plan-price">
+          <span class="currency">¥</span>-- <span class="period">/ 年</span>
+        </div>
+        <p class="plan-desc">5 人以内团队，统一管理</p>
+        <hr class="plan-divider">
+        <ul class="plan-features">
+          <li>NVH Waterfall 完整功能</li>
+          <li>EPS Analyzer 完整功能</li>
+          <li>5 个账号席位</li>
+          <li>优先技术支持</li>
+          <li>新功能优先体验</li>
+        </ul>
+        <a href="#contact" class="plan-cta plan-cta-filled">联系洽谈</a>
+      </div>
+
+      <!-- 企业 -->
+      <div class="plan-card">
+        <div class="plan-name">企业</div>
+        <div class="plan-price" style="font-size:24px;line-height:1.3;padding-top:6px;">
+          定制<span class="period" style="font-size:13px;"> 报价</span>
+        </div>
+        <p class="plan-desc">部门或公司级采购</p>
+        <hr class="plan-divider">
+        <ul class="plan-features">
+          <li>无限席位授权</li>
+          <li>私有化部署支持</li>
+          <li>定制功能开发</li>
+          <li>驻场培训支持</li>
+          <li>NDA 保密协议</li>
+        </ul>
+        <a href="#contact" class="plan-cta plan-cta-ghost">联系洽谈</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="section-label">Contact</div>
+    <h2 class="section-title">申请试用 / 联系开发者</h2>
+
+    <div class="contact-wrap">
+      <div class="contact-left">
+        <div class="contact-title">直接联系</div>
+        <p class="contact-desc">
+          公测阶段欢迎 EPS / NVH 工程师申请试用。<br>
+          留下你的联系方式，通常 1 个工作日内回复，提供试用链接和激活码。
+        </p>
+        <div class="contact-info">
+          <div class="contact-row">
+            <span class="contact-row-label">微信</span>
+            <span>联系后提供</span>
+          </div>
+          <div class="contact-row">
+            <span class="contact-row-label">邮箱</span>
+            <span>联系后提供</span>
+          </div>
+          <div class="contact-row">
+            <span class="contact-row-label">响应</span>
+            <span>1 个工作日内</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-right">
+        <form class="contact-form" onsubmit="handleSubmit(event)">
+          <input class="form-input" type="text" name="name" placeholder="姓名 / 公司" required>
+          <input class="form-input" type="text" name="contact" placeholder="微信号 / 邮箱" required>
+          <input class="form-input" type="text" name="role" placeholder="职位 / 使用场景（选填）">
+          <textarea class="form-input" name="message" placeholder="想了解哪款工具？有什么具体问题？（选填）"></textarea>
+          <button class="form-submit" type="submit">提交申请</button>
+          <p class="form-note">提交信息仅用于联系，不会用于其他用途</p>
+        </form>
+        <div id="form-success" style="display:none; padding:24px; text-align:center; color:var(--green); font-family:var(--mono); font-size:13px;">
+          ✓ 已收到申请，我会尽快联系你
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">// NVH-TOOLS · 汽车工程师专业分析工具</div>
+  <div class="footer-copy">© 2026 · 数据全程本地处理，安全可控</div>
+</footer>
+
+<script>
+/* ── Hero Canvas：模拟NVH瀑布图频谱滚动 ── */
+(function () {
+  const canvas = document.getElementById('hero-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, cols, history = [], animId;
+  const ROWS = 60;
+  const BASE_FREQS = [0.05, 0.12, 0.22, 0.38, 0.55, 0.7, 0.85];
+
+  function resize() {
+    W = canvas.width = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+    cols = Math.floor(W / 3);
+    history = [];
+  }
+
+  function genRow() {
+    const row = new Float32Array(cols);
+    const t = Date.now() * 0.0008;
+    for (let i = 0; i < cols; i++) {
+      const x = i / cols;
+      let v = 0;
+      BASE_FREQS.forEach((f, idx) => {
+        const drift = Math.sin(t * (0.3 + idx * 0.11) + idx) * 0.04;
+        const dist = Math.abs(x - (f + drift));
+        const width = 0.018 + Math.sin(t * 0.5 + idx) * 0.006;
+        v += Math.exp(-(dist * dist) / (2 * width * width)) * (0.5 + 0.5 * Math.sin(t * (1 + idx * 0.3)));
+      });
+      v += (Math.random() * 0.08);
+      row[i] = Math.min(1, v);
+    }
+    return row;
+  }
+
+  function draw() {
+    history.unshift(genRow());
+    if (history.length > ROWS) history.length = ROWS;
+    ctx.clearRect(0, 0, W, H);
+    const rowH = H / ROWS;
+    history.forEach((row, ri) => {
+      const alpha = 1 - ri / ROWS;
+      for (let ci = 0; ci < cols; ci++) {
+        const v = row[ci];
+        if (v < 0.05) continue;
+        const hue = 200 - v * 160;
+        const sat = 60 + v * 40;
+        const lit = 20 + v * 55;
+        ctx.fillStyle = `hsla(${hue},${sat}%,${lit}%,${alpha * v})`;
+        ctx.fillRect(ci * 3, ri * rowH, 3, rowH + 0.5);
+      }
+    });
+    animId = requestAnimationFrame(draw);
+  }
+
+  function init() {
+    resize();
+    draw();
+  }
+
+  window.addEventListener('resize', () => {
+    cancelAnimationFrame(animId);
+    resize();
+    draw();
+  });
+
+  const ro = new ResizeObserver(init);
+  ro.observe(canvas);
+})();
+
+/* ── Contact Form ── */
+function handleSubmit(e) {
+  e.preventDefault();
+  const form = e.target;
+  const data = {
+    name: form.name.value,
+    contact: form.contact.value,
+    role: form.role.value,
+    message: form.message.value,
+    time: new Date().toLocaleString('zh-CN'),
+  };
+  // 目前只做前端提示，后续可接 Formspree / 飞书 webhook 等
+  console.log('申请信息：', data);
+  form.style.display = 'none';
+  document.getElementById('form-success').style.display = 'block';
+}
+</script>
 </body>
 </html>

@@ -1,0 +1,1757 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#0a0d0f">
+<title>NVH Spectrum Analyzer v2</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0a0d0f;--bg2:#111518;--bg3:#181d21;
+  --border:#1e2830;--accent:#00e5ff;--accent2:#ff6b35;
+  --text:#c8d8e0;--text2:#5a7a8a;--green:#39ff6a;--warn:#ffcc00;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);
+  font-family:'Courier New',Courier,monospace}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+
+/* Header */
+#header{display:flex;align-items:center;justify-content:space-between;
+  padding:5px 10px;border-bottom:1px solid var(--border);background:var(--bg2);
+  flex-shrink:0;gap:6px;min-height:32px}
+#logo{font-size:11px;color:var(--accent);letter-spacing:2px;white-space:nowrap}
+#status-bar{display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end;flex-wrap:wrap}
+.stat{font-size:10px;color:var(--text2);display:flex;align-items:center;gap:3px;white-space:nowrap}
+.stat b{color:var(--text);font-weight:400}
+#dot{width:7px;height:7px;border-radius:50%;background:var(--text2);flex-shrink:0}
+#dot.on{background:var(--green);box-shadow:0 0 6px var(--green)}
+#dot.warn{background:var(--warn);box-shadow:0 0 6px var(--warn)}
+
+/* Main row */
+#main{display:flex;flex:1;overflow:hidden;min-height:0}
+
+/* Y axis */
+#yaxis{width:40px;flex-shrink:0;border-right:1px solid var(--border);
+  background:var(--bg2);position:relative;cursor:ns-resize;user-select:none}
+#yaxis-canvas{display:block;width:100%;height:100%}
+/* Y zoom hint */
+#yzoom-hint{position:absolute;bottom:4px;left:0;right:0;text-align:center;
+  font-size:8px;color:var(--text2);pointer-events:none;line-height:1.3}
+
+/* Waterfall */
+#waterfall-wrap{flex:1;position:relative;overflow:hidden;background:#000;min-width:0}
+#waterfall{display:block;image-rendering:pixelated}
+
+/* Freq zoom band indicator */
+#freqband{position:absolute;left:0;right:30px;top:0;height:2px;
+  background:linear-gradient(90deg,var(--accent),transparent);opacity:.5;pointer-events:none}
+
+/* Crosshair */
+#ch-h{position:absolute;left:0;right:0;height:1px;background:rgba(0,229,255,.5);
+  pointer-events:none;display:none}
+#ch-v{position:absolute;top:0;bottom:0;width:1px;background:rgba(0,229,255,.3);
+  pointer-events:none;display:none}
+#ch-label{position:absolute;background:rgba(10,13,15,.9);border:1px solid var(--accent);
+  padding:2px 7px;color:var(--accent);font-size:10px;white-space:nowrap;
+  border-radius:2px;pointer-events:none;display:none}
+
+/* Colorbar — 横向离散色块条（Artemis风格），常驻于X轴下方 */
+#colorbar-row{display:flex;align-items:center;background:var(--bg2);
+  border-top:1px solid var(--border);padding:14px 8px 4px;gap:8px;flex-shrink:0;height:34px;
+  position:relative;overflow:visible}
+#colorbar-row-spacer{width:40px;flex-shrink:0}
+#colorbar-segs{flex:1;display:flex;height:14px;border:1px solid var(--border);border-radius:2px;overflow:visible}
+.cbseg{flex:1;height:100%}
+.cb-unit-label{font-size:10px;color:var(--text2);white-space:nowrap;letter-spacing:.5px;flex-shrink:0}
+
+/* FFT spectrum panel */
+/* (实时频谱面板已移除，简化界面，节省手机端空间) */
+
+/* X axis */
+#xaxis{height:20px;background:var(--bg2);border-top:1px solid var(--border);
+  flex-shrink:0;position:relative}
+#xaxis-canvas{display:block;width:100%;height:100%}
+
+/* Controls */
+#controls,#display-controls{border-top:1px solid var(--border);background:var(--bg2);
+  padding:8px 10px;display:flex;align-items:center;gap:7px;
+  flex-wrap:wrap;flex-shrink:0}
+#display-controls{background:var(--bg3)}
+.ctrl-sep{width:1px;height:28px;background:var(--border);flex-shrink:0}
+label.lbl{font-size:11px;color:var(--text2);letter-spacing:.5px;white-space:nowrap}
+select{background:var(--bg3);border:1px solid var(--border);color:var(--text);
+  font-size:12px;border-radius:3px;outline:none;padding:5px 6px;
+  cursor:pointer;font-family:inherit;min-height:34px}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;
+  border-radius:2px;cursor:pointer;background:var(--border)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;
+  border-radius:50%;background:var(--accent);box-shadow:0 0 5px var(--accent)}
+.val-display{font-size:11px;color:var(--accent);min-width:36px;text-align:right}
+.btn{font-size:13px;letter-spacing:.5px;padding:8px 14px;border-radius:4px;
+  cursor:pointer;border:1px solid;transition:background .12s;flex-shrink:0;
+  white-space:nowrap;font-family:inherit;background:transparent;
+  min-height:36px;min-width:44px;touch-action:manipulation}
+#btn-start{border-color:var(--green);color:var(--green)}
+#btn-start:active{background:rgba(57,255,106,.15)}
+#btn-stop{border-color:var(--accent2);color:var(--accent2)}
+#btn-stop:active{background:rgba(255,107,53,.15)}
+#btn-save{border-color:var(--text2);color:var(--text2)}
+#btn-save:active{border-color:var(--accent);color:var(--accent)}
+#btn-rec{border-color:#ff4444;color:#ff4444}
+#btn-rec.recording{background:rgba(255,68,68,.2)}
+.is-hidden{display:none !important}
+
+/* 控件分组：作为一个整体参与flex-wrap换行，避免label/控件/数值被拆散到不同行 */
+.ctrl-group{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;white-space:nowrap}
+
+/* 步进器按钮（MIN/MAX调节）：比拖动滑条更适合手机精确点击 */
+.stepper-group{background:var(--bg3);border:1px solid var(--border);
+  border-radius:6px;padding:2px 4px;gap:0}
+.stepper-group .lbl{padding:0 6px 0 4px}
+.stepper-btn{font-family:inherit;font-size:18px;font-weight:bold;line-height:1;
+  width:34px;height:34px;border-radius:5px;border:1px solid var(--border);
+  background:var(--bg2);color:var(--accent);cursor:pointer;
+  touch-action:manipulation;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;padding:0}
+.stepper-btn:active{background:rgba(0,229,255,.18);border-color:var(--accent)}
+.stepper-group .val-display{min-width:30px;text-align:center;font-size:13px;font-weight:bold}
+
+/* dBA toggle button */
+#btn-dba{border-color:var(--text2);color:var(--text2)}
+#btn-dba.on{border-color:var(--accent);color:var(--accent);background:rgba(0,229,255,.1)}
+
+/* Freq range display */
+#freqrange{font-size:11px;color:var(--accent);white-space:nowrap;
+  background:var(--bg3);border:1px solid var(--border);
+  padding:5px 8px;border-radius:3px;min-width:110px;text-align:center;flex-shrink:0}
+
+/* Copyright */
+#copyright{width:100%;text-align:center;font-size:9px;color:var(--text2);
+  padding:2px 0 1px;letter-spacing:.5px;flex-basis:100%;order:99}
+
+/* Toast */
+#toast{position:fixed;bottom:55px;left:50%;transform:translateX(-50%);
+  background:#1a0808;border:1px solid #ff4444;color:#ff8888;
+  padding:7px 14px;border-radius:3px;font-size:10px;display:none;
+  z-index:200;max-width:88vw;text-align:center;line-height:1.5}
+
+/* Huawei guide */
+#hw-guide{position:fixed;inset:0;background:rgba(10,13,15,.96);z-index:300;
+  display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  padding:24px}
+#hw-guide.show{display:flex}
+#hw-guide h2{color:var(--accent);font-size:14px;letter-spacing:1px}
+#hw-guide p{color:var(--text);font-size:12px;line-height:1.8;text-align:left;max-width:320px}
+#hw-guide code{color:var(--green);background:var(--bg3);padding:2px 6px;border-radius:2px;font-size:11px}
+#hw-guide button{margin-top:4px;padding:6px 20px;border:1px solid var(--accent);
+  color:var(--accent);background:transparent;border-radius:2px;cursor:pointer;font-family:inherit;font-size:11px}
+
+/* Tab switch */
+#tabs{display:flex;gap:0;margin-right:8px;flex-shrink:0}
+.tab-btn{font-family:inherit;font-size:11px;letter-spacing:1px;padding:5px 12px;
+  background:transparent;border:1px solid var(--border);color:var(--text2);
+  cursor:pointer;touch-action:manipulation}
+.tab-btn:first-child{border-radius:4px 0 0 4px}
+.tab-btn:last-child{border-radius:0 4px 4px 0;border-left-width:0}
+.tab-btn.active{background:rgba(0,229,255,.12);color:var(--accent);border-color:var(--accent)}
+
+/* File mode toolbar */
+#file-controls{display:none;border-top:1px solid var(--border);background:var(--bg2);
+  padding:8px 10px;align-items:center;gap:7px;flex-wrap:wrap;flex-shrink:0}
+#file-controls.show{display:flex}
+#controls.hide-mode{display:none}
+#file-drop{
+  border:1.5px dashed var(--border);border-radius:6px;color:var(--text2);
+  font-size:12px;padding:7px 14px;cursor:pointer;white-space:nowrap;
+  transition:border-color .15s,color .15s}
+#file-drop:hover,#file-drop.dragover{border-color:var(--accent);color:var(--accent)}
+#file-name{font-size:11px;color:var(--accent);max-width:160px;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+#file-progress-wrap{display:none;align-items:center;gap:6px;flex:1;min-width:140px}
+#file-progress-wrap.show{display:flex}
+#file-progress-bar{flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;border:1px solid var(--border)}
+#file-progress-fill{height:100%;width:0%;background:var(--accent);transition:width .15s}
+#file-progress-pct{font-size:10px;color:var(--accent);min-width:32px;text-align:right}
+
+/* Playhead on waterfall (static overview mode) */
+#playhead{position:absolute;top:0;bottom:0;width:2px;background:var(--accent2);
+  box-shadow:0 0 6px var(--accent2);display:none;pointer-events:none;z-index:5}
+#playhead-time{position:absolute;top:2px;background:rgba(10,13,15,.9);
+  border:1px solid var(--accent2);color:var(--accent2);font-size:10px;
+  padding:1px 5px;border-radius:2px;display:none;pointer-events:none;z-index:5;white-space:nowrap}
+
+/* View mode toggle (static/scroll) */
+.seg-group{display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden}
+.seg-btn{font-family:inherit;font-size:10px;padding:5px 9px;background:transparent;
+  border:none;color:var(--text2);cursor:pointer;touch-action:manipulation}
+.seg-btn.active{background:rgba(0,229,255,.12);color:var(--accent)}
+
+@media(max-width:500px){
+  .tab-btn{padding:4px 9px;font-size:10px}
+  #file-controls{gap:5px;padding:6px 8px}
+  #file-name{max-width:90px}
+  #controls{gap:5px;padding:6px 8px}
+  #display-controls{gap:5px;padding:6px 8px}
+  .btn{padding:7px 11px;font-size:12px;min-height:34px}
+  select{font-size:11px;padding:4px 5px;min-height:32px}
+  .ctrl-sep{display:none}
+  #logo{font-size:10px}
+  .stepper-btn{width:32px;height:32px;font-size:16px}
+  #freqrange{min-width:90px;font-size:10px;padding:5px 6px}
+}
+<style>
+
+#nvh-gate{position:fixed;inset:0;z-index:99999;background:#060b14;display:flex;align-items:center;justify-content:center;font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif}
+#nvh-gate.hidden{display:none}
+.gate-card{width:92%;max-width:380px;background:#0e1726;border:1px solid #1f2c40;border-radius:14px;padding:32px 26px;box-shadow:0 8px 40px rgba(0,0,0,.6)}
+.gate-logo{font-size:11px;color:#2196f3;letter-spacing:.18em;text-transform:uppercase;margin-bottom:18px;font-family:'Courier New',monospace}
+.gate-title{color:#e8edf5;font-size:17px;font-weight:700;margin-bottom:8px}
+.gate-sub{color:#4a6a8a;font-size:12.5px;margin-bottom:20px;line-height:1.6}
+.gate-input{width:100%;box-sizing:border-box;background:#060b14;border:1px solid #2a3b52;border-radius:8px;color:#e8edf5;font-size:15px;padding:12px 14px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;outline:none;font-family:'Courier New',monospace}
+.gate-input:focus{border-color:#2196f3;box-shadow:0 0 0 2px rgba(33,150,243,.15)}
+.gate-input::placeholder{color:#2a3b52;letter-spacing:.05em;font-size:13px}
+.gate-btn{width:100%;padding:12px;border:none;border-radius:8px;background:#2196f3;color:#fff;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:background .15s}
+.gate-btn:hover{background:#1976d2}
+.gate-btn:disabled{background:#1e2d42;color:#34495e;cursor:not-allowed}
+.gate-msg{font-size:12px;margin-top:10px;min-height:16px;text-align:center}
+.gate-msg.err{color:#ff5470}
+.gate-msg.ok{color:#00e5a0}
+.gate-footer{margin-top:20px;text-align:center;color:#263650;font-size:11px;line-height:1.6}
+.gate-footer a{color:#2196f3;text-decoration:none}
+
+</style>
+
+</head>
+<body>
+
+<div id="nvh-gate">
+  <div class="gate-card">
+    <div class="gate-logo">// eps-nvh-tools.com</div>
+    <div class="gate-title">NVH Waterfall · 实时瀑布图</div>
+    <div class="gate-sub">请输入激活码以使用本工具。<br>所有数据全程留在本机，不上传。</div>
+    <input id="gate-code" class="gate-input" placeholder="NVH-XXXXXXXX-2026" maxlength="17" autocomplete="off" spellcheck="false"/>
+    <button id="gate-btn" class="gate-btn">激 活</button>
+    <div id="gate-msg" class="gate-msg"></div>
+    <div class="gate-footer">
+      需要激活码？联系开发者<br>
+      <a href="https://eps-nvh-tools.com#contact" target="_blank">eps-nvh-tools.com</a>
+    </div>
+  </div>
+</div>
+
+<div id="nvh-app-content" style="display:none;width:100%;height:100%;">
+<div id="app">
+  <div id="header">
+    <div id="tabs">
+      <button class="tab-btn active" id="tab-live">● LIVE</button>
+      <button class="tab-btn" id="tab-file">📁 FILE</button>
+    </div>
+    <div id="logo">NVH ANALYZER v2</div>
+    <div id="status-bar">
+      <div class="stat"><div id="dot"></div>&nbsp;<b id="stat-state">IDLE</b></div>
+      <div class="stat">Fs&nbsp;<b id="stat-sr">—</b></div>
+      <div class="stat">PEAK&nbsp;<b id="stat-peak">—</b></div>
+      <div class="stat">SPL&nbsp;<b id="stat-spl">—</b></div>
+    </div>
+  </div>
+
+  <div id="main">
+    <div id="yaxis">
+      <canvas id="yaxis-canvas"></canvas>
+      <div id="yzoom-hint">↕ 拖动<br>缩放</div>
+    </div>
+    <div id="waterfall-wrap">
+      <canvas id="waterfall"></canvas>
+      <div id="ch-h"></div>
+      <div id="ch-v"></div>
+      <div id="ch-label"></div>
+      <div id="playhead"></div>
+      <div id="playhead-time">0:00</div>
+    </div>
+    <!-- 实时FFT频谱面板 -->
+    <!-- 实时频谱面板已移除（节省手机端屏幕空间，聚焦瀑布图主显示） -->
+  </div>
+
+  <div id="xaxis"><canvas id="xaxis-canvas"></canvas></div>
+
+  <!-- 横向离散色谱条（Artemis风格），与瀑布图横向对齐 -->
+  <div id="colorbar-row">
+    <div id="colorbar-row-spacer"></div>
+    <div id="colorbar-segs"></div>
+    <span class="cb-unit-label" id="cb-unit-label">L / dB(SPL)</span>
+  </div>
+
+  <!-- 通用显示设置：色谱/范围/dBA，LIVE与FILE模式通用，常驻显示 -->
+  <div id="display-controls">
+    <div class="ctrl-group">
+      <label class="lbl">COLOR</label>
+      <select id="sel-cmap">
+        <option value="jet" selected>Jet</option>
+        <option value="inferno">Inferno</option>
+        <option value="hot">Hot</option>
+        <option value="viridis">Viridis</option>
+      </select>
+    </div>
+
+    <div class="ctrl-sep"></div>
+
+    <div class="ctrl-group stepper-group">
+      <label class="lbl">MIN</label>
+      <button class="stepper-btn" id="btn-min-dn" aria-label="MIN减小">−</button>
+      <span class="val-display" id="val-min">10</span>
+      <button class="stepper-btn" id="btn-min-up" aria-label="MIN增大">+</button>
+    </div>
+
+    <div class="ctrl-group stepper-group">
+      <label class="lbl">MAX</label>
+      <button class="stepper-btn" id="btn-max-dn" aria-label="MAX减小">−</button>
+      <span class="val-display" id="val-max">80</span>
+      <button class="stepper-btn" id="btn-max-up" aria-label="MAX增大">+</button>
+    </div>
+
+    <div class="ctrl-sep"></div>
+    <div class="ctrl-group">
+      <button class="btn on" id="btn-dba">dB(A): ON</button>
+    </div>
+    <div class="ctrl-group">
+      <button class="btn" id="btn-save">↓ PNG</button>
+    </div>
+    <div class="ctrl-group" id="freqrange">0 – 1000 Hz</div>
+  </div>
+
+  <div id="controls">
+    <div class="ctrl-group">
+      <button class="btn" id="btn-start">▶ START</button>
+      <button class="btn is-hidden" id="btn-stop">■ STOP</button>
+      <button class="btn is-hidden" id="btn-rec">● REC</button>
+    </div>
+    <div class="ctrl-sep"></div>
+
+    <div class="ctrl-group">
+      <label class="lbl">FFT</label>
+      <select id="sel-fft">
+        <option value="2048">2048</option>
+        <option value="4096" selected>4096</option>
+        <option value="8192">8192</option>
+      </select>
+    </div>
+    <div id="copyright">Copyright © Feng Xinghui &nbsp;|&nbsp; AI Agent</div>
+  </div>
+
+  <!-- 文件分析模式专属工具栏 -->
+  <div id="file-controls">
+    <div class="ctrl-group">
+      <label for="file-input" id="file-drop">📁 选择文件</label>
+      <input type="file" id="file-input" accept="audio/*,video/*" style="display:none">
+      <span id="file-name"></span>
+    </div>
+
+    <div id="file-progress-wrap">
+      <span class="lbl" style="font-size:10px">解析中</span>
+      <div id="file-progress-bar"><div id="file-progress-fill"></div></div>
+      <span id="file-progress-pct">0%</span>
+    </div>
+
+    <div class="ctrl-sep"></div>
+
+    <div class="seg-group" id="view-mode-group">
+      <button class="seg-btn active" data-mode="static">静态全貌</button>
+      <button class="seg-btn" data-mode="scroll">动态回放</button>
+    </div>
+
+    <div class="ctrl-sep"></div>
+
+    <div class="ctrl-group">
+      <button class="btn" id="btn-play" disabled style="border-color:var(--green);color:var(--green)">▶ 播放</button>
+      <button class="btn" id="btn-pause" style="display:none;border-color:var(--accent2);color:var(--accent2)">❙❙ 暂停</button>
+    </div>
+
+    <div class="ctrl-group">
+      <input type="range" id="sl-seek" min="0" max="1000" value="0" step="1" style="width:90px" disabled>
+      <span class="val-display" id="val-time">0:00 / 0:00</span>
+    </div>
+
+    <div class="ctrl-sep"></div>
+    <div class="ctrl-group">
+      <label class="lbl">FFT</label>
+      <select id="sel-fft-file">
+        <option value="2048">2048</option>
+        <option value="4096" selected>4096</option>
+        <option value="8192">8192</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- Huawei guide modal -->
+<div id="hw-guide">
+  <h2>🔶 华为/鸿蒙 打开方式</h2>
+  <p>
+    <b>方法 A — 华为浏览器直接输入路径：</b><br>
+    1. 打开华为浏览器<br>
+    2. 地址栏输入：<br>
+    <code>file:///storage/emulated/0/Download/nvh_waterfall_v2.html</code><br>
+    3. 回车即可<br><br>
+    <b>方法 B — 局域网访问（推荐车测）：</b><br>
+    1. 电脑与手机连同一WiFi<br>
+    2. 电脑终端运行：<code>python3 -m http.server 8080</code><br>
+    3. 手机浏览器输入电脑IP：<code>http://192.168.x.x:8080</code><br><br>
+    <b>方法 C — 微信文件助手：</b><br>
+    发给自己 → 点开 → 右上角… → 用浏览器打开
+  </p>
+  <button onclick="document.getElementById('hw-guide').classList.remove('show')">知道了，继续</button>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+// ── DOM ──
+var wfWrap  = document.getElementById('waterfall-wrap');
+var wfCanvas= document.getElementById('waterfall');
+var wfCtx   = wfCanvas.getContext('2d');
+var yEl     = document.getElementById('yaxis');
+var yCanvas = document.getElementById('yaxis-canvas');
+var yCtx    = yCanvas.getContext('2d');
+var xCanvas = document.getElementById('xaxis-canvas');
+var xCtx    = xCanvas.getContext('2d');
+var cbSegsEl = document.getElementById('colorbar-segs');
+var cbUnitLabel = document.getElementById('cb-unit-label');
+var dot     = document.getElementById('dot');
+var statState=document.getElementById('stat-state');
+var statSr  = document.getElementById('stat-sr');
+var statPeak= document.getElementById('stat-peak');
+var statSpl = document.getElementById('stat-spl');
+var btnStart= document.getElementById('btn-start');
+var btnStop = document.getElementById('btn-stop');
+var btnRec  = document.getElementById('btn-rec');
+var btnSave = document.getElementById('btn-save');
+var btnDba  = document.getElementById('btn-dba');
+var selFft  = document.getElementById('sel-fft');
+var selCmap = document.getElementById('sel-cmap');
+var btnMinDn= document.getElementById('btn-min-dn');
+var btnMinUp= document.getElementById('btn-min-up');
+var btnMaxDn= document.getElementById('btn-max-dn');
+var btnMaxUp= document.getElementById('btn-max-up');
+var valMin  = document.getElementById('val-min');
+var valMax  = document.getElementById('val-max');
+// cbMax/cbMin2 已废弃（旧竖向色条），数值现通过 drawColorbar() 动态生成离散标签
+var chH     = document.getElementById('ch-h');
+var chV     = document.getElementById('ch-v');
+var chLabel = document.getElementById('ch-label');
+var toast   = document.getElementById('toast');
+var freqRangeEl = document.getElementById('freqrange');
+// (实时频谱面板已移除)
+
+// ── 文件分析模式 DOM ──
+var tabLive   = document.getElementById('tab-live');
+var tabFile   = document.getElementById('tab-file');
+var fileControls = document.getElementById('file-controls');
+var liveControls = document.getElementById('controls');
+var fileInput = document.getElementById('file-input');
+var fileDrop  = document.getElementById('file-drop');
+var fileNameEl= document.getElementById('file-name');
+var progWrap  = document.getElementById('file-progress-wrap');
+var progFill  = document.getElementById('file-progress-fill');
+var progPct   = document.getElementById('file-progress-pct');
+var viewModeGroup = document.getElementById('view-mode-group');
+var btnPlay   = document.getElementById('btn-play');
+var btnPause  = document.getElementById('btn-pause');
+var slSeek    = document.getElementById('sl-seek');
+var valTime   = document.getElementById('val-time');
+var selFftFile= document.getElementById('sel-fft-file');
+var playhead  = document.getElementById('playhead');
+var playheadTime = document.getElementById('playhead-time');
+
+// ── State ──
+var audioCtx,analyser,stream,rafId;
+var running = false;
+var sampleRate = 44100;
+var fftSize = 4096;    // default higher for better resolution
+var dbMin = 10, dbMax = 80;
+var useDba = true;
+var colormap = 'jet';
+var mediaRecorder,recChunks=[],isRec=false;
+var offCanvas,offCtx;
+var wfW=1,wfH=1,frameCount=0;
+
+// ── 模式与文件分析状态 ──
+var appMode = 'live';       // 'live' | 'file'
+var fileViewMode = 'static'; // 'static' | 'scroll'
+var fileAudioCtx = null;
+var fileAudioBuffer = null;  // 解码后的 AudioBuffer
+var fileSpecMatrix = null;   // 全程频谱矩阵 Float32Array[frameIdx][bin]，扁平化存储
+var fileSpecFrames = 0;      // 总帧数
+var fileSpecBins   = 0;      // 每帧bin数（= fftSize/2）
+var fileFreqPerBin = 0;
+var fileDuration   = 0;
+var filePlaying    = false;
+var filePlaySrc    = null;   // AudioBufferSourceNode
+var filePlayStartCtxTime = 0;
+var filePlayStartOffset  = 0;
+var fileRafId = null;
+var fileStaticRendered = false;
+
+// ── Frequency zoom (Y axis) ──
+// fLow / fHigh define the visible frequency band
+var fHigh = 1000;  // Hz
+var fLow  = 0;     // Hz
+
+// Y-axis drag state
+var yDrag = { active:false, startY:0, startLow:0, startHigh:0 };
+var yPinch= { active:false, startDist:0, startLow:0, startHigh:0, startMid:0 };
+
+// ── Color maps ──
+var CMAPS = {
+  jet: function(t){
+    var r=t<0.35?0:t<0.65?Math.round((t-0.35)/0.30*255):255;
+    var g=t<0.125?0:t<0.375?Math.round((t-0.125)/0.25*255):
+          t<0.625?255:t<0.875?Math.round((1-(t-0.625)/0.25)*255):0;
+    var b=t<0.125?Math.round(0.5*255+t/0.125*0.5*255):
+          t<0.375?255:t<0.625?Math.round((1-(t-0.375)/0.25)*255):0;
+    return [clamp(r),clamp(g),clamp(b)];
+  },
+  inferno: function(t){
+    return [clamp(Math.round(Math.pow(t,0.55)*255)),
+            clamp(Math.round(Math.pow(t,2.0)*255)),
+            clamp(Math.round(t<0.5?t*2*120:(1-t)*2*80))];
+  },
+  hot: function(t){
+    return [clamp(Math.round(t*3*255)),
+            clamp(Math.round((t-1/3)*3*255)),
+            clamp(Math.round((t-2/3)*3*255))];
+  },
+  viridis: function(t){
+    return [clamp(Math.round((0.267+t*0.528)*255)),
+            clamp(Math.round((0.004+t*0.873)*255)),
+            clamp(Math.round((0.329+t*0.198)*255))];
+  }
+};
+function clamp(v){ return Math.max(0,Math.min(255,v)); }
+
+// ── A-weighting (IEC 61672) ──
+function aWeight(f){
+  if(f<10) return -70;
+  var f2=f*f,f4=f2*f2;
+  var num=12194*12194*f4;
+  var d1=f2+20.6*20.6,d2=f2+107.7*107.7,d3=f2+737.9*737.9,d4=f2+12194*12194;
+  return 20*Math.log10(num/(d1*Math.sqrt(d2*d3)*d4))+2.0;
+}
+
+// ── Toast ──
+function showToast(msg,dur){
+  toast.textContent=msg; toast.style.display='block';
+  clearTimeout(toast._t);
+  toast._t=setTimeout(function(){toast.style.display='none';},dur||4000);
+}
+
+// ── Resize ──
+function resize(){
+  wfW=wfWrap.clientWidth; wfH=wfWrap.clientHeight;
+  wfCanvas.width=wfW; wfCanvas.height=wfH;
+  wfCanvas.style.width=wfW+'px'; wfCanvas.style.height=wfH+'px';
+  offCanvas=document.createElement('canvas');
+  offCanvas.width=wfW; offCanvas.height=wfH;
+  offCtx=offCanvas.getContext('2d');
+  offCtx.fillStyle='#000'; offCtx.fillRect(0,0,wfW,wfH);
+  yCanvas.width=yEl.clientWidth; yCanvas.height=yEl.clientHeight;
+  xCanvas.width=xCanvas.parentElement.clientWidth;
+  xCanvas.height=xCanvas.parentElement.clientHeight;
+  drawYAxis(); drawColorbar();
+  if(appMode==='file' && fileSpecMatrix){
+    if(fileViewMode==='static'){ renderStaticOverview(); }
+    else { drawXAxis(); }
+  } else {
+    drawXAxis();
+  }
+}
+
+// ── Draw Y axis ──
+function drawYAxis(){
+  var W=yCanvas.width,H=yCanvas.height;
+  yCtx.clearRect(0,0,W,H);
+  yCtx.fillStyle='#111518'; yCtx.fillRect(0,0,W,H);
+  yCtx.font='9px "Courier New",monospace';
+  yCtx.fillStyle='#5a7a8a'; yCtx.textAlign='right';
+  yCtx.strokeStyle='#1e2830'; yCtx.lineWidth=0.5;
+  var band=fHigh-fLow;
+  // choose step so we get ~8-10 labels
+  var rawStep=band/8;
+  var mag=Math.pow(10,Math.floor(Math.log10(rawStep)));
+  var step=Math.ceil(rawStep/mag)*mag;
+  var firstTick=Math.ceil(fLow/step)*step;
+  for(var freq=firstTick;freq<=fHigh;freq+=step){
+    var frac=(fHigh-freq)/band;
+    var y=Math.round(H*frac);
+    if(y<0||y>H) continue;
+    yCtx.beginPath(); yCtx.moveTo(W-4,y); yCtx.lineTo(W,y); yCtx.stroke();
+    var lbl=freq>=1000?(freq/1000).toFixed(freq%1000===0?0:1)+'k':freq.toFixed(0);
+    yCtx.fillText(lbl,W-2,y+3);
+  }
+  // unit label
+  yCtx.save(); yCtx.fillStyle='#2a3a44';
+  yCtx.translate(8,H/2); yCtx.rotate(-Math.PI/2);
+  yCtx.font='9px "Courier New",monospace'; yCtx.textAlign='center';
+  yCtx.fillText('Hz',0,0); yCtx.restore();
+  // Update freq range display
+  var lo=fLow>=1000?(fLow/1000).toFixed(1)+'k':fLow.toFixed(0);
+  var hi=fHigh>=1000?(fHigh/1000).toFixed(1)+'k':fHigh.toFixed(0);
+  freqRangeEl.textContent=lo+' – '+hi+' Hz';
+}
+
+function drawXAxis(){
+  var W=xCanvas.width,H=xCanvas.height;
+  xCtx.clearRect(0,0,W,H); xCtx.fillStyle='#111518'; xCtx.fillRect(0,0,W,H);
+  xCtx.font='9px "Courier New",monospace'; xCtx.fillStyle='#5a7a8a'; xCtx.textAlign='center';
+  [60,50,40,30,20,10,0].forEach(function(s){
+    xCtx.fillText('-'+s+'s',W*(1-s/60),14);
+  });
+}
+
+function drawColorbar(){
+  // 清空旧色块
+  cbSegsEl.innerHTML = '';
+  var fn = CMAPS[colormap] || CMAPS.jet;
+  var nSeg = 14;
+
+  for (var i = 0; i < nSeg; i++) {
+    var t = i / (nSeg - 1);
+    var c = fn(t);
+    var seg = document.createElement('div');
+    seg.className = 'cbseg';
+    seg.style.background = 'rgb('+c[0]+','+c[1]+','+c[2]+')';
+    cbSegsEl.appendChild(seg);
+  }
+
+  renderCbValueOverlay();
+  cbUnitLabel.textContent = useDba ? 'L(A) / dB(SPL)' : 'L / dB(SPL)';
+}
+
+function renderCbValueOverlay(){
+  cbSegsEl.style.position = 'relative';
+  var overlay = document.createElement('div');
+  overlay.id = 'cb-val-overlay';
+  overlay.style.position = 'absolute';
+  overlay.style.left = '0'; overlay.style.top = '-13px';
+  overlay.style.right = '0'; overlay.style.height = '12px';
+  overlay.style.pointerEvents = 'none';
+  var nLabels = 8;
+  for (var i = 0; i <= nLabels; i++) {
+    var v = Math.round(dbMin + (dbMax - dbMin) * i / nLabels);
+    var span = document.createElement('span');
+    span.textContent = v;
+    span.style.position = 'absolute';
+    span.style.left = (i / nLabels * 100) + '%';
+    span.style.top = '0';
+    span.style.fontSize = '9px';
+    span.style.color = 'var(--accent)';
+    span.style.transform = 'translateX(-50%)';
+    overlay.appendChild(span);
+  }
+  cbSegsEl.appendChild(overlay);
+}
+
+// ── Audio start ──
+async function startAudio(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    showToast('浏览器不支持麦克风 API\niOS请用Safari，安卓/鸿蒙请用Chrome或华为浏览器',6000);
+    return;
+  }
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({
+      audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}
+    });
+  }catch(e){
+    var m='麦克风权限被拒绝，请在浏览器设置中允许麦克风后刷新';
+    if(e.name==='NotFoundError') m='未找到麦克风设备';
+    showToast(m,6000);
+    dot.className='warn'; statState.textContent='ERR'; return;
+  }
+  var AC=window.AudioContext||window.webkitAudioContext;
+  if(!AC){showToast('浏览器不支持 Web Audio API',5000);return;}
+  audioCtx=new AC();
+  if(audioCtx.state==='suspended') await audioCtx.resume();
+  sampleRate=audioCtx.sampleRate;
+  statSr.textContent=(sampleRate/1000).toFixed(1)+'kHz';
+
+  analyser=audioCtx.createAnalyser();
+  analyser.fftSize=fftSize;
+  analyser.smoothingTimeConstant=0.2;
+  analyser.minDecibels=-100;
+  analyser.maxDecibels=0;
+
+  var src=audioCtx.createMediaStreamSource(stream);
+  src.connect(analyser);
+
+  // 准备手动 Hann 窗 FFT 所需缓冲区（替代浏览器内置不可控的窗函数）
+  prepareLiveFftBuffers(fftSize);
+
+  running=true; resize();
+  dot.className='on'; statState.textContent='LIVE';
+  btnStart.classList.add('is-hidden');
+  btnStop.classList.remove('is-hidden');
+  btnRec.classList.remove('is-hidden');
+  drawFrame();
+}
+
+function stopAudio(){
+  running=false;
+  if(rafId) cancelAnimationFrame(rafId);
+  try{if(analyser)analyser.disconnect();}catch(e){}
+  try{if(audioCtx)audioCtx.close();}catch(e){}
+  if(stream) stream.getTracks().forEach(function(t){t.stop();});
+  analyser=null;audioCtx=null;stream=null;
+  dot.className=''; statState.textContent='IDLE';
+  statSr.textContent=statPeak.textContent=statSpl.textContent='—';
+  btnStart.classList.remove('is-hidden');
+  btnStop.classList.add('is-hidden');
+  btnRec.classList.add('is-hidden');
+  if(isRec) stopRec();
+}
+// ════════════════════════════════════════════
+//  文件分析模式（FILE MODE）
+// ════════════════════════════════════════════
+
+// ── Tab 切换 ──
+function switchMode(mode) {
+  appMode = mode;
+  if (mode === 'live') {
+    tabLive.classList.add('active'); tabFile.classList.remove('active');
+    liveControls.classList.remove('hide-mode');
+    fileControls.classList.remove('show');
+    playhead.style.display = 'none';
+    playheadTime.style.display = 'none';
+    // 停止文件回放
+    stopFilePlayback();
+    resize();
+  } else {
+    tabLive.classList.remove('active'); tabFile.classList.add('active');
+    liveControls.classList.add('hide-mode');
+    fileControls.classList.add('show');
+    // 离开 LIVE 时停止麦克风
+    if (running) stopAudio();
+    resize();
+    if (fileSpecMatrix && fileViewMode === 'static') renderStaticOverview();
+  }
+}
+tabLive.addEventListener('click', function(){ switchMode('live'); });
+tabFile.addEventListener('click', function(){ switchMode('file'); });
+
+// ── 文件选择与解码 ──
+fileInput.addEventListener('change', function(e){
+  var f = e.target.files[0];
+  if (f) loadAudioFile(f);
+});
+
+// 拖拽支持
+fileDrop.addEventListener('dragover', function(e){ e.preventDefault(); fileDrop.classList.add('dragover'); });
+fileDrop.addEventListener('dragleave', function(){ fileDrop.classList.remove('dragover'); });
+fileDrop.addEventListener('drop', function(e){
+  e.preventDefault(); fileDrop.classList.remove('dragover');
+  var f = e.dataTransfer.files[0];
+  if (f) loadAudioFile(f);
+});
+
+async function loadAudioFile(file) {
+  fileNameEl.textContent = file.name;
+  progWrap.classList.add('show');
+  progFill.style.width = '0%';
+  progPct.textContent = '0%';
+  btnPlay.disabled = true;
+  slSeek.disabled = true;
+  fileStaticRendered = false;
+
+  try {
+    if (!fileAudioCtx) {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      fileAudioCtx = new AC();
+    }
+    if (fileAudioCtx.state === 'suspended') await fileAudioCtx.resume();
+
+    var arrayBuf = await file.arrayBuffer();
+    progFill.style.width = '15%'; progPct.textContent = '15%';
+
+    // decodeAudioData 支持音频和大部分视频容器中的音轨（mp4/mov等，取决于浏览器codec支持）
+    var audioBuffer = await fileAudioCtx.decodeAudioData(arrayBuf.slice(0));
+    fileAudioBuffer = audioBuffer;
+    fileDuration = audioBuffer.duration;
+    progFill.style.width = '35%'; progPct.textContent = '35%';
+
+    await computeFullSpectrogram(audioBuffer);
+
+    progFill.style.width = '100%'; progPct.textContent = '100%';
+    setTimeout(function(){ progWrap.classList.remove('show'); }, 600);
+
+    btnPlay.disabled = false;
+    slSeek.disabled = false;
+    slSeek.max = Math.round(fileDuration * 10);
+    slSeek.value = 0;
+    updateTimeLabel(0);
+
+    statState.textContent = 'LOADED';
+    statSr.textContent = (audioBuffer.sampleRate/1000).toFixed(1)+'kHz';
+    dot.className = 'on';
+
+    if (fileViewMode === 'static') { renderStaticOverview(); updatePlayheadStatic(); }
+
+  } catch(e) {
+    showToast('文件解析失败：' + (e.message || '不支持的格式') + '\n请尝试 MP3/WAV/M4A 音频或 MP4/MOV 视频', 6000);
+    progWrap.classList.remove('show');
+    dot.className = 'warn'; statState.textContent = 'ERR';
+  }
+}
+
+// ── 全程 STFT 批量计算（用 OfflineAudioContext 跑帧）──
+async function computeFullSpectrogram(audioBuffer) {
+  var fSize = parseInt(selFftFile.value) || 4096;
+  var hopSize = Math.round(fSize / 2); // 50% overlap
+  var sr = audioBuffer.sampleRate;
+  var totalSamples = audioBuffer.length;
+
+  // 取单通道（如多通道，取平均或第一通道；这里取第一通道，工程现场单麦克风采集场景已足够）
+  var chData = audioBuffer.getChannelData(0);
+
+  var nFrames = Math.max(1, Math.floor((totalSamples - fSize) / hopSize) + 1);
+  var nBins = fSize / 2;
+
+  fileSpecMatrix = new Float32Array(nFrames * nBins);
+  fileSpecFrames = nFrames;
+  fileSpecBins = nBins;
+  fileFreqPerBin = sr / fSize;
+  sampleRate = sr; // 复用全局变量供绘制函数使用
+
+  // Hann 窗
+  var win = new Float32Array(fSize);
+  for (var i = 0; i < fSize; i++) {
+    win[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / (fSize - 1));
+  }
+
+  // 简单 DFT 太慢，使用迭代 FFT（Radix-2，要求 fSize 为 2 的幂，已满足：2048/4096/8192）
+  var re = new Float32Array(fSize);
+  var im = new Float32Array(fSize);
+
+  var yieldEvery = Math.max(1, Math.floor(nFrames / 40)); // 分批让出主线程，更新进度条
+
+  for (var fi = 0; fi < nFrames; fi++) {
+    var start = fi * hopSize;
+    for (var i = 0; i < fSize; i++) {
+      var s = start + i < totalSamples ? chData[start + i] : 0;
+      re[i] = s * win[i];
+      im[i] = 0;
+    }
+    fft(re, im);
+
+    var base = fi * nBins;
+    for (var b = 0; b < nBins; b++) {
+      var mag = Math.sqrt(re[b]*re[b] + im[b]*im[b]) / fSize;
+      // 转为近似 dBFS（参考 AnalyserNode 量级，乘2补偏单边谱能量，加小量避免log(0)）
+      var dbfs = 20 * Math.log10(mag * 2 + 1e-9);
+      fileSpecMatrix[base + b] = dbfs;
+    }
+
+    if (fi % yieldEvery === 0) {
+      var pct = 35 + Math.round((fi / nFrames) * 60);
+      progFill.style.width = pct + '%';
+      progPct.textContent = pct + '%';
+      await new Promise(function(r){ setTimeout(r, 0); }); // 让出主线程，避免页面卡死
+    }
+  }
+}
+
+// ── 迭代 Radix-2 FFT（原地计算，re/im 长度需为2的幂） ──
+function fft(re, im) {
+  var n = re.length;
+  // bit-reversal permutation
+  for (var i = 1, j = 0; i < n; i++) {
+    var bit = n >> 1;
+    for (; j & bit; bit >>= 1) j ^= bit;
+    j ^= bit;
+    if (i < j) {
+      var tr = re[i]; re[i] = re[j]; re[j] = tr;
+      var ti = im[i]; im[i] = im[j]; im[j] = ti;
+    }
+  }
+  for (var len = 2; len <= n; len <<= 1) {
+    var ang = -2 * Math.PI / len;
+    var wr = Math.cos(ang), wi = Math.sin(ang);
+    for (var i = 0; i < n; i += len) {
+      var curWr = 1, curWi = 0;
+      for (var k = 0; k < len/2; k++) {
+        var uR = re[i+k], uI = im[i+k];
+        var vR = re[i+k+len/2]*curWr - im[i+k+len/2]*curWi;
+        var vI = re[i+k+len/2]*curWi + im[i+k+len/2]*curWr;
+        re[i+k] = uR + vR; im[i+k] = uI + vI;
+        re[i+k+len/2] = uR - vR; im[i+k+len/2] = uI - vI;
+        var nWr = curWr*wr - curWi*wi;
+        var nWi = curWr*wi + curWi*wr;
+        curWr = nWr; curWi = nWi;
+      }
+    }
+  }
+}
+
+// ── LIVE 模式手动 Hann 窗 FFT（替代浏览器内置不可控窗函数，确保与文件分析口径一致） ──
+var liveHannWin = null;   // 预计算的 Hann 窗系数
+var liveTimeData = null;  // 时域采样缓冲
+var liveRe = null, liveIm = null; // FFT 工作缓冲
+var liveFftSizeCached = 0;
+
+function prepareLiveFftBuffers(fSize) {
+  liveFftSizeCached = fSize;
+  liveHannWin = new Float32Array(fSize);
+  for (var i = 0; i < fSize; i++) {
+    liveHannWin[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / (fSize - 1));
+  }
+  liveTimeData = new Float32Array(fSize);
+  liveRe = new Float32Array(fSize);
+  liveIm = new Float32Array(fSize);
+}
+
+// 从 AnalyserNode 取时域样本，加 Hann 窗后做 FFT，返回 dBFS 频谱（长度 fSize/2）
+// 与文件分析模式（computeFullSpectrogram）使用完全相同的窗函数与缩放，保证两种模式结果口径一致
+function computeLiveSpectrum(fSize) {
+  if (!liveHannWin || liveFftSizeCached !== fSize) prepareLiveFftBuffers(fSize);
+  analyser.getFloatTimeDomainData(liveTimeData);
+  for (var i = 0; i < fSize; i++) {
+    liveRe[i] = liveTimeData[i] * liveHannWin[i];
+    liveIm[i] = 0;
+  }
+  fft(liveRe, liveIm);
+  var nBins = fSize / 2;
+  var out = new Float32Array(nBins);
+  for (var b = 0; b < nBins; b++) {
+    var mag = Math.sqrt(liveRe[b]*liveRe[b] + liveIm[b]*liveIm[b]) / fSize;
+    out[b] = 20 * Math.log10(mag * 2 + 1e-9);
+  }
+  return out;
+}
+
+// ── 从矩阵中取指定帧的频谱数据（返回类似 getFloatFrequencyData 的数组）──
+function getFrameSpectrum(frameIdx) {
+  frameIdx = Math.max(0, Math.min(fileSpecFrames - 1, frameIdx));
+  var base = frameIdx * fileSpecBins;
+  return fileSpecMatrix.subarray(base, base + fileSpecBins);
+}
+
+// ── 静态全貌瀑布图渲染（一次性把整段时间压缩到画布宽度） ──
+function renderStaticOverview() {
+  if (!fileSpecMatrix) return;
+  var W = wfW, H = wfH;
+  if (W < 2 || H < 2) return;
+
+  var fn = CMAPS[colormap] || CMAPS.jet;
+  var band = fHigh - fLow;
+  var img = wfCtx.createImageData(W, H);
+
+  for (var px = 0; px < W; px++) {
+    // 每个像素列对应的时间帧范围（可能多帧映射到1像素，取最大值做能量聚焦，类似峰值保持，避免短促瞬态丢失）
+    var fStart = Math.floor(px / W * fileSpecFrames);
+    var fEnd   = Math.max(fStart + 1, Math.floor((px+1) / W * fileSpecFrames));
+    fEnd = Math.min(fEnd, fileSpecFrames);
+
+    for (var py = 0; py < H; py++) {
+      var freq = fHigh - (py / H) * band;
+      if (freq < 0 || freq > sampleRate/2) continue;
+      var bin = Math.round(freq / fileFreqPerBin);
+      if (bin < 0 || bin >= fileSpecBins) continue;
+
+      // 取该时间区间内该频率bin的最大值（避免抽稀丢失瞬态峰）
+      var maxDb = -Infinity;
+      for (var fi = fStart; fi < fEnd; fi++) {
+        var v = fileSpecMatrix[fi * fileSpecBins + bin];
+        if (v > maxDb) maxDb = v;
+      }
+      if (!isFinite(maxDb)) continue;
+
+      var spl = maxDb + 94;
+      if (useDba) spl += aWeight(freq);
+
+      var t = Math.max(0, Math.min(1, (spl - dbMin) / (dbMax - dbMin)));
+      var c = fn(t);
+      var idx = (py * W + px) * 4;
+      img.data[idx] = c[0]; img.data[idx+1] = c[1]; img.data[idx+2] = c[2]; img.data[idx+3] = 255;
+    }
+  }
+  wfCtx.putImageData(img, 0, 0);
+
+  // 网格
+  wfCtx.strokeStyle = 'rgba(30,40,48,0.55)'; wfCtx.lineWidth = 0.5;
+  for (var i = 0; i <= 10; i++) {
+    var y = Math.round(H * i / 10);
+    wfCtx.beginPath(); wfCtx.moveTo(0, y); wfCtx.lineTo(W, y); wfCtx.stroke();
+  }
+
+  fileStaticRendered = true;
+  drawXAxisFile(); // 时间轴改为绝对时长刻度
+}
+
+// 文件模式下 X 轴显示真实时长（而非滚动60秒窗口）
+function drawXAxisFile() {
+  var W = xCanvas.width, H = xCanvas.height;
+  xCtx.clearRect(0,0,W,H); xCtx.fillStyle='#111518'; xCtx.fillRect(0,0,W,H);
+  xCtx.font='9px "Courier New",monospace'; xCtx.fillStyle='#5a7a8a'; xCtx.textAlign='center';
+  if (!fileDuration) return;
+  var steps = 6;
+  for (var i = 0; i <= steps; i++) {
+    var t = fileDuration * i / steps;
+    var x = W * i / steps;
+    xCtx.fillText(fmtTime(t), x, 14);
+  }
+}
+
+function fmtTime(sec) {
+  sec = Math.max(0, sec);
+  var m = Math.floor(sec / 60);
+  var s = Math.floor(sec % 60);
+  return m + ':' + (s < 10 ? '0' : '') + s;
+}
+
+// ── 静态全貌图：点击跳转播放位置 ──
+wfWrap.addEventListener('click', function(e){
+  if (appMode !== 'file' || fileViewMode !== 'static' || !fileStaticRendered) return;
+  var rect = wfWrap.getBoundingClientRect();
+  var cx = e.clientX - rect.left;
+  var frac = Math.max(0, Math.min(1, cx / wfW));
+  var t = frac * fileDuration;
+  seekTo(t);
+});
+
+function updatePlayheadStatic() {
+  if (!fileStaticRendered || fileViewMode !== 'static') { playhead.style.display='none'; playheadTime.style.display='none'; return; }
+  var t = getCurrentPlayTime();
+  var frac = fileDuration > 0 ? t / fileDuration : 0;
+  var x = frac * wfW;
+  playhead.style.left = x + 'px';
+  playhead.style.display = 'block';
+  playheadTime.style.left = Math.min(Math.max(x - 18, 0), wfW - 40) + 'px';
+  playheadTime.textContent = fmtTime(t);
+  playheadTime.style.display = 'block';
+}
+
+// ── 播放控制（AudioBufferSourceNode） ──
+function getCurrentPlayTime() {
+  if (!filePlaying) return filePlayStartOffset;
+  var elapsed = fileAudioCtx.currentTime - filePlayStartCtxTime;
+  return Math.min(filePlayStartOffset + elapsed, fileDuration);
+}
+
+function startFilePlayback(fromTime) {
+  if (!fileAudioBuffer) return;
+  stopFilePlaybackNode();
+  filePlaySrc = fileAudioCtx.createBufferSource();
+  filePlaySrc.buffer = fileAudioBuffer;
+  filePlaySrc.connect(fileAudioCtx.destination);
+  filePlayStartOffset = fromTime;
+  filePlayStartCtxTime = fileAudioCtx.currentTime;
+  filePlaySrc.start(0, fromTime);
+  filePlaySrc.onended = function(){
+    if (filePlaying) { // 自然播放结束（非手动stop触发）
+      filePlaying = false;
+      btnPlay.style.display=''; btnPause.style.display='none';
+      if (fileRafId) cancelAnimationFrame(fileRafId);
+    }
+  };
+  filePlaying = true;
+  btnPlay.style.display='none'; btnPause.style.display='';
+  driveFilePlaybackLoop();
+}
+
+function stopFilePlaybackNode() {
+  if (filePlaySrc) {
+    try { filePlaySrc.onended = null; filePlaySrc.stop(); } catch(e){}
+    filePlaySrc = null;
+  }
+}
+
+function pauseFilePlayback() {
+  if (!filePlaying) return;
+  filePlayStartOffset = getCurrentPlayTime();
+  stopFilePlaybackNode();
+  filePlaying = false;
+  btnPlay.style.display=''; btnPause.style.display='none';
+  if (fileRafId) cancelAnimationFrame(fileRafId);
+}
+
+function stopFilePlayback() {
+  pauseFilePlayback();
+  filePlayStartOffset = 0;
+}
+
+function seekTo(t) {
+  t = Math.max(0, Math.min(fileDuration, t));
+  var wasPlaying = filePlaying;
+  if (wasPlaying) stopFilePlaybackNode();
+  filePlayStartOffset = t;
+  filePlayStartCtxTime = fileAudioCtx ? fileAudioCtx.currentTime : 0;
+  updateTimeLabel(t);
+  slSeek.value = Math.round(t * 10);
+  if (fileViewMode === 'static') {
+    updatePlayheadStatic();
+  } else {
+    renderScrollFrameAtTime(t);
+  }
+  if (wasPlaying) startFilePlayback(t);
+}
+
+function updateTimeLabel(t) {
+  valTime.textContent = fmtTime(t) + ' / ' + fmtTime(fileDuration);
+}
+
+// ── 播放驱动循环：更新播放头、滚动视图、FFT面板、进度条 ──
+function driveFilePlaybackLoop() {
+  if (!filePlaying) return;
+  fileRafId = requestAnimationFrame(driveFilePlaybackLoop);
+  var t = getCurrentPlayTime();
+  updateTimeLabel(t);
+  slSeek.value = Math.round(t * 10);
+
+  if (fileViewMode === 'static') {
+    updatePlayheadStatic();
+  } else {
+    renderScrollFrameAtTime(t);
+  }
+
+  if (t >= fileDuration - 0.02) {
+    filePlaying = false;
+    btnPlay.style.display=''; btnPause.style.display='none';
+  }
+}
+
+// ── 动态回放模式：模拟实时滚动效果，把矩阵中对应时间窗的帧逐列绘制 ──
+var scrollWindowSec = 15; // 滚动窗口显示最近15秒
+function renderScrollFrameAtTime(t) {
+  if (!fileSpecMatrix) return;
+  var W = wfW, H = wfH;
+  if (W < 2 || H < 2) return;
+  var fn = CMAPS[colormap] || CMAPS.jet;
+  var band = fHigh - fLow;
+  var img = wfCtx.createImageData(W, H);
+
+  var hopSec = (parseInt(selFftFile.value) / 2) / sampleRate;
+  var winStartT = Math.max(0, t - scrollWindowSec);
+
+  for (var px = 0; px < W; px++) {
+    var pxT = winStartT + (px / W) * scrollWindowSec;
+    if (pxT > t) { continue; } // 还没到这个时间，留黑
+    var fi = Math.round(pxT / hopSec);
+    fi = Math.max(0, Math.min(fileSpecFrames - 1, fi));
+
+    for (var py = 0; py < H; py++) {
+      var freq = fHigh - (py / H) * band;
+      if (freq < 0 || freq > sampleRate/2) continue;
+      var bin = Math.round(freq / fileFreqPerBin);
+      if (bin < 0 || bin >= fileSpecBins) continue;
+      var db = fileSpecMatrix[fi * fileSpecBins + bin];
+      var spl = db + 94;
+      if (useDba) spl += aWeight(freq);
+      var tt = Math.max(0, Math.min(1, (spl - dbMin) / (dbMax - dbMin)));
+      var c = fn(tt);
+      var idx = (py * W + px) * 4;
+      img.data[idx]=c[0]; img.data[idx+1]=c[1]; img.data[idx+2]=c[2]; img.data[idx+3]=255;
+    }
+  }
+  wfCtx.putImageData(img, 0, 0);
+  wfCtx.strokeStyle='rgba(30,40,48,0.55)'; wfCtx.lineWidth=0.5;
+  for(var i=0;i<=10;i++){
+    var y=Math.round(H*i/10);
+    wfCtx.beginPath(); wfCtx.moveTo(0,y); wfCtx.lineTo(W,y); wfCtx.stroke();
+  }
+  drawScrollXAxis(winStartT, t);
+}
+
+function drawScrollXAxis(winStart, curT) {
+  var W = xCanvas.width, H = xCanvas.height;
+  xCtx.clearRect(0,0,W,H); xCtx.fillStyle='#111518'; xCtx.fillRect(0,0,W,H);
+  xCtx.font='9px "Courier New",monospace'; xCtx.fillStyle='#5a7a8a'; xCtx.textAlign='center';
+  var steps = 6;
+  for (var i = 0; i <= steps; i++) {
+    var t = winStart + (curT - winStart) * i / steps;
+    var x = W * i / steps;
+    xCtx.fillText(fmtTime(t), x, 14);
+  }
+}
+
+// (renderFftPanelAtTime 已移除，频谱面板功能整体下线)
+
+// ── 文件模式控件事件 ──
+btnPlay.addEventListener('click', async function(){
+  if (!fileAudioBuffer) return;
+  if (fileAudioCtx.state === 'suspended') await fileAudioCtx.resume();
+  startFilePlayback(filePlayStartOffset);
+});
+btnPause.addEventListener('click', pauseFilePlayback);
+
+slSeek.addEventListener('input', function(){
+  var t = parseInt(slSeek.value) / 10;
+  seekTo(t);
+});
+
+viewModeGroup.querySelectorAll('.seg-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    viewModeGroup.querySelectorAll('.seg-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    fileViewMode = btn.dataset.mode;
+    if (fileViewMode === 'static') {
+      renderStaticOverview();
+      updatePlayheadStatic();
+    } else {
+      playhead.style.display = 'none';
+      playheadTime.style.display = 'none';
+      renderScrollFrameAtTime(getCurrentPlayTime());
+    }
+  });
+});
+
+selFftFile.addEventListener('change', function(){
+  // 改变FFT参数需要重新计算全程频谱
+  if (fileAudioBuffer) {
+    stopFilePlayback();
+    computeFullSpectrogram(fileAudioBuffer).then(function(){
+      if (fileViewMode === 'static') renderStaticOverview();
+    });
+  }
+});
+
+
+
+// ── Draw frame ──
+function drawFrame(){
+  if(!running) return;
+  rafId=requestAnimationFrame(drawFrame);
+  if(!analyser||!offCanvas) return;
+
+  if(liveFftSizeCached!==fftSize){ prepareLiveFftBuffers(fftSize); }
+  if(analyser.fftSize!==fftSize){ try{analyser.fftSize=fftSize;}catch(e){} }
+
+  var bufLen=fftSize/2;
+  var data=computeLiveSpectrum(fftSize);
+
+  var W=wfW,H=wfH;
+  var freqPerBin=sampleRate/fftSize;
+  var fn=CMAPS[colormap]||CMAPS.jet;
+  var band=fHigh-fLow;
+
+  // Scroll left
+  offCtx.drawImage(offCanvas,-1,0);
+
+  // New right column
+  var colImg=offCtx.createImageData(1,H);
+  var peakDb=-Infinity,sumPow=0,nBins=0;
+
+  for(var py=0;py<H;py++){
+    // Map pixel → frequency within [fLow, fHigh]
+    var freq=fHigh-(py/H)*band;  // top=fHigh, bottom=fLow
+    if(freq<0||freq>sampleRate/2){ colImg.data[py*4+3]=255; continue; }
+
+    var bin=Math.round(freq/freqPerBin);
+    if(bin<0||bin>=bufLen){ colImg.data[py*4+3]=255; continue; }
+
+    var db=data[bin];
+    if(!isFinite(db)||db<-140) db=-100;
+
+    // dBFS → approx dBSPL (calibration offset, 0dBFS≈94dB mic ref)
+    var spl=db+94;
+    if(useDba) spl+=aWeight(freq);
+
+    if(spl>peakDb) peakDb=spl;
+    sumPow+=Math.pow(10,spl/10); nBins++;
+
+    var t=Math.max(0,Math.min(1,(spl-dbMin)/(dbMax-dbMin)));
+    var c=fn(t);
+    var idx=py*4;
+    colImg.data[idx]=c[0]; colImg.data[idx+1]=c[1];
+    colImg.data[idx+2]=c[2]; colImg.data[idx+3]=255;
+  }
+  offCtx.putImageData(colImg,W-1,0);
+  wfCtx.drawImage(offCanvas,0,0);
+
+  // Grid
+  wfCtx.strokeStyle='rgba(30,40,48,0.55)'; wfCtx.lineWidth=0.5;
+  for(var i=0;i<=10;i++){
+    var y=Math.round(H*i/10);
+    wfCtx.beginPath(); wfCtx.moveTo(0,y); wfCtx.lineTo(W,y); wfCtx.stroke();
+  }
+
+  // Stats
+  frameCount++;
+  if(frameCount%15===0&&isFinite(peakDb)){
+    statPeak.textContent=peakDb.toFixed(1)+'dB';
+    if(nBins>0){
+      var ov=10*Math.log10(sumPow/nBins);
+      statSpl.textContent=isFinite(ov)?ov.toFixed(1)+'dB':'—';
+    }
+  }
+
+  // (实时频谱面板功能已移除)
+}
+
+// ── Y-axis zoom (mouse wheel) ──
+wfWrap.addEventListener('wheel',function(e){
+  e.preventDefault();
+  var rect=wfWrap.getBoundingClientRect();
+  var fy=e.clientY-rect.top; // pixel position
+  // Which frequency is under cursor
+  var band=fHigh-fLow;
+  var fAtCursor=fHigh-(fy/wfH)*band;
+  var factor=e.deltaY>0?1.25:0.8; // zoom out/in
+  var newBand=Math.min(Math.max(band*factor,50),sampleRate/2);
+  // Keep fAtCursor at same screen position
+  var ratio=fy/wfH;
+  fHigh=fAtCursor+newBand*(1-ratio);
+  fLow =fAtCursor-newBand*ratio;
+  clampFreqRange();
+  drawYAxis();
+},{passive:false});
+
+// ── Y-axis drag on Y-axis panel ──
+yEl.addEventListener('mousedown',function(e){
+  yDrag={active:true,startY:e.clientY,startLow:fLow,startHigh:fHigh};
+  e.preventDefault();
+});
+window.addEventListener('mousemove',function(e){
+  if(!yDrag.active) return;
+  var dy=e.clientY-yDrag.startY;
+  var band=yDrag.startHigh-yDrag.startLow;
+  var shift=dy/yCanvas.height*band;
+  fLow=yDrag.startLow+shift; fHigh=yDrag.startHigh+shift;
+  clampFreqRange(); drawYAxis();
+});
+window.addEventListener('mouseup',function(){ yDrag.active=false; });
+
+// Touch: single-finger drag on Y axis = shift; two-finger pinch on waterfall = zoom
+yEl.addEventListener('touchstart',function(e){
+  if(e.touches.length===1){
+    yDrag={active:true,startY:e.touches[0].clientY,startLow:fLow,startHigh:fHigh};
+  }
+  e.preventDefault();
+},{passive:false});
+yEl.addEventListener('touchmove',function(e){
+  if(yDrag.active&&e.touches.length===1){
+    var dy=e.touches[0].clientY-yDrag.startY;
+    var band=yDrag.startHigh-yDrag.startLow;
+    var shift=dy/yCanvas.height*band;
+    fLow=yDrag.startLow+shift; fHigh=yDrag.startHigh+shift;
+    clampFreqRange(); drawYAxis();
+  }
+  e.preventDefault();
+},{passive:false});
+yEl.addEventListener('touchend',function(){ yDrag.active=false; },{passive:true});
+
+// Two-finger pinch on waterfall to zoom
+wfWrap.addEventListener('touchstart',function(e){
+  if(e.touches.length===2){
+    var dy=Math.abs(e.touches[0].clientY-e.touches[1].clientY);
+    var midY=(e.touches[0].clientY+e.touches[1].clientY)/2;
+    var rect=wfWrap.getBoundingClientRect();
+    var band=fHigh-fLow;
+    var fMid=fHigh-((midY-rect.top)/wfH)*band;
+    yPinch={active:true,startDist:dy,startLow:fLow,startHigh:fHigh,startMid:fMid,midY:midY-rect.top};
+  }
+},{passive:true});
+wfWrap.addEventListener('touchmove',function(e){
+  if(yPinch.active&&e.touches.length===2){
+    var dy=Math.abs(e.touches[0].clientY-e.touches[1].clientY);
+    var factor=yPinch.startDist/Math.max(dy,10);
+    var origBand=yPinch.startHigh-yPinch.startLow;
+    var newBand=Math.min(Math.max(origBand*factor,50),sampleRate/2);
+    var ratio=yPinch.midY/wfH;
+    fHigh=yPinch.startMid+newBand*(1-ratio);
+    fLow =yPinch.startMid-newBand*ratio;
+    clampFreqRange(); drawYAxis();
+  }
+  e.preventDefault();
+},{passive:false});
+wfWrap.addEventListener('touchend',function(e){
+  if(e.touches.length<2) yPinch.active=false;
+},{passive:true});
+
+function clampFreqRange(){
+  var band=fHigh-fLow;
+  var maxF=sampleRate>0?sampleRate/2:22050;
+  if(fLow<0){fLow=0;fHigh=Math.min(band,maxF);}
+  if(fHigh>maxF){fHigh=maxF;fLow=Math.max(0,maxF-band);}
+  if(band<20){fLow=Math.max(0,fHigh-20);}
+}
+
+// ── Crosshair ──
+wfWrap.addEventListener('mousemove',function(e){
+  if(!running && !(appMode==='file' && fileSpecMatrix)) return;
+  var rect=wfWrap.getBoundingClientRect();
+  var cx=e.clientX-rect.left,cy=e.clientY-rect.top;
+  chH.style.display=chV.style.display=chLabel.style.display='block';
+  chH.style.top=cy+'px'; chV.style.left=cx+'px';
+  var freq=fHigh-(cy/wfH)*(fHigh-fLow);
+  var lbl=freq>=1000?(freq/1000).toFixed(3)+'kHz':freq.toFixed(1)+'Hz';
+  chLabel.textContent=lbl;
+  chLabel.style.left=(cx>wfW*0.65?cx-105:cx+8)+'px';
+  chLabel.style.top=(cy>wfH*0.85?cy-26:cy+6)+'px';
+});
+wfWrap.addEventListener('mouseleave',function(){
+  chH.style.display=chV.style.display=chLabel.style.display='none';
+});
+wfWrap.addEventListener('touchmove',function(e){
+  if(!running||e.touches.length!==1) return;
+  var rect=wfWrap.getBoundingClientRect();
+  var cy=e.touches[0].clientY-rect.top;
+  var freq=fHigh-(cy/wfH)*(fHigh-fLow);
+  var lbl=freq>=1000?(freq/1000).toFixed(3)+'kHz':freq.toFixed(1)+'Hz';
+  chLabel.textContent=lbl; chLabel.style.display='block';
+  chLabel.style.left='8px'; chLabel.style.top=(cy+6)+'px';
+},{passive:true});
+
+// ── Recording ──
+function startRec(){
+  if(!stream) return;
+  recChunks=[];
+  var mime=['audio/webm;codecs=opus','audio/webm','audio/ogg','audio/mp4',''].find(function(m){
+    return m===''||MediaRecorder.isTypeSupported(m);
+  });
+  mediaRecorder=new MediaRecorder(stream,mime?{mimeType:mime}:{});
+  mediaRecorder.ondataavailable=function(e){recChunks.push(e.data);};
+  mediaRecorder.onstop=saveRec;
+  mediaRecorder.start();
+  isRec=true; btnRec.textContent='■ STOP REC'; btnRec.classList.add('recording');
+}
+function stopRec(){
+  if(mediaRecorder&&mediaRecorder.state!=='inactive') mediaRecorder.stop();
+  isRec=false; btnRec.textContent='● REC'; btnRec.classList.remove('recording');
+}
+function saveRec(){
+  var blob=new Blob(recChunks,{type:'audio/webm'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a'); a.href=url;
+  a.download='nvh_'+ts()+'.webm'; a.click();
+  setTimeout(function(){URL.revokeObjectURL(url);},1000);
+}
+// ── 导出带完整坐标轴/色谱/标题的 PNG（Artemis 风格） ──
+function savePng(){
+  var marginL = 56;   // 左侧Y轴刻度区
+  var marginR = 16;
+  var marginT = 46;   // 顶部标题区
+  var marginB = 38;   // X轴刻度区
+  var cbarH   = 58;   // 底部色谱条区域（含文字）
+
+  var plotW = wfCanvas.width;
+  var plotH = wfCanvas.height;
+  var outW = plotW + marginL + marginR;
+  var outH = plotH + marginT + marginB + cbarH;
+
+  var out = document.createElement('canvas');
+  out.width = outW; out.height = outH;
+  var ctx = out.getContext('2d');
+
+  // 白底
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, outW, outH);
+
+  // 标题（文件名或LIVE标识 + 时间戳）
+  var titleText = appMode==='file' && fileNameEl.textContent
+    ? fileNameEl.textContent : 'NVH Real-time Capture';
+  ctx.fillStyle = '#000000';
+  ctx.font = 'bold 15px Arial';
+  ctx.textAlign = 'left';
+  ctx.fillText(titleText, marginL, 20);
+  ctx.font = '11px Arial';
+  ctx.fillStyle = '#444444';
+  ctx.fillText('Exported: ' + new Date().toLocaleString(), marginL, 36);
+
+  // ── 瀑布图区域 ──
+  var plotX = marginL, plotY = marginT;
+  ctx.drawImage(wfCanvas, plotX, plotY, plotW, plotH);
+
+  // 白色描边边框（Artemis特征）
+  ctx.strokeStyle = '#000000';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(plotX, plotY, plotW, plotH);
+
+  // ── Y轴刻度（频率，黑色粗体，外侧） ──
+  ctx.fillStyle = '#000000';
+  ctx.font = 'bold 13px Arial';
+  ctx.textAlign = 'right';
+  var band = fHigh - fLow;
+  var rawStep = band / 8;
+  var mag = Math.pow(10, Math.floor(Math.log10(rawStep || 1)));
+  var step = Math.ceil(rawStep / mag) * mag || 1;
+  var firstTick = Math.ceil(fLow / step) * step;
+  ctx.beginPath();
+  for (var freq = firstTick; freq <= fHigh; freq += step) {
+    var frac = (fHigh - freq) / band;
+    var y = plotY + plotH * frac;
+    if (y < plotY - 2 || y > plotY + plotH + 2) continue;
+    var lbl = freq >= 1000 ? (freq/1000).toFixed(freq % 1000 === 0 ? 0 : 1) + 'k' : Math.round(freq).toString();
+    ctx.fillText(lbl, plotX - 8, y + 4);
+    // 刻度短线
+    ctx.moveTo(plotX - 4, y); ctx.lineTo(plotX, y);
+  }
+  ctx.strokeStyle = '#000000'; ctx.lineWidth = 1; ctx.stroke();
+  // Y轴单位标签
+  ctx.save();
+  ctx.translate(14, plotY + plotH/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.textAlign = 'center';
+  ctx.font = 'bold 12px Arial';
+  ctx.fillText('Frequency / Hz', 0, 0);
+  ctx.restore();
+
+  // ── X轴刻度（时间，黑色粗体，外侧） ──
+  ctx.font = 'bold 12px Arial';
+  ctx.textAlign = 'center';
+  ctx.beginPath();
+  if (appMode === 'file' && fileViewMode === 'static' && fileDuration) {
+    var xsteps = 8;
+    for (var i = 0; i <= xsteps; i++) {
+      var t = fileDuration * i / xsteps;
+      var x = plotX + plotW * i / xsteps;
+      ctx.fillText(fmtTime(t), x, plotY + plotH + 18);
+      ctx.moveTo(x, plotY + plotH); ctx.lineTo(x, plotY + plotH + 4);
+    }
+    ctx.fillStyle = '#000'; ctx.font = 'bold 12px Arial';
+    ctx.fillText('Time (mm:ss)', plotX + plotW/2, plotY + plotH + 32);
+  } else {
+    [60,50,40,30,20,10,0].forEach(function(s){
+      var x = plotX + plotW * (1 - s/60);
+      ctx.fillText('-'+s+'s', x, plotY + plotH + 18);
+      ctx.moveTo(x, plotY + plotH); ctx.lineTo(x, plotY + plotH + 4);
+    });
+    ctx.fillText('Time (s, 0=now)', plotX + plotW/2, plotY + plotH + 32);
+  }
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 1; ctx.stroke();
+
+  // ── 底部色谱条（离散色块 + 数值，Artemis风格） ──
+  var cbY = plotY + plotH + marginB;
+  var cbX = plotX;
+  var cbW = plotW;
+  var cbH = 22;
+  var nSeg = 16;
+  var fn = CMAPS[colormap] || CMAPS.jet;
+  for (var i = 0; i < nSeg; i++) {
+    var t = i / (nSeg - 1);
+    var c = fn(t);
+    ctx.fillStyle = 'rgb('+c[0]+','+c[1]+','+c[2]+')';
+    ctx.fillRect(cbX + cbW*i/nSeg, cbY, cbW/nSeg + 1, cbH);
+  }
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 1;
+  ctx.strokeRect(cbX, cbY, cbW, cbH);
+
+  // 色谱数值标注（离散刻度，类似参考图的 10 14 16 18...）
+  ctx.fillStyle = '#000'; ctx.font = 'bold 11px Arial'; ctx.textAlign = 'center';
+  var nLabels = 8;
+  for (var i = 0; i <= nLabels; i++) {
+    var v = dbMin + (dbMax - dbMin) * i / nLabels;
+    var x = cbX + cbW * i / nLabels;
+    ctx.fillText(Math.round(v), x, cbY + cbH + 14);
+  }
+  // 色谱标题
+  ctx.textAlign = 'left'; ctx.font = 'bold 12px Arial';
+  var unitLbl = useDba ? 'L(A) / dB(SPL)' : 'L / dB(SPL)';
+  ctx.fillText(unitLbl, cbX, cbY + cbH + 30);
+  // ── 信息框（左上角浮层，类似参考图 Average(Auto){Pa}） ──
+  var fftSizeUsed = appMode==='file' ? (parseInt(selFftFile.value)||4096) : fftSize;
+  var infoLines = [
+    'FFT: ' + fftSizeUsed + '  |  Fs: ' + (sampleRate/1000).toFixed(1) + 'kHz',
+    useDba ? 'Weighting: A' : 'Weighting: Linear',
+    colormap.toUpperCase()
+  ];
+  ctx.font = 'bold 11px Arial';
+  var boxW = Math.max.apply(null, infoLines.map(function(l){return ctx.measureText(l).width;})) + 16;
+  var boxH = infoLines.length * 14 + 10;
+  ctx.fillStyle = 'rgba(255,255,255,0.92)';
+  ctx.fillRect(plotX + 6, plotY + 6, boxW, boxH);
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 1;
+  ctx.strokeRect(plotX + 6, plotY + 6, boxW, boxH);
+  ctx.fillStyle = '#000';
+  infoLines.forEach(function(l, i){
+    ctx.fillText(l, plotX + 14, plotY + 6 + 16 + i*14);
+  });
+
+  // Copyright watermark
+  ctx.font = '9px Arial'; ctx.fillStyle = '#888'; ctx.textAlign='right';
+  ctx.fillText('NVH Analyzer  ·  Copyright © Feng Xinghui | AI Agent', outW - 8, outH - 6);
+
+  var a=document.createElement('a');
+  a.href=out.toDataURL('image/png');
+  a.download='nvh_'+ts()+'.png'; a.click();
+}
+function ts(){
+  var d=new Date();
+  return [d.getFullYear(),pad(d.getMonth()+1),pad(d.getDate())].join('')+'_'+
+         [pad(d.getHours()),pad(d.getMinutes()),pad(d.getSeconds())].join('');
+}
+function pad(n){return String(n).padStart(2,'0');}
+
+// ── Controls ──
+btnStart.addEventListener('click',startAudio);
+btnStop.addEventListener('click',stopAudio);
+btnSave.addEventListener('click',savePng);
+btnRec.addEventListener('click',function(){if(isRec)stopRec();else startRec();});
+
+btnDba.addEventListener('click',function(){
+  useDba=!useDba;
+  btnDba.textContent='dB(A): '+(useDba?'ON':'OFF');
+  btnDba.className='btn'+(useDba?' on':'');
+  refreshCurrentView();
+});
+
+selFft.addEventListener('change',function(){fftSize=parseInt(selFft.value);});
+selCmap.addEventListener('change',function(){colormap=selCmap.value;drawColorbar();refreshCurrentView();});
+
+// MIN/MAX 色轴步进调节（比拖动滑条更适合手机精确点击）
+var DB_STEP = 2;       // 每次点击调整量
+var DB_FLOOR = 0;      // MIN 可调下限
+var DB_CEIL  = 120;    // MAX 可调上限
+var MIN_GAP  = 4;       // MIN/MAX 之间最小间隔，避免范围倒置或归零
+
+function updateDbRange(){
+  valMin.textContent = dbMin;
+  valMax.textContent = dbMax;
+  drawColorbar();
+  refreshCurrentView();
+}
+function stepMin(delta){
+  dbMin = Math.max(DB_FLOOR, Math.min(dbMax - MIN_GAP, dbMin + delta));
+  updateDbRange();
+}
+function stepMax(delta){
+  dbMax = Math.min(DB_CEIL, Math.max(dbMin + MIN_GAP, dbMax + delta));
+  updateDbRange();
+}
+// 支持单击步进 + 长按连续调节（按住500ms后每120ms重复一次，方便快速拉大范围）
+function bindHoldRepeat(btn, fn){
+  var timer=null, delay=null;
+  function start(e){
+    e.preventDefault();
+    fn();
+    delay = setTimeout(function(){
+      timer = setInterval(fn, 120);
+    }, 500);
+  }
+  function stop(){
+    clearTimeout(delay); clearInterval(timer);
+    delay=null; timer=null;
+  }
+  btn.addEventListener('mousedown', start);
+  btn.addEventListener('touchstart', start, {passive:false});
+  ['mouseup','mouseleave','touchend','touchcancel'].forEach(function(ev){
+    btn.addEventListener(ev, stop);
+  });
+}
+bindHoldRepeat(btnMinDn, function(){ stepMin(-DB_STEP); });
+bindHoldRepeat(btnMinUp, function(){ stepMin(DB_STEP); });
+bindHoldRepeat(btnMaxDn, function(){ stepMax(-DB_STEP); });
+bindHoldRepeat(btnMaxUp, function(){ stepMax(DB_STEP); });
+
+// 统一刷新入口：根据当前模式/视图，重新绘制瀑布图（供 MIN/MAX/色谱/dBA 切换时调用）
+function refreshCurrentView(){
+  if(appMode==='file' && fileSpecMatrix){
+    if(fileViewMode==='static'){ renderStaticOverview(); updatePlayheadStatic(); }
+    else { renderScrollFrameAtTime(getCurrentPlayTime()); }
+  }
+  // LIVE模式下色谱/范围变化会在下一帧 drawFrame 自动生效，无需手动刷新
+}
+
+window.addEventListener('resize',function(){resize();});
+
+// ── Detect Huawei / Harmony OS ──
+(function(){
+  var ua=navigator.userAgent||'';
+  // HarmonyOS or HUAWEI browser without proper file association
+  if((ua.indexOf('HarmonyOS')>-1||ua.indexOf('HUAWEI')>-1) && ua.indexOf('Chrome')===-1){
+    // show guide after 500ms
+    setTimeout(function(){
+      document.getElementById('hw-guide').classList.add('show');
+    },500);
+  }
+})();
+
+// ── Init ──
+resize();
+
+})();
+</script>
+</div>
+<script>
+
+(function(){
+  var PREFIX='NVH';
+  var SALT='nvh-eps-tools-2026-fxh';
+  var SKEY='nvh_lic_v1';
+
+  function cached(){
+    try{
+      var r=JSON.parse(localStorage.getItem(SKEY)||'null');
+      if(!r||!r.year)return false;
+      if(r.year<new Date().getFullYear())return false;
+      return true;
+    }catch(e){return false;}
+  }
+
+  function showApp(){
+    document.getElementById('nvh-gate').classList.add('hidden');
+    var a=document.getElementById('nvh-app-content');
+    if(a){a.style.display='block';a.style.height='100%';}
+  }
+
+  function msg(t,cls){
+    var el=document.getElementById('gate-msg');
+    el.textContent=t;el.className='gate-msg'+(cls?' '+cls:'');
+  }
+
+  async function verify(code){
+    code=code.trim().toUpperCase();
+    // 格式校验：PREFIX-XXXXXXXX-YYYY
+    var re=/^NVH-([0-9A-F]{8})-([0-9]{4})$/;
+    var m=code.match(re);
+    if(!m)return{ok:false,msg:'格式错误，应为 NVH-XXXXXXXX-2026'};
+    var hash=m[1],year=parseInt(m[2]);
+    if(year<new Date().getFullYear())return{ok:false,msg:'激活码已过期（'+year+'年）'};
+    // 计算期望哈希：sha256(SALT+year+PREFIX)
+    var raw=SALT+year+PREFIX;
+    var enc=new TextEncoder().encode(raw);
+    var buf=await crypto.subtle.digest('SHA-256',enc);
+    var expected=Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('').substring(0,8).toUpperCase();
+    if(hash!==expected)return{ok:false,msg:'激活码无效，请检查后重新输入'};
+    return{ok:true,year:year};
+  }
+
+  async function activate(code){
+    var btn=document.getElementById('gate-btn');
+    btn.disabled=true;msg('验证中...','');
+    var r=await verify(code);
+    btn.disabled=false;
+    if(r.ok){
+      localStorage.setItem(SKEY,JSON.stringify({code:code,year:r.year}));
+      msg('激活成功！','ok');
+      setTimeout(showApp,400);
+    }else{
+      msg(r.msg,'err');
+    }
+  }
+
+  function init(){
+    if(cached()){showApp();return;}
+    var inp=document.getElementById('gate-code'),btn=document.getElementById('gate-btn');
+    btn.addEventListener('click',function(){
+      var c=inp.value.trim().toUpperCase();
+      if(!c){msg('请输入激活码','err');return;}
+      activate(c);
+    });
+    inp.addEventListener('keydown',function(e){if(e.key==='Enter')btn.click();});
+    // 自动格式化输入
+    inp.addEventListener('input',function(){
+      var v=inp.value.replace(/[^0-9A-Za-z-]/g,'').toUpperCase();
+      inp.value=v;
+    });
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
+  else init();
+})();
+
+</script>
+</body>
+</html>

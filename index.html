@@ -654,19 +654,38 @@
   ro.observe(canvas);
 })();
 
-/* ── Contact Form ── */
-function handleSubmit(e) {
+/* ── Contact Form → 飞书机器人 ── */
+async function handleSubmit(e) {
   e.preventDefault();
   const form = e.target;
-  const data = {
-    name: form.name.value,
-    contact: form.contact.value,
-    role: form.role.value,
-    message: form.message.value,
-    time: new Date().toLocaleString('zh-CN'),
-  };
-  // 目前只做前端提示，后续可接 Formspree / 飞书 webhook 等
-  console.log('申请信息：', data);
+  const btn = form.querySelector('.form-submit');
+  btn.textContent = '提交中...';
+  btn.disabled = true;
+
+  const name    = form.name.value.trim();
+  const contact = form.contact.value.trim();
+  const role    = form.role.value.trim();
+  const message = form.message.value.trim();
+  const time    = new Date().toLocaleString('zh-CN');
+
+  const text = [
+    '📩 NVH Tools 新询盘',
+    `姓名/公司：${name}`,
+    `联系方式：${contact}`,
+    role    ? `职位/场景：${role}`    : null,
+    message ? `留言：${message}` : null,
+    `时间：${time}`,
+  ].filter(Boolean).join('\n');
+
+  try {
+    await fetch('https://open.feishu.cn/open-apis/bot/v2/hook/067581a9-c93f-4983-b33a-03b77ec38fb2', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ msg_type: 'text', content: { text } }),
+      mode: 'no-cors',
+    });
+  } catch (_) {}
+
   form.style.display = 'none';
   document.getElementById('form-success').style.display = 'block';
 }

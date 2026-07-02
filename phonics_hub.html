@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>自然拼读乐园 · 选一本书</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --cream: #FFF8EA;
+    --cream2: #FFF1D6;
+    --ink: #4A3728;
+    --ink-soft: #8A7561;
+    --white: #FFFFFF;
+  }
+  body {
+    background: var(--cream);
+    background-image: radial-gradient(circle at 15% 8%, var(--cream2) 0%, transparent 45%),
+                       radial-gradient(circle at 90% 85%, var(--cream2) 0%, transparent 40%);
+    color: var(--ink);
+    font-family: 'Nunito', -apple-system, 'PingFang SC', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+  .hero { text-align: center; padding: 44px 20px 30px; }
+  .hero-mascot {
+    font-size: 60px;
+    display: inline-block;
+    animation: bob 3s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(-10px) rotate(3deg); }
+  }
+  .hero h1 {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 800;
+    font-size: clamp(26px, 5.5vw, 38px);
+    margin-top: 6px;
+  }
+  .hero p { color: var(--ink-soft); font-size: 15px; margin-top: 8px; font-weight: 600; }
+  .back-link {
+    display: inline-block;
+    margin-top: 14px;
+    color: var(--ink-soft);
+    font-weight: 700;
+    font-size: 13px;
+    text-decoration: none;
+    border-bottom: 2px dashed var(--ink-soft);
+  }
+
+  .grid {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 10px 20px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .book-card {
+    display: block;
+    text-decoration: none;
+    color: var(--ink);
+    border-radius: 28px;
+    padding: 26px 20px;
+    box-shadow: 0 8px 0 rgba(0,0,0,.08);
+    border: 4px solid rgba(255,255,255,0.7);
+    transition: transform 0.15s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .book-card:active { transform: translateY(5px); box-shadow: 0 3px 0 rgba(0,0,0,.08); }
+  .book-1 { background: linear-gradient(160deg, #FFD3D3, #FFE8B0); }
+  .book-2 { background: linear-gradient(160deg, #C8F0D8, #FFF6C4); }
+  .book-3 { background: linear-gradient(160deg, #C9E7FF, #E3D4FF); }
+  .book-4 { background: linear-gradient(160deg, #FFD6EC, #D6C4FF); }
+
+  .book-mascot { font-size: 44px; }
+  .book-num {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin-top: 6px;
+  }
+  .book-title {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    margin-top: 4px;
+    line-height: 1.3;
+  }
+  .book-desc {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-top: 6px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 50px;
+    color: var(--ink-soft);
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0.7;
+  }
+
+  @media (max-width: 480px) {
+    .grid { grid-template-columns: 1fr 1fr; gap: 14px; padding: 10px 16px; }
+    .book-card { padding: 20px 16px; }
+    .book-mascot { font-size: 36px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <span class="hero-mascot">📚</span>
+  <h1>自然拼读乐园</h1>
+  <p>选一本书，开始今天的练习吧</p>
+  <a href="index.html" class="back-link">← 返回单词认知入门</a>
+</div>
+
+<div class="grid">
+  <a href="phonics_book1.html" class="book-card book-1">
+    <div class="book-mascot">🐣</div>
+    <div class="book-num">Book 1</div>
+    <div class="book-title">字母启蒙<br>Letter Sounds</div>
+    <div class="book-desc">认识26个字母和它们的发音</div>
+  </a>
+
+  <a href="phonics_book2.html" class="book-card book-2">
+    <div class="book-mascot">🦉</div>
+    <div class="book-num">Book 2</div>
+    <div class="book-title">短元音<br>Short Vowels</div>
+    <div class="book-desc">a e i o u 短元音单词家族</div>
+  </a>
+
+  <a href="phonics_book3.html" class="book-card book-3">
+    <div class="book-mascot">🦋</div>
+    <div class="book-num">Book 3</div>
+    <div class="book-title">长元音乐园<br>Long Vowels</div>
+    <div class="book-desc">静音e、字母组合发长音</div>
+  </a>
+
+  <a href="phonics_book4.html" class="book-card book-4">
+    <div class="book-mascot">🦄</div>
+    <div class="book-num">Book 4</div>
+    <div class="book-title">组合拼读<br>Blends & Teams</div>
+    <div class="book-desc">sh ch th 等字母组合</div>
+  </a>
+</div>
+
+<footer>建议按顺序 1 → 2 → 3 → 4 学习，每本书完成后再进入下一本</footer>
+
+</body>
+</html>

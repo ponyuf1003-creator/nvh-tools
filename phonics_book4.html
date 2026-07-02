@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>自然拼读乐园 Book 2</title>
+<title>自然拼读乐园 Book 4</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 
@@ -356,8 +356,8 @@ body{
 <!-- ══ HEADER ══ -->
 <div class="hdr">
   <div class="hdr-title">
-    <h1>📖 自然拼读乐园 2</h1>
-    <p><a href="phonics_hub.html" style="color:#fff;opacity:.8;text-decoration:underline;">← 自然拼读四册</a> · Short Vowels 短元音</p>
+    <h1>📖 自然拼读乐园 4</h1>
+    <p><a href="index.html" style="color:#fff;opacity:.8;text-decoration:underline;">← 入门单词卡</a> · Digraphs & Blends · 字母组合</p>
   </div>
   <div class="coin-counter" id="coin-counter">🪙 <span id="total-coins">0</span></div>
 </div>
@@ -365,7 +365,7 @@ body{
 <!-- ══ HOME ══ -->
 <div id="screen-home" class="screen active">
   <div class="mascot-row">
-    <div class="mascot">🦉</div>
+    <div class="mascot">🦄</div>
     <div class="mascot-text">
       <h2 id="greeting">你好！准备好了吗？</h2>
       <p>选一个单元开始练习吧 👇</p>
@@ -473,74 +473,42 @@ body{
 //  词库
 // ════════════════════════════════
 const UNITS=[
-  {id:1,title:'Unit 1',vowel:'Short a',families:'a · am · an',color:'#EF4444',
+  {id:1,title:'Unit 1',vowel:'sh · ch',families:'字母组合 sh ch',color:'#EF4444',
    words:[
-    {word:'cat',emoji:'🐱',hint:'小猫'},{word:'ant',emoji:'🐜',hint:'蚂蚁'},
-    {word:'fan',emoji:'🌀',hint:'风扇'},{word:'jam',emoji:'🍓',hint:'果酱'},
-    {word:'yam',emoji:'🍠',hint:'山药'},{word:'man',emoji:'👨',hint:'男人'},
-    {word:'pan',emoji:'🍳',hint:'平底锅'},{word:'can',emoji:'🥫',hint:'罐头'},
+    {word:'ship',emoji:'🚢',hint:'船'},{word:'shell',emoji:'🐚',hint:'贝壳'},
+    {word:'chair',emoji:'🪑',hint:'椅子'},{word:'cheese',emoji:'🧀',hint:'奶酪'},
+    {word:'fish',emoji:'🐟',hint:'鱼'},{word:'lunch',emoji:'🍱',hint:'午餐'},
   ]},
-  {id:2,title:'Unit 2',vowel:'Short a',families:'ad · ag · ap · at',color:'#F97316',
+  {id:2,title:'Unit 2',vowel:'th · wh',families:'字母组合 th wh',color:'#F97316',
    words:[
-    {word:'bag',emoji:'👜',hint:'包包'},{word:'cap',emoji:'🧢',hint:'帽子'},
-    {word:'bat',emoji:'🦇',hint:'蝙蝠'},{word:'rat',emoji:'🐀',hint:'老鼠'},
-    {word:'hat',emoji:'🎩',hint:'帽子'},{word:'mat',emoji:'🪆',hint:'垫子'},
-    {word:'map',emoji:'🗺️',hint:'地图'},{word:'nap',emoji:'😴',hint:'小睡'},
+    {word:'this',emoji:'👉',hint:'这个'},{word:'three',emoji:'3️⃣',hint:'三'},
+    {word:'whale',emoji:'🐳',hint:'鲸鱼'},{word:'wheel',emoji:'🎡',hint:'轮子'},
+    {word:'bath',emoji:'🛁',hint:'洗澡'},{word:'teeth',emoji:'🦷',hint:'牙齿'},
   ]},
-  {id:3,title:'Unit 3',vowel:'Short e',families:'e · et · en · ed',color:'#10B981',
+  {id:3,title:'Unit 3',vowel:'bl · cl · fl',families:'辅音连缀 bl cl fl',color:'#10B981',
    words:[
-    {word:'web',emoji:'🕸️',hint:'蜘蛛网'},{word:'egg',emoji:'🥚',hint:'鸡蛋'},
-    {word:'jet',emoji:'✈️',hint:'喷气机'},{word:'net',emoji:'🥅',hint:'渔网'},
-    {word:'wet',emoji:'💧',hint:'湿的'},{word:'pet',emoji:'🐾',hint:'宠物'},
-    {word:'hen',emoji:'🐔',hint:'母鸡'},{word:'pen',emoji:'✏️',hint:'笔'},
-    {word:'bed',emoji:'🛏️',hint:'床'},{word:'red',emoji:'🔴',hint:'红色'},
+    {word:'blue',emoji:'🔵',hint:'蓝色'},{word:'block',emoji:'🧱',hint:'积木'},
+    {word:'clock',emoji:'🕐',hint:'时钟'},{word:'cloud',emoji:'☁️',hint:'云'},
+    {word:'flag',emoji:'🚩',hint:'旗子'},{word:'flower',emoji:'🌸',hint:'花'},
   ]},
-  {id:4,title:'Unit 4',vowel:'Short i',families:'i · ip · ib · id',color:'#3B82F6',
+  {id:4,title:'Unit 4',vowel:'ai · oi',families:'元音组合 ai oi',color:'#3B82F6',
    words:[
-    {word:'ink',emoji:'🖊️',hint:'墨水'},{word:'lip',emoji:'👄',hint:'嘴唇'},
-    {word:'tip',emoji:'👆',hint:'尖端'},{word:'sip',emoji:'🥤',hint:'小口喝'},
-    {word:'zip',emoji:'🤐',hint:'拉链'},{word:'bib',emoji:'🍼',hint:'围兜'},
-    {word:'rib',emoji:'🦴',hint:'肋骨'},{word:'kid',emoji:'👦',hint:'小孩'},
-    {word:'lid',emoji:'🫙',hint:'盖子'},
+    {word:'rain',emoji:'🌧️',hint:'雨'},{word:'snail',emoji:'🐌',hint:'蜗牛'},
+    {word:'coin',emoji:'🪙',hint:'硬币'},{word:'toy',emoji:'🧸',hint:'玩具'},
+    {word:'boil',emoji:'♨️',hint:'煮沸'},{word:'point',emoji:'👉',hint:'指向'},
   ]},
-  {id:5,title:'Unit 5',vowel:'Short i',families:'in · ig · it · ix',color:'#8B5CF6',
+  {id:5,title:'Unit 5',vowel:'ou · ow',families:'元音组合 ou ow',color:'#8B5CF6',
    words:[
-    {word:'fin',emoji:'🐟',hint:'鱼鳍'},{word:'bin',emoji:'🗑️',hint:'垃圾桶'},
-    {word:'win',emoji:'🏆',hint:'赢了'},{word:'fig',emoji:'🍑',hint:'无花果'},
-    {word:'big',emoji:'🐘',hint:'大的'},{word:'dig',emoji:'⛏️',hint:'挖土'},
-    {word:'hit',emoji:'⚾',hint:'打击'},{word:'six',emoji:'6️⃣',hint:'数字六'},
-    {word:'mix',emoji:'🥣',hint:'搅拌'},{word:'pit',emoji:'🕳️',hint:'坑'},
-  ]},
-  {id:6,title:'Unit 6',vowel:'Short o',families:'o · ot · op',color:'#EC4899',
-   words:[
-    {word:'fox',emoji:'🦊',hint:'狐狸'},{word:'log',emoji:'🪵',hint:'原木'},
-    {word:'ox', emoji:'🐂',hint:'公牛'},{word:'pot',emoji:'🪴',hint:'花盆'},
-    {word:'hot',emoji:'🔥',hint:'热的'},{word:'dot',emoji:'⚫',hint:'圆点'},
-    {word:'top',emoji:'🎪',hint:'顶部'},{word:'mop',emoji:'🧹',hint:'拖把'},
-    {word:'pop',emoji:'🎈',hint:'爆破'},
-  ]},
-  {id:7,title:'Unit 7',vowel:'Short u',families:'u · ug · ud · up',color:'#F59E0B',
-   words:[
-    {word:'sun',emoji:'☀️',hint:'太阳'},{word:'jug',emoji:'🫙',hint:'水壶'},
-    {word:'hug',emoji:'🤗',hint:'拥抱'},{word:'bug',emoji:'🐛',hint:'虫子'},
-    {word:'rug',emoji:'🏡',hint:'地毯'},{word:'mug',emoji:'☕',hint:'马克杯'},
-    {word:'mud',emoji:'🟤',hint:'泥巴'},{word:'bud',emoji:'🌱',hint:'花蕾'},
-    {word:'cup',emoji:'🥤',hint:'杯子'},{word:'pup',emoji:'🐶',hint:'小狗'},
-  ]},
-  {id:8,title:'Unit 8',vowel:'Short u',families:'ut · ub · um · un',color:'#22C55E',
-   words:[
-    {word:'nut',emoji:'🥜',hint:'坚果'},{word:'cut',emoji:'✂️',hint:'剪切'},
-    {word:'hut',emoji:'🏚️',hint:'小屋'},{word:'tub',emoji:'🛁',hint:'浴缸'},
-    {word:'gum',emoji:'🍬',hint:'口香糖'},{word:'bun',emoji:'🍞',hint:'小面包'},
-    {word:'run',emoji:'🏃',hint:'跑步'},{word:'fun',emoji:'🎉',hint:'有趣'},
-    {word:'hum',emoji:'🎵',hint:'哼唱'},
+    {word:'house',emoji:'🏠',hint:'房子'},{word:'mouse',emoji:'🐭',hint:'老鼠'},
+    {word:'cloud',emoji:'☁️',hint:'云'},{word:'cow',emoji:'🐮',hint:'奶牛'},
+    {word:'owl',emoji:'🦉',hint:'猫头鹰'},{word:'flower',emoji:'🌸',hint:'花'},
   ]},
 ];
 
 // ════════════════════════════════
 //  持久化状态
 // ════════════════════════════════
-const SK='phonics-book2-v1';
+const SK='phonics-book4-v1';
 let S=JSON.parse(localStorage.getItem(SK)||'{"coins":0,"units":{}}');
 function save(){localStorage.setItem(SK,JSON.stringify(S));}
 function updateCoins(){document.getElementById('total-coins').textContent=S.coins||0;}

@@ -69,6 +69,25 @@
     margin-top: 10px;
     font-weight: 600;
   }
+  .next-level {
+    display: inline-block;
+    margin-top: 20px;
+    background: var(--white);
+    color: var(--ink);
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 12px 24px;
+    border-radius: 999px;
+    text-decoration: none;
+    box-shadow: var(--shadow);
+    border: 3px solid var(--purple);
+    transition: transform 0.15s ease;
+  }
+  .next-level:active {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 rgba(74,55,40,0.12);
+  }
 
   /* ── CATEGORY PILLS ── */
   .categories {
@@ -220,6 +239,9 @@
   <span class="hero-mascot">🐻</span>
   <h1>小熊学<span class="accent">英语</span></h1>
   <p>点一点卡片，听发音，认单词</p>
+  <a href="phonics_book2.html" class="next-level">
+    进阶练习：自然拼读乐园 2 📖
+  </a>
 </div>
 
 <div class="categories" id="categories"></div>
@@ -317,13 +339,35 @@ function renderCategories() {
   });
 }
 
+// 优选清晰女声，避免默认沙哑男声
+const FEMALE_EN_HINTS = ['Samantha','Google US English','Microsoft Zira','Ava','Susan','Karen','Moira','Tessa','Victoria','Allison','Female'];
+let _enVoice = null;
+
+function pickEnglishVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  const enVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('en'));
+  if (!enVoices.length) return null;
+  for (const hint of FEMALE_EN_HINTS) {
+    const hit = enVoices.find(v => v.name.includes(hint));
+    if (hit) return hit;
+  }
+  const maleHints = ['David','Male','Daniel','Fred','Alex'];
+  return enVoices.find(v => !maleHints.some(m => v.name.includes(m))) || enVoices[0];
+}
+
+if ('speechSynthesis' in window) {
+  _enVoice = pickEnglishVoice();
+  window.speechSynthesis.onvoiceschanged = () => { _enVoice = pickEnglishVoice(); };
+}
+
 function speak(text) {
   if (!('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = 'en-US';
-  utter.rate = 0.85;
-  utter.pitch = 1.1;
+  utter.rate = 0.68;   // 放慢语速，方便孩子跟读
+  utter.pitch = 1.08;
+  if (_enVoice) utter.voice = _enVoice;
   window.speechSynthesis.speak(utter);
 }
 

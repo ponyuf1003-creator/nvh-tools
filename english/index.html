@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>英语乐园</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔤</text></svg>">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+:root { --bg: #FFF8F0; --ink: #1A1A2E; --muted: #6B7280; --purple: #7C3AED; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg); color: var(--ink); min-height: 100vh; user-select: none;
+}
+.wrap { max-width: 600px; margin: 0 auto; padding: 20px 16px 40px; }
+.top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.back {
+  text-decoration: none; color: var(--muted); font-weight: 700; font-size: .95rem;
+  background: #fff; border-radius: 999px; padding: 8px 16px; box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+.top h1 { font-size: 1.25rem; font-weight: 900; }
+.hero {
+  background: linear-gradient(135deg, #7C3AED, #A855F7); color: #fff;
+  border-radius: 24px; padding: 22px; display: flex; gap: 16px; align-items: center;
+  box-shadow: 0 6px 24px rgba(124,58,237,.35); margin-bottom: 20px;
+}
+.hero .m { font-size: 3.4rem; }
+.hero h2 { font-size: 1.3rem; font-weight: 900; }
+.hero p { opacity: .88; font-size: .9rem; margin-top: 4px; }
+.item {
+  display: flex; align-items: center; gap: 16px;
+  background: #fff; border-radius: 22px; padding: 20px;
+  box-shadow: 0 6px 24px rgba(0,0,0,.08); margin-bottom: 14px;
+  text-decoration: none; color: var(--ink); transition: transform .15s;
+}
+.item:active { transform: scale(.97); }
+.item .icon { font-size: 2.6rem; }
+.item h3 { font-size: 1.1rem; font-weight: 900; }
+.item p { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+.item .lv { margin-left: auto; background: #FEF3C7; color: #D97706; border-radius: 999px; padding: 5px 12px; font-size: .8rem; font-weight: 800; white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="back" href="../">← 学习乐园</a>
+    <h1>🔤 英语乐园</h1>
+    <span style="width:90px"></span>
+  </div>
+
+  <div class="hero">
+    <div class="m">🦉</div>
+    <div><h2>English Time!</h2><p>选一个练习开始吧 👇</p></div>
+  </div>
+
+  <a class="item" href="words.html">
+    <div class="icon">🐻</div>
+    <div><h3>小熊学英语 · 单词卡</h3><p>看图点读，积累生活词汇</p></div>
+    <div class="lv">入门</div>
+  </a>
+
+  <a class="item" href="phonics_hub.html">
+    <div class="icon">📚</div>
+    <div><h3>自然拼读乐园</h3><p>Phonics Book 1-4，系统学字母音</p></div>
+    <div class="lv">进阶</div>
+  </a>
+
+  <a class="item" href="opw2.html">
+    <div class="icon">📖</div>
+    <div><h3>Phonics World 2 · 短元音</h3><p>听音选图 · 看图选词 · 拼写单词</p></div>
+    <div class="lv">挑战</div>
+  </a>
+</div>
+</body>
+</html>

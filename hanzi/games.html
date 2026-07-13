@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>游戏乐园 · 小小识字岛</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="back" href="index.html">🏠 回家</a>
+    <div class="title">🎮 游戏乐园</div>
+    <div class="stars-chip">⭐ <span id="stars">0</span></div>
+  </div>
+
+  <a class="task-card" href="game-listen.html">
+    <div class="icon">🍎</div>
+    <div><div class="t">听音摘果子</div><div class="d">听一听，摘下正确的果子</div></div>
+  </a>
+
+  <a class="task-card" href="game-trace.html">
+    <div class="icon">✍️</div>
+    <div><div class="t">描红闯关</div><div class="d">按笔顺写字，闯过五道关</div></div>
+  </a>
+
+  <div class="card muted" id="hint" style="display:none">
+    先跟着任务学几个字，游戏会用你学过的字来出题哦 🐼
+  </div>
+</div>
+
+<script src="data/chars.js"></script>
+<script src="js/core.js"></script>
+<script>
+(async function () {
+  await AppData.load();
+  document.getElementById('stars').textContent = Store.load().stars;
+  if (SRS.pool().length < 4) document.getElementById('hint').style.display = 'block';
+})();
+</script>
+</body>
+</html>

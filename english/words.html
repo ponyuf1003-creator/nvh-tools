@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>小熊学英语 · 亲子单词卡</title>
+<meta name="description" content="3-6岁学前儿童英语单词卡，中英双语，点击卡片听发音，适合家长陪孩子在家学习。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream:    #FFF8EA;
+    --cream2:   #FFF1D6;
+    --ink:      #4A3728;
+    --ink-soft: #8A7561;
+    --pink:     #FF8FA3;
+    --pink-bg:  #FFE1E8;
+    --blue:     #5FB8E8;
+    --blue-bg:  #DCF0FB;
+    --yellow:   #FFC451;
+    --yellow-bg:#FFF1D0;
+    --green:    #6FCF97;
+    --green-bg: #E1F7EA;
+    --purple:   #B18CF0;
+    --purple-bg:#EEE3FD;
+    --white:    #FFFFFF;
+    --shadow:   0 6px 0 rgba(74,55,40,0.12);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--cream);
+    background-image: radial-gradient(circle at 15% 8%, var(--cream2) 0%, transparent 45%),
+                       radial-gradient(circle at 90% 85%, var(--cream2) 0%, transparent 40%);
+    color: var(--ink);
+    font-family: 'Nunito', -apple-system, 'PingFang SC', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+  .display { font-family: 'Baloo 2', 'PingFang SC', sans-serif; }
+
+  /* ── HERO ── */
+  .hero {
+    text-align: center;
+    padding: 48px 20px 32px;
+    position: relative;
+  }
+  .hero-mascot {
+    font-size: 64px;
+    display: inline-block;
+    animation: bob 3s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(-10px) rotate(3deg); }
+  }
+  .hero h1 {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 800;
+    font-size: clamp(28px, 6vw, 42px);
+    color: var(--ink);
+    margin-top: 8px;
+    letter-spacing: -0.01em;
+  }
+  .hero h1 .accent { color: var(--pink); }
+  .hero p {
+    color: var(--ink-soft);
+    font-size: 16px;
+    margin-top: 10px;
+    font-weight: 600;
+  }
+  .next-level {
+    display: inline-block;
+    margin-top: 20px;
+    background: var(--white);
+    color: var(--ink);
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 12px 24px;
+    border-radius: 999px;
+    text-decoration: none;
+    box-shadow: var(--shadow);
+    border: 3px solid var(--purple);
+    transition: transform 0.15s ease;
+  }
+  .next-level:active {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 rgba(74,55,40,0.12);
+  }
+
+  /* ── CATEGORY PILLS ── */
+  .categories {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 8px 20px 36px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .cat-btn {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 12px 22px;
+    border-radius: 999px;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: var(--shadow);
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .cat-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 rgba(74,55,40,0.12); }
+  .cat-btn.active { border-color: var(--ink); transform: translateY(-2px); }
+  .cat-btn .emoji { font-size: 20px; }
+  .cat-animals  { background: var(--yellow-bg); }
+  .cat-colors   { background: var(--pink-bg); }
+  .cat-numbers  { background: var(--blue-bg); }
+  .cat-fruits   { background: var(--green-bg); }
+  .cat-family   { background: var(--purple-bg); }
+
+  /* ── CARD GRID ── */
+  .grid {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 18px;
+  }
+
+  .card {
+    perspective: 1000px;
+    height: 170px;
+    cursor: pointer;
+  }
+  .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s cubic-bezier(.34,1.56,.64,1);
+    transform-style: preserve-3d;
+  }
+  .card.flipped .card-inner { transform: rotateY(180deg); }
+
+  .card-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow);
+    border: 3px solid rgba(255,255,255,0.6);
+  }
+  .card-front {
+    background: var(--white);
+  }
+  .card-front .emoji-big {
+    font-size: 52px;
+    margin-bottom: 8px;
+  }
+  .card-front .word-cn {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--ink);
+  }
+  .card-back {
+    transform: rotateY(180deg);
+    flex-direction: column;
+    gap: 6px;
+  }
+  .card-back .word-en {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 800;
+    font-size: 26px;
+    color: var(--white);
+  }
+  .card-back .phonetic {
+    font-size: 13px;
+    color: rgba(255,255,255,0.85);
+    font-weight: 600;
+  }
+  .card-back .speak-icon {
+    font-size: 28px;
+    margin-top: 4px;
+  }
+
+  /* 撞色卡片背面 */
+  .c-yellow .card-back { background: var(--yellow); }
+  .c-pink   .card-back { background: var(--pink); }
+  .c-blue   .card-back { background: var(--blue); }
+  .c-green  .card-back { background: var(--green); }
+  .c-purple .card-back { background: var(--purple); }
+
+  .card:active .card-inner { transform: scale(0.96) rotateY(var(--rot, 0deg)); }
+  .card.flipped:active .card-inner { --rot: 180deg; }
+
+  /* ── HINT ── */
+  .hint {
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 13px;
+    font-weight: 600;
+    margin: 28px 0 0;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    margin-top: 56px;
+    color: var(--ink-soft);
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0.7;
+  }
+
+  @media (max-width: 480px) {
+    .grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .card { height: 150px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; }
+    .card-inner { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <a href="index.html" style="position:absolute;left:16px;top:14px;color:#fff;text-decoration:none;font-weight:800;opacity:.8;font-size:14px">← 英语乐园</a>
+  <span class="hero-mascot">🐻</span>
+  <h1>小熊学<span class="accent">英语</span></h1>
+  <p>点一点卡片，听发音，认单词</p>
+  <a href="phonics_hub.html" class="next-level">
+    进阶练习：自然拼读四册 📚
+  </a>
+</div>
+
+<div class="categories" id="categories"></div>
+
+<div class="grid" id="grid"></div>
+
+<p class="hint">👆 点击卡片翻面，再点一次听发音</p>
+
+<footer>为 3-6 岁小朋友设计 · 陪孩子一起学</footer>
+
+<script>
+const DATA = {
+  animals: {
+    label: '动物', emoji: '🐶', cls: 'yellow',
+    words: [
+      {cn:'狗狗', en:'Dog', emoji:'🐶', phon:'/dɒɡ/'},
+      {cn:'猫咪', en:'Cat', emoji:'🐱', phon:'/kæt/'},
+      {cn:'兔子', en:'Rabbit', emoji:'🐰', phon:'/ˈræbɪt/'},
+      {cn:'大象', en:'Elephant', emoji:'🐘', phon:'/ˈelɪfənt/'},
+      {cn:'狮子', en:'Lion', emoji:'🦁', phon:'/ˈlaɪən/'},
+      {cn:'熊猫', en:'Panda', emoji:'🐼', phon:'/ˈpændə/'},
+      {cn:'小鸟', en:'Bird', emoji:'🐦', phon:'/bɜːd/'},
+      {cn:'小鱼', en:'Fish', emoji:'🐟', phon:'/fɪʃ/'},
+    ]
+  },
+  colors: {
+    label: '颜色', emoji: '🎨', cls: 'pink',
+    words: [
+      {cn:'红色', en:'Red', emoji:'🔴', phon:'/red/'},
+      {cn:'黄色', en:'Yellow', emoji:'🟡', phon:'/ˈjeləʊ/'},
+      {cn:'蓝色', en:'Blue', emoji:'🔵', phon:'/bluː/'},
+      {cn:'绿色', en:'Green', emoji:'🟢', phon:'/ɡriːn/'},
+      {cn:'紫色', en:'Purple', emoji:'🟣', phon:'/ˈpɜːpl/'},
+      {cn:'橙色', en:'Orange', emoji:'🟠', phon:'/ˈɒrɪndʒ/'},
+      {cn:'粉色', en:'Pink', emoji:'🩷', phon:'/pɪŋk/'},
+      {cn:'棕色', en:'Brown', emoji:'🟤', phon:'/braʊn/'},
+    ]
+  },
+  numbers: {
+    label: '数字', emoji: '🔢', cls: 'blue',
+    words: [
+      {cn:'一', en:'One', emoji:'1️⃣', phon:'/wʌn/'},
+      {cn:'二', en:'Two', emoji:'2️⃣', phon:'/tuː/'},
+      {cn:'三', en:'Three', emoji:'3️⃣', phon:'/θriː/'},
+      {cn:'四', en:'Four', emoji:'4️⃣', phon:'/fɔː/'},
+      {cn:'五', en:'Five', emoji:'5️⃣', phon:'/faɪv/'},
+      {cn:'六', en:'Six', emoji:'6️⃣', phon:'/sɪks/'},
+      {cn:'七', en:'Seven', emoji:'7️⃣', phon:'/ˈsevn/'},
+      {cn:'八', en:'Eight', emoji:'8️⃣', phon:'/eɪt/'},
+    ]
+  },
+  fruits: {
+    label: '水果', emoji: '🍎', cls: 'green',
+    words: [
+      {cn:'苹果', en:'Apple', emoji:'🍎', phon:'/ˈæpl/'},
+      {cn:'香蕉', en:'Banana', emoji:'🍌', phon:'/bəˈnɑːnə/'},
+      {cn:'西瓜', en:'Watermelon', emoji:'🍉', phon:'/ˈwɔːtəmelən/'},
+      {cn:'草莓', en:'Strawberry', emoji:'🍓', phon:'/ˈstrɔːbəri/'},
+      {cn:'葡萄', en:'Grape', emoji:'🍇', phon:'/ɡreɪp/'},
+      {cn:'橙子', en:'Orange', emoji:'🍊', phon:'/ˈɒrɪndʒ/'},
+      {cn:'桃子', en:'Peach', emoji:'🍑', phon:'/piːtʃ/'},
+      {cn:'菠萝', en:'Pineapple', emoji:'🍍', phon:'/ˈpaɪnæpl/'},
+    ]
+  },
+  family: {
+    label: '家庭', emoji: '👨‍👩‍👧', cls: 'purple',
+    words: [
+      {cn:'爸爸', en:'Dad', emoji:'👨', phon:'/dæd/'},
+      {cn:'妈妈', en:'Mom', emoji:'👩', phon:'/mɒm/'},
+      {cn:'哥哥', en:'Brother', emoji:'👦', phon:'/ˈbrʌðə/'},
+      {cn:'姐姐', en:'Sister', emoji:'👧', phon:'/ˈsɪstə/'},
+      {cn:'爷爷', en:'Grandpa', emoji:'👴', phon:'/ˈɡrænpɑː/'},
+      {cn:'奶奶', en:'Grandma', emoji:'👵', phon:'/ˈɡrænmɑː/'},
+      {cn:'宝宝', en:'Baby', emoji:'👶', phon:'/ˈbeɪbi/'},
+      {cn:'我', en:'Me', emoji:'🙋', phon:'/miː/'},
+    ]
+  },
+};
+
+let currentCat = 'animals';
+
+function renderCategories() {
+  const wrap = document.getElementById('categories');
+  wrap.innerHTML = '';
+  Object.entries(DATA).forEach(([key, cat]) => {
+    const btn = document.createElement('button');
+    btn.className = `cat-btn cat-${key}` + (key === currentCat ? ' active' : '');
+    btn.innerHTML = `<span class="emoji">${cat.emoji}</span>${cat.label}`;
+    btn.addEventListener('click', () => {
+      currentCat = key;
+      renderCategories();
+      renderGrid();
+    });
+    wrap.appendChild(btn);
+  });
+}
+
+// 优选清晰女声，避免默认沙哑男声
+const FEMALE_EN_HINTS = ['Samantha','Google US English','Microsoft Zira','Ava','Susan','Karen','Moira','Tessa','Victoria','Allison','Female'];
+let _enVoice = null;
+
+function pickEnglishVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  const enVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('en'));
+  if (!enVoices.length) return null;
+  for (const hint of FEMALE_EN_HINTS) {
+    const hit = enVoices.find(v => v.name.includes(hint));
+    if (hit) return hit;
+  }
+  const maleHints = ['David','Male','Daniel','Fred','Alex'];
+  return enVoices.find(v => !maleHints.some(m => v.name.includes(m))) || enVoices[0];
+}
+
+if ('speechSynthesis' in window) {
+  _enVoice = pickEnglishVoice();
+  window.speechSynthesis.onvoiceschanged = () => { _enVoice = pickEnglishVoice(); };
+}
+
+function speak(text) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'en-US';
+  utter.rate = 0.68;   // 放慢语速，方便孩子跟读
+  utter.pitch = 1.08;
+  if (_enVoice) utter.voice = _enVoice;
+  window.speechSynthesis.speak(utter);
+}
+
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  const cat = DATA[currentCat];
+  cat.words.forEach((w) => {
+    const card = document.createElement('div');
+    card.className = `card c-${cat.cls}`;
+    card.innerHTML = `
+      <div class="card-inner">
+        <div class="card-face card-front">
+          <div class="emoji-big">${w.emoji}</div>
+          <div class="word-cn">${w.cn}</div>
+        </div>
+        <div class="card-face card-back">
+          <div class="word-en">${w.en}</div>
+          <div class="phonetic">${w.phon}</div>
+          <div class="speak-icon">🔊</div>
+        </div>
+      </div>
+    `;
+    card.addEventListener('click', () => {
+      const isFlipped = card.classList.contains('flipped');
+      if (!isFlipped) {
+        card.classList.add('flipped');
+        speak(w.en);
+      } else {
+        speak(w.en);
+      }
+    });
+    grid.appendChild(card);
+  });
+}
+
+renderCategories();
+renderGrid();
+</script>
+</body>
+</html>

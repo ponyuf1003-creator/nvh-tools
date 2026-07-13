@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>家长中心 · 小小识字岛</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap" style="max-width:720px">
+  <div class="topbar">
+    <a class="back" href="index.html">🏠 返回</a>
+    <div class="title">⚙️ 家长中心</div>
+    <div class="stars-chip">⭐ <span id="stars">0</span></div>
+  </div>
+
+  <div class="card">
+    <h3 class="section">📊 进度总览</h3>
+    <div class="stat-grid">
+      <div class="stat"><div class="n" id="st-met">0</div><div class="l">累计认识（含摸底）</div></div>
+      <div class="stat"><div class="n" id="st-learning">0</div><div class="l">复习巩固中</div></div>
+      <div class="stat"><div class="n" id="st-grad">0</div><div class="l">已毕业（记牢了）</div></div>
+      <div class="stat"><div class="n" id="st-due">0</div><div class="l">今日待复习</div></div>
+      <div class="stat"><div class="n" id="st-streak">0</div><div class="l">连续学习天数</div></div>
+      <div class="stat"><div class="n" id="st-weak">0</div><div class="l">薄弱字（错2次以上）</div></div>
+    </div>
+    <div id="weak-list" class="muted" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card">
+    <h3 class="section">🛠️ 设置</h3>
+    <label class="field">每天学几个新字（建议 3-5 个）</label>
+    <input type="number" id="set-new" min="1" max="10">
+    <label class="field">每天最多复习几个字</label>
+    <input type="number" id="set-cap" min="5" max="60">
+    <label class="field">朗读语速</label>
+    <select id="set-rate">
+      <option value="0.5">很慢</option>
+      <option value="0.6">慢速（推荐）</option>
+      <option value="0.75">适中</option>
+      <option value="0.9">正常</option>
+    </select>
+    <button class="btn ghost" style="margin-top:10px" onclick="Speech.speak('今天天气真好', +document.getElementById('set-rate').value)">🔊 试听语速</button>
+    <button class="btn green" style="margin-top:14px" onclick="saveSettings()">保存设置</button>
+  </div>
+
+  <div class="card">
+    <h3 class="section">💾 数据备份</h3>
+    <p class="muted">学习进度保存在这台设备的浏览器里。换设备或清理浏览器前，请先导出备份。</p>
+    <div style="display:flex;gap:10px;margin-top:12px">
+      <button class="btn blue" style="flex:1" onclick="exportData()">导出进度</button>
+      <button class="btn ghost" style="flex:1" onclick="document.getElementById('imp').click()">导入进度</button>
+      <input type="file" id="imp" accept=".json" style="display:none" onchange="importData(this)">
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 class="section">✏️ 摸底 / 字表管理</h3>
+    <p class="muted">点击汉字标记「已认识」（绿色）。孩子已在线下认识的字请在这里标记，标记后不会重复教学。
+    橙色 = 复习巩固中，蓝色 = 已毕业。共 1000 字，按部编版教材顺序排列。</p>
+    <div id="char-list"></div>
+  </div>
+</div>
+
+<script src="data/chars.js"></script>
+<script src="js/core.js"></script>
+<script>
+async function init() {
+  await AppData.load();
+  refreshStats();
+  const s = Store.load();
+  document.getElementById('set-new').value = s.settings.newPerDay;
+  document.getElementById('set-cap').value = s.settings.reviewCap;
+  document.getElementById('set-rate').value = String(s.settings.speechRate || 0.6);
+  renderGrid();
+}
+
+function refreshStats() {
+  const s = Store.load(), stats = SRS.stats();
+  document.getElementById('stars').textContent = s.stars;
+  document.getElementById('st-met').textContent = stats.met;
+  document.getElementById('st-learning').textContent = stats.learning;
+  document.getElementById('st-grad').textContent = stats.grad + stats.known;
+  document.getElementById('st-due').textContent = stats.due;
+  document.getElementById('st-streak').textContent = Store.streak();
+  const weak = Object.keys(s.srs).filter(c => (s.srs[c].wrong || 0) >= 2);
+  document.getElementById('st-weak').textContent = weak.length;
+  document.getElementById('weak-list').textContent = weak.length ? '薄弱字：' + weak.join('、') : '';
+}
+
+function saveSettings() {
+  const s = Store.load();
+  s.settings.newPerDay = Math.max(1, Math.min(10, +document.getElementById('set-new').value || 3));
+  s.settings.reviewCap = Math.max(5, Math.min(60, +document.getElementById('set-cap').value || 20));
+  s.settings.speechRate = +document.getElementById('set-rate').value || 0.6;
+  Store.save();
+  toast('设置已保存');
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(Store.load())], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '识字岛备份-' + Store.today() + '.json';
+  a.click();
+}
+
+function importData(input) {
+  const f = input.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const data = JSON.parse(r.result);
+      if (!data.srs) throw new Error('bad');
+      localStorage.setItem(Store.KEY, JSON.stringify(data));
+      Store.state = null;
+      toast('导入成功');
+      setTimeout(() => location.reload(), 800);
+    } catch (e) { toast('文件格式不对，导入失败'); }
+  };
+  r.readAsText(f);
+}
+
+/* 字表格子 */
+function cellClass(c) {
+  const e = SRS.entry(c);
+  if (!e) return '';
+  if (e.k) return ' known';
+  if (e.lv >= 6) return ' grad';
+  return ' learning';
+}
+
+function renderGrid() {
+  const box = document.getElementById('char-list');
+  box.innerHTML = '';
+  let unit = '', grid = null;
+  AppData.chars.forEach(e => {
+    if (e.u !== unit) {
+      unit = e.u;
+      const head = document.createElement('div');
+      head.className = 'unit-head';
+      const chars = AppData.chars.filter(x => x.u === unit).map(x => x.c);
+      head.innerHTML = `<span>${unit}</span>`;
+      const btn = document.createElement('button');
+      btn.textContent = '本组全部已认识';
+      btn.onclick = () => { chars.forEach(c => { if (!SRS.entry(c)) SRS.setKnown(c, true); }); renderGrid(); refreshStats(); };
+      head.appendChild(btn);
+      box.appendChild(head);
+      grid = document.createElement('div');
+      grid.className = 'char-grid';
+      box.appendChild(grid);
+    }
+    const cell = document.createElement('div');
+    cell.className = 'char-cell' + cellClass(e.c);
+    cell.textContent = e.c;
+    cell.title = e.p;
+    cell.onclick = () => {
+      const cur = SRS.entry(e.c);
+      if (cur && !cur.k) {
+        if (!confirm(`「${e.c}」正在复习计划中，标记为已认识会把它移出复习。继续吗？`)) return;
+        SRS.setKnown(e.c, true);
+      } else {
+        SRS.setKnown(e.c, !(cur && cur.k));
+      }
+      cell.className = 'char-cell' + cellClass(e.c);
+      refreshStats();
+    };
+    grid.appendChild(cell);
+  });
+}
+
+init();
+</script>
+</body>
+</html>

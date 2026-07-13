@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>描红闯关 · 小小识字岛</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✍️</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="back" href="games.html">⬅️ 返回</a>
+    <div class="title">✍️ 描红闯关</div>
+    <div class="stars-chip">⭐ <span id="stars">0</span></div>
+  </div>
+  <div class="dots" id="dots"></div>
+  <div id="stage"></div>
+</div>
+
+<script src="js/hanzi-writer.min.js"></script>
+<script src="data/chars.js"></script>
+<script src="data/strokes.js"></script>
+<script src="js/core.js"></script>
+<script>
+const LEVELS = 5;
+let queue = [], idx = 0, writer = null;
+
+async function init() {
+  await AppData.load();
+  document.getElementById('stars').textContent = Store.load().stars;
+  let pool = SRS.pool();
+  if (pool.length < LEVELS) pool = pool.concat(AppData.chars.slice(0, 20).map(e => e.c));
+  queue = sample(pool, LEVELS, []);
+  renderLevel();
+}
+
+function renderDots() {
+  const el = document.getElementById('dots');
+  el.innerHTML = '';
+  queue.forEach((c, i) => {
+    const d = document.createElement('span');
+    d.className = 'dot' + (i < idx ? ' on' : i === idx ? ' now' : '');
+    el.appendChild(d);
+  });
+}
+
+function renderLevel() {
+  renderDots();
+  if (idx >= queue.length) return renderDone();
+  const c = queue[idx], e = AppData.map[c];
+  document.getElementById('stage').innerHTML = `
+    <div class="card">
+      <div style="text-align:center;font-weight:800;font-size:1.1rem;margin-bottom:6px">
+        第 ${idx + 1} 关：写出「<span style="font-family:var(--hanzi-font)">${c}</span>」${e && e.e ? ' ' + e.e : ''}
+      </div>
+      <div class="writer-box"><div id="writer-target"></div></div>
+      <div style="display:flex;gap:10px">
+        <button class="btn blue" style="flex:1" onclick="hint()">💡 提示</button>
+        <button class="btn ghost" style="flex:1" onclick="skip()">跳过 ➡️</button>
+      </div>
+    </div>`;
+  const size = Math.min(280, Math.max(220, (window.innerWidth || 320) - 90));
+  writer = HanziWriter.create('writer-target', c, {
+    width: size, height: size, padding: 8,
+    showOutline: true, showCharacter: false,
+    strokeColor: '#3D3B37', outlineColor: '#E5DCC8',
+    drawingColor: '#4D96FF', drawingWidth: 22,
+    charDataLoader: (char, done) => {
+      if (window.STROKES_DATA && window.STROKES_DATA[char]) return done(window.STROKES_DATA[char]);
+      fetch('data/strokes/' + char + '.json').then(r => r.json()).then(done)
+        .catch(() => { toast('这个字的笔顺数据缺失'); setTimeout(skip, 1200); });
+    },
+  });
+  Speech.speak(c);
+  writer.quiz({
+    showHintAfterMisses: 2,
+    onComplete: () => {
+      confetti();
+      Speech.speak(c);
+      idx++;
+      setTimeout(renderLevel, 1100);
+    }
+  });
+}
+
+function hint() { if (writer) writer.animateCharacter({ onComplete: () => writer.quiz({ showHintAfterMisses: 2, onComplete: () => { confetti(); idx++; setTimeout(renderLevel, 1100); } }) }); }
+function skip() { idx++; renderLevel(); }
+
+function renderDone() {
+  const done = Store.todayDone();
+  let starMsg = '';
+  if (!done.game) { done.game = true; Store.addStar(1); starMsg = '得到一颗星星！' }
+  Store.save();
+  confetti();
+  document.getElementById('stage').innerHTML = `
+    <div class="card celebrate">
+      <div class="big">🏅</div>
+      <h2>五关全部通过！${starMsg}</h2>
+      <p>你写的字越来越漂亮啦</p>
+      <button class="btn" onclick="location.reload()">再闯一次 🔁</button>
+      <button class="btn ghost" onclick="location.href='games.html'">返回乐园</button>
+    </div>`;
+  document.getElementById('stars').textContent = Store.load().stars;
+}
+
+init();
+</script>
+</body>
+</html>

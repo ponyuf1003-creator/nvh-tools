@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>学新字 · 小小识字岛</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="back" href="index.html">🏠 回家</a>
+    <div class="title">🌱 学新字</div>
+    <div class="stars-chip">⭐ <span id="stars">0</span></div>
+  </div>
+
+  <div class="dots" id="dots"></div>
+  <div id="stage"></div>
+</div>
+
+<script src="js/hanzi-writer.min.js"></script>
+<script src="data/chars.js"></script>
+<script src="data/strokes.js"></script>
+<script src="js/core.js"></script>
+<script>
+let queue = [], idx = 0, writer = null, quizChars = [], quizLock = false;
+
+async function init() {
+  await AppData.load();
+  const s = Store.load();
+  document.getElementById('stars').textContent = s.stars;
+  const newLeft = Math.max(0, s.settings.newPerDay - Store.todayLog().new.length);
+  queue = SRS.newList(newLeft);
+  if (!queue.length) return renderEmpty(newLeft === 0);
+  renderDots();
+  renderKnow();
+}
+
+function renderDots() {
+  const el = document.getElementById('dots');
+  el.innerHTML = '';
+  queue.forEach((c, i) => {
+    const d = document.createElement('span');
+    d.className = 'dot' + (i < idx ? ' on' : i === idx ? ' now' : '');
+    el.appendChild(d);
+  });
+}
+
+function renderEmpty(doneToday) {
+  document.getElementById('stage').innerHTML = `
+    <div class="card celebrate">
+      <div class="big">${doneToday ? '🎉' : '🏆'}</div>
+      <h2>${doneToday ? '今天的新字学完啦！' : '1000个字全部学完啦！'}</h2>
+      <p>${doneToday ? '明天再来认识新的字宝宝吧' : '你太了不起了！'}</p>
+      <button class="btn" onclick="location.href='games.html'">去游戏乐园玩一玩 🎮</button>
+      <button class="btn ghost" onclick="location.href='index.html'">回家</button>
+    </div>`;
+}
+
+/* 第一步：认一认 */
+function renderKnow() {
+  const c = queue[idx], e = AppData.map[c];
+  renderDots();
+  const words = e.w.map(w =>
+    `<span class="word-pill" onclick="Speech.speak('${w}')">${w} 🔊</span>`).join('');
+  document.getElementById('stage').innerHTML = `
+    <div class="card">
+      ${e.e ? `<div class="emoji-big">${e.e}</div>` : ''}
+      <div class="pinyin-big">${e.p}</div>
+      <div class="tian-grid"><div class="hanzi-big" onclick="Speech.speak('${c}')">${c}</div></div>
+      <button class="speaker" onclick="Speech.speak('${c}')">🔊</button>
+      <div class="word-pills">${words}</div>
+      ${e.s ? `<div class="sentence" onclick="Speech.speak('${e.s.replace(/'/g,'')}')">📖 ${e.s} 🔊</div>` : ''}
+    </div>
+    <button class="btn" onclick="renderWrite()">下一步：写一写 ✍️</button>`;
+  setTimeout(() => Speech.speak(c), 250);
+}
+
+/* 第二步：笔顺 + 描红 */
+function renderWrite() {
+  const c = queue[idx];
+  document.getElementById('stage').innerHTML = `
+    <div class="card">
+      <div style="text-align:center;font-weight:800;font-size:1.1rem;margin-bottom:6px">看笔顺，再描一描「${c}」</div>
+      <div class="writer-box"><div id="writer-target"></div></div>
+      <div style="display:flex;gap:10px">
+        <button class="btn blue" style="flex:1" id="btn-anim" onclick="playAnim()">▶️ 看笔顺</button>
+        <button class="btn green" style="flex:1" id="btn-quiz" onclick="startQuiz()">✍️ 我来写</button>
+      </div>
+    </div>
+    <button class="btn ghost" onclick="finishChar()">先跳过，下一个 ➡️</button>`;
+  const size = Math.min(280, Math.max(220, (window.innerWidth || 320) - 90));
+  writer = HanziWriter.create('writer-target', c, {
+    width: size, height: size, padding: 8,
+    showOutline: true,
+    strokeColor: '#3D3B37', outlineColor: '#E5DCC8',
+    drawingColor: '#FF9F43', drawingWidth: 22,
+    charDataLoader: (char, done) => {
+      if (window.STROKES_DATA && window.STROKES_DATA[char]) return done(window.STROKES_DATA[char]);
+      fetch('data/strokes/' + char + '.json').then(r => r.json()).then(done)
+        .catch(() => { toast('这个字的笔顺数据缺失，先跳过～'); setTimeout(finishChar, 1200); });
+    },
+  });
+  playAnim();
+}
+function playAnim() { if (writer) { writer.cancelQuiz(); writer.animateCharacter(); } }
+function startQuiz() {
+  if (!writer) return;
+  writer.quiz({
+    showHintAfterMisses: 2,
+    onComplete: () => {
+      confetti();
+      Speech.speak(queue[idx]);
+      setTimeout(finishChar, 1200);
+    }
+  });
+}
+
+function finishChar() {
+  const c = queue[idx];
+  SRS.onLearned(c);
+  Store.todayLog().new.push(c);
+  Store.save();
+  idx++;
+  if (idx < queue.length) renderKnow();
+  else renderQuizIntro();
+}
+
+/* 第三步：小测验（听音选字巩固今天的新字） */
+function renderQuizIntro() {
+  quizChars = shuffle(queue.slice());
+  document.getElementById('stage').innerHTML = `
+    <div class="card celebrate">
+      <div class="big">🐼</div>
+      <h2>新字都认识啦！</h2>
+      <p>来个小测验，看看你还记得吗？</p>
+      <button class="btn" onclick="renderQuiz()">开始小测验 🎯</button>
+    </div>`;
+  renderDots();
+}
+
+function renderQuiz() {
+  quizLock = false;
+  if (!quizChars.length) return renderAllDone();
+  const c = quizChars[0];
+  const distract = sample(AppData.chars.map(x => x.c), 3, [c]);
+  const opts = shuffle([c, ...distract]);
+  document.getElementById('stage').innerHTML = `
+    <div class="card">
+      <div style="text-align:center;font-weight:800;font-size:1.1rem">听一听，点一点 👇</div>
+      <button class="speaker" onclick="Speech.speak('${c}')">🔊</button>
+      <div class="opt-grid">
+        ${opts.map(o => `<div class="opt" data-c="${o}" onclick="pickQuiz(this,'${o}','${c}')">${o}</div>`).join('')}
+      </div>
+    </div>`;
+  setTimeout(() => Speech.speak(c), 250);
+}
+
+function pickQuiz(el, picked, answer) {
+  if (quizLock) return;
+  if (picked === answer) {
+    quizLock = true;
+    el.classList.add('right');
+    Speech.speak(answer);
+    quizChars.shift();
+    setTimeout(renderQuiz, 900);
+  } else {
+    el.classList.add('wrong');
+    setTimeout(() => el.classList.remove('wrong'), 500);
+  }
+}
+
+function renderAllDone() {
+  const done = Store.todayDone();
+  if (!done.learn) { done.learn = true; Store.addStar(1); }
+  Store.save();
+  confetti();
+  document.getElementById('stage').innerHTML = `
+    <div class="card celebrate">
+      <div class="big">🌟</div>
+      <h2>太棒了！得到一颗星星！</h2>
+      <p>今天认识了 ${queue.length} 个新字：${queue.join('、')}</p>
+      <button class="btn" onclick="location.href='index.html'">回家 🏠</button>
+      <button class="btn blue" onclick="location.href='games.html'">去游戏乐园 🎮</button>
+    </div>`;
+  document.getElementById('stars').textContent = Store.load().stars;
+}
+
+init();
+</script>
+</body>
+</html>

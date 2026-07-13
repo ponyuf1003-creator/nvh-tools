@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>听音摘果子 · 小小识字岛</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍎</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .tree {
+    background: linear-gradient(#BDE3C3, #A5D6AD); border-radius: 22px;
+    padding: 20px 14px; position: relative;
+  }
+  .fruit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .fruit {
+    position: relative; text-align: center; cursor: pointer; transition: transform .15s;
+  }
+  .fruit .bg { font-size: 5.6rem; line-height: 1; }
+  .fruit .ch {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-family: var(--hanzi-font); font-size: 2.1rem; font-weight: 700; color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,.35); padding-top: 12px;
+  }
+  .fruit.picked { animation: drop .6s forwards; }
+  @keyframes drop { to { transform: translateY(60vh) rotate(20deg); opacity: 0; } }
+  .fruit.no { animation: shake .4s; }
+  .basket { text-align: center; font-size: 2rem; margin-top: 14px; font-weight: 800; color: #4C7B54; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="back" href="games.html">⬅️ 返回</a>
+    <div class="title">🍎 听音摘果子</div>
+    <div class="stars-chip">⭐ <span id="stars">0</span></div>
+  </div>
+  <div id="stage"></div>
+</div>
+
+<script src="data/chars.js"></script>
+<script src="js/core.js"></script>
+<script>
+const ROUNDS = 10, FRUITS = ['🍎','🍊','🍐','🍑'];
+let pool = [], round = 0, score = 0, lock = false;
+
+async function init() {
+  await AppData.load();
+  document.getElementById('stars').textContent = Store.load().stars;
+  pool = SRS.pool();
+  if (pool.length < 4) pool = AppData.chars.slice(0, 20).map(e => e.c);   // 没学过字时用最前面的字
+  renderRound();
+}
+
+function renderRound() {
+  lock = false;
+  if (round >= ROUNDS) return renderDone();
+  const answer = pool[Math.floor(Math.random() * pool.length)];
+  const distract = sample(pool.length >= 4 ? pool : AppData.chars.map(e => e.c), 3, [answer]);
+  const opts = shuffle([answer, ...distract]);
+  document.getElementById('stage').innerHTML = `
+    <div class="card" style="padding:12px 20px;display:flex;justify-content:space-between;font-weight:800">
+      <span>第 ${round + 1} / ${ROUNDS} 题</span><span>🧺 ${score}</span>
+    </div>
+    <div class="tree">
+      <div class="fruit-grid">
+        ${opts.map((o, i) => `
+          <div class="fruit" onclick="pick(this,'${o}','${answer}')">
+            <div class="bg">${FRUITS[i]}</div><div class="ch">${o}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+    <button class="speaker" style="margin-top:16px" onclick="Speech.speak('${answer}')">🔊</button>
+    <div class="basket" id="fb"></div>`;
+  setTimeout(() => Speech.speak(answer), 300);
+}
+
+function pick(el, picked, answer) {
+  if (lock) return;
+  if (picked === answer) {
+    lock = true;
+    el.classList.add('picked');
+    score++;
+    round++;
+    document.getElementById('fb').textContent = '摘到啦！+1 🧺';
+    setTimeout(renderRound, 900);
+  } else {
+    el.classList.add('no');
+    setTimeout(() => el.classList.remove('no'), 450);
+    document.getElementById('fb').textContent = '再听一听～';
+    Speech.speak(answer);
+  }
+}
+
+function renderDone() {
+  const done = Store.todayDone();
+  let starMsg = '';
+  if (!done.game) { done.game = true; Store.addStar(1); starMsg = '得到一颗星星！'; }
+  Store.save();
+  confetti();
+  document.getElementById('stage').innerHTML = `
+    <div class="card celebrate">
+      <div class="big">🧺</div>
+      <h2>摘了 ${score} 个果子！${starMsg}</h2>
+      <p>${score >= 9 ? '全对，你是识字小天才！' : '果子甜甜的，明天再来摘！'}</p>
+      <button class="btn" onclick="location.reload()">再玩一次 🔁</button>
+      <button class="btn ghost" onclick="location.href='games.html'">返回乐园</button>
+    </div>`;
+  document.getElementById('stars').textContent = Store.load().stars;
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>小小识字岛</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏝️</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="title" style="font-size:1.4rem">🏝️ 小小识字岛</div>
+    <div class="stars-chip">⭐ <span id="stars">0</span></div>
+  </div>
+
+  <div class="card" style="display:flex;align-items:center;gap:14px">
+    <div style="font-size:2.6rem">🐼</div>
+    <div>
+      <div style="font-weight:800;font-size:1.1rem" id="greet">你好呀！</div>
+      <div class="muted" id="streak-line">今天也一起来认字吧！</div>
+    </div>
+  </div>
+
+  <a class="task-card" id="task-review" href="review.html">
+    <div class="icon">🔔</div>
+    <div><div class="t">复习字卡</div><div class="d" id="review-desc">…</div></div>
+    <div class="check" id="review-check"></div>
+  </a>
+
+  <a class="task-card" id="task-learn" href="learn.html">
+    <div class="icon">🌱</div>
+    <div><div class="t">学新字</div><div class="d" id="learn-desc">…</div></div>
+    <div class="check" id="learn-check"></div>
+  </a>
+
+  <a class="task-card" href="games.html">
+    <div class="icon">🎮</div>
+    <div><div class="t">游戏乐园</div><div class="d">摘果子 · 描红闯关</div></div>
+    <div class="check" id="game-check"></div>
+  </a>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;font-weight:700;margin-bottom:8px">
+      <span>🚩 识字进度</span><span id="progress-text">0 / 1000</span>
+    </div>
+    <div class="pbar"><i id="progress-bar" style="width:0%"></i></div>
+  </div>
+
+  <div class="card">
+    <div style="font-weight:700">🏡 我的动物小岛 <span class="muted" id="animal-hint"></span></div>
+    <div class="animal-row" id="animal-row"></div>
+  </div>
+
+  <div style="text-align:center;margin-top:18px">
+    <a href="../" style="color:#B9B29F;text-decoration:none;font-size:.9rem">🎪 学习乐园</a>
+    &nbsp;·&nbsp;
+    <a href="parent.html" style="color:#B9B29F;text-decoration:none;font-size:.9rem">⚙️ 家长中心</a>
+  </div>
+</div>
+
+<script src="data/chars.js"></script>
+<script src="js/core.js"></script>
+<script>
+(async function () {
+  await AppData.load();
+  const s = Store.load();
+  document.getElementById('stars').textContent = s.stars;
+
+  const hour = new Date().getHours();
+  document.getElementById('greet').textContent =
+    hour < 12 ? '早上好呀！' : hour < 18 ? '下午好呀！' : '晚上好呀！';
+  const st = Store.streak();
+  if (st > 1) document.getElementById('streak-line').textContent = `已经连续学习 ${st} 天啦，真棒！🔥`;
+
+  const done = Store.todayDone();
+  const due = SRS.dueList();
+  const todayLog = Store.todayLog();
+  const newLeft = Math.max(0, s.settings.newPerDay - todayLog.new.length);
+  const newChars = SRS.newList(newLeft);
+
+  // 复习卡
+  const rd = document.getElementById('review-desc');
+  if (due.length) rd.textContent = `有 ${Math.min(due.length, s.settings.reviewCap)} 个字宝宝等你回来看它`;
+  else if (done.review) { rd.textContent = '今天的复习完成啦！'; document.getElementById('review-check').textContent = '✅'; document.getElementById('task-review').classList.add('done'); }
+  else rd.textContent = '今天没有要复习的字';
+
+  // 新字卡
+  const ld = document.getElementById('learn-desc');
+  if (newLeft === 0) { ld.textContent = '今天的新字学完啦！'; document.getElementById('learn-check').textContent = '✅'; document.getElementById('task-learn').classList.add('done'); }
+  else if (newChars.length) ld.textContent = `今天学 ${newChars.length} 个新字：${newChars.join('、')}`;
+  else ld.textContent = '1000 个字全部学完啦！🎉';
+
+  if (done.game) document.getElementById('game-check').textContent = '✅';
+
+  // 进度
+  const stats = SRS.stats();
+  document.getElementById('progress-text').textContent = `${stats.met} / ${stats.total}`;
+  document.getElementById('progress-bar').style.width = (stats.met / stats.total * 100).toFixed(1) + '%';
+
+  // 动物岛
+  const unlocked = unlockedAnimals();
+  const row = document.getElementById('animal-row');
+  ANIMALS.forEach(([emoji, name], i) => {
+    const sp = document.createElement('span');
+    sp.textContent = emoji;
+    sp.title = name;
+    if (i >= unlocked) sp.className = 'locked';
+    else sp.onclick = () => toast(name + ' 陪你一起学习！');
+    row.appendChild(sp);
+  });
+  const need = STAR_PER_ANIMAL - (s.stars % STAR_PER_ANIMAL);
+  document.getElementById('animal-hint').textContent =
+    unlocked >= ANIMALS.length ? '全部集齐啦！' : `再得 ${need} 颗星星，新朋友就来啦`;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>复习字卡 · 小小识字岛</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔔</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="back" href="index.html">🏠 回家</a>
+    <div class="title">🔔 复习字卡</div>
+    <div class="stars-chip">⭐ <span id="stars">0</span></div>
+  </div>
+
+  <div class="card" style="padding:12px 20px">
+    <div class="pbar"><i id="qbar" style="width:0%"></i></div>
+  </div>
+  <div id="stage"></div>
+</div>
+
+<script src="data/chars.js"></script>
+<script src="js/core.js"></script>
+<script>
+let queue = [], total = 0, wrongOnce = new Set(), rightCount = 0, lock = false;
+
+async function init() {
+  await AppData.load();
+  document.getElementById('stars').textContent = Store.load().stars;
+  const cap = Store.load().settings.reviewCap;
+  queue = shuffle(SRS.dueList()).slice(0, cap);
+  total = queue.length;
+  if (!total) return renderEmpty();
+  renderCard();
+}
+
+function renderEmpty() {
+  document.getElementById('stage').innerHTML = `
+    <div class="card celebrate">
+      <div class="big">😊</div>
+      <h2>今天没有要复习的字</h2>
+      <p>去学几个新字，或者玩个游戏吧！</p>
+      <button class="btn" onclick="location.href='learn.html'">去学新字 🌱</button>
+      <button class="btn ghost" onclick="location.href='index.html'">回家</button>
+    </div>`;
+}
+
+function updateBar() {
+  document.getElementById('qbar').style.width = ((total - queue.length) / total * 100) + '%';
+}
+
+/* 每张卡：听音选字 */
+function renderCard() {
+  lock = false;
+  updateBar();
+  if (!queue.length) return renderDone();
+  const c = queue[0];
+  const pool = AppData.chars.map(x => x.c);
+  // 干扰项优先来自其他待复习字，更有挑战
+  const others = queue.slice(1).filter(x => x !== c);
+  let distract = sample(others, 3, [c]);
+  if (distract.length < 3) distract = distract.concat(sample(pool, 3 - distract.length, [c, ...distract]));
+  const opts = shuffle([c, ...distract]);
+  document.getElementById('stage').innerHTML = `
+    <div class="card">
+      <div style="text-align:center;font-weight:800;font-size:1.1rem">哪个字在说话？👂</div>
+      <button class="speaker" onclick="Speech.speak('${c}')">🔊</button>
+      <div class="opt-grid">
+        ${opts.map(o => `<div class="opt" onclick="pick(this,'${o}','${c}')">${o}</div>`).join('')}
+      </div>
+      <div id="feedback" style="text-align:center;margin-top:14px;min-height:2.2rem"></div>
+    </div>`;
+  setTimeout(() => Speech.speak(c), 250);
+}
+
+function pick(el, picked, answer) {
+  if (lock) return;
+  const e = AppData.map[answer];
+  if (picked === answer) {
+    lock = true;
+    el.classList.add('right');
+    rightCount++;
+    if (!wrongOnce.has(answer)) SRS.onReview(answer, true);
+    Store.todayLog().rev++;
+    Store.save();
+    // 强化：展示词语并朗读
+    const word = e.w && e.w[0] ? e.w[0] : answer;
+    document.getElementById('feedback').innerHTML =
+      `<span style="font-family:var(--hanzi-font);font-size:1.3rem;font-weight:700">${e.e || '✅'} ${word}</span>`;
+    Speech.speak(word);
+    queue.shift();
+    setTimeout(renderCard, 1300);
+  } else {
+    lock = true;
+    el.classList.add('wrong');
+    if (!wrongOnce.has(answer)) {
+      wrongOnce.add(answer);
+      SRS.onReview(answer, false);   // 只记一次错误
+    }
+    queue.push(answer);              // 排到队尾，答对为止
+    queue.shift();
+    total++;
+    document.getElementById('feedback').innerHTML =
+      `<span style="color:#FF6B6B;font-weight:700">再想想～正确的是「${answer}」哦</span>`;
+    Speech.speak(answer);
+    setTimeout(renderCard, 1600);
+  }
+}
+
+function renderDone() {
+  const done = Store.todayDone();
+  if (!done.review) { done.review = true; Store.addStar(1); }
+  Store.save();
+  confetti();
+  document.getElementById('stage').innerHTML = `
+    <div class="card celebrate">
+      <div class="big">🌟</div>
+      <h2>复习完成，得到一颗星星！</h2>
+      <p>字宝宝们都记得你，明天再来看它们哦</p>
+      <button class="btn" onclick="location.href='learn.html'">去学新字 🌱</button>
+      <button class="btn ghost" onclick="location.href='index.html'">回家 🏠</button>
+    </div>`;
+  document.getElementById('stars').textContent = Store.load().stars;
+}
+
+init();
+</script>
+</body>
+</html>

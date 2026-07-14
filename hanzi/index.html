@@ -23,16 +23,9 @@
     </div>
   </div>
 
-  <a class="task-card" id="task-review" href="review.html">
-    <div class="icon">🔔</div>
-    <div><div class="t">复习字卡</div><div class="d" id="review-desc">…</div></div>
-    <div class="check" id="review-check"></div>
-  </a>
-
-  <a class="task-card" id="task-learn" href="learn.html">
-    <div class="icon">🌱</div>
-    <div><div class="t">学新字</div><div class="d" id="learn-desc">…</div></div>
-    <div class="check" id="learn-check"></div>
+  <a class="btn-hero" id="main-btn" href="learn.html?flow=1">
+    <div class="icon" id="main-icon">▶️</div>
+    <div><div class="t" id="main-title">开始今天的学习</div><div class="d" id="main-desc">…</div></div>
   </a>
 
   <a class="task-card" href="games.html">
@@ -80,17 +73,27 @@
   const newLeft = Math.max(0, s.settings.newPerDay - todayLog.new.length);
   const newChars = SRS.newList(newLeft);
 
-  // 复习卡
-  const rd = document.getElementById('review-desc');
-  if (due.length) rd.textContent = `有 ${Math.min(due.length, s.settings.reviewCap)} 个字宝宝等你回来看它`;
-  else if (done.review) { rd.textContent = '今天的复习完成啦！'; document.getElementById('review-check').textContent = '✅'; document.getElementById('task-review').classList.add('done'); }
-  else rd.textContent = '今天没有要复习的字';
-
-  // 新字卡
-  const ld = document.getElementById('learn-desc');
-  if (newLeft === 0) { ld.textContent = '今天的新字学完啦！'; document.getElementById('learn-check').textContent = '✅'; document.getElementById('task-learn').classList.add('done'); }
-  else if (newChars.length) ld.textContent = `今天学 ${newChars.length} 个新字：${newChars.join('、')}`;
-  else ld.textContent = '1000 个字全部学完啦！🎉';
+  // 一键主按钮：有复习先复习，再学新字，全完成则引向游戏
+  const btn = document.getElementById('main-btn');
+  const icon = document.getElementById('main-icon');
+  const title = document.getElementById('main-title');
+  const desc = document.getElementById('main-desc');
+  const dueN = Math.min(due.length, s.settings.reviewCap);
+  if (due.length) {
+    btn.href = 'review.html?flow=1';
+    desc.textContent = newChars.length
+      ? `先复习 ${dueN} 个字，再学 ${newChars.length} 个新字`
+      : `复习 ${dueN} 个字`;
+  } else if (newChars.length) {
+    btn.href = 'learn.html?flow=1';
+    desc.textContent = `今天学 ${newChars.length} 个新字：${newChars.join('、')}`;
+  } else if (newLeft === 0 || !SRS.newList(1).length) {
+    btn.href = 'games.html';
+    icon.textContent = '🎉';
+    title.textContent = '今天都完成啦！';
+    desc.textContent = '去游戏乐园玩一玩吧';
+    btn.classList.add('done');
+  }
 
   if (done.game) document.getElementById('game-check').textContent = '✅';
 

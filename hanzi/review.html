@@ -25,6 +25,7 @@
 <script src="js/core.js"></script>
 <script>
 let queue = [], total = 0, wrongOnce = new Set(), rightCount = 0, lock = false;
+const FLOW = new URLSearchParams(location.search).has('flow');   // 一键学习流程：复习完自动接学新字
 
 async function init() {
   await AppData.load();
@@ -37,6 +38,7 @@ async function init() {
 }
 
 function renderEmpty() {
+  if (FLOW) return location.replace('learn.html?flow=1');
   document.getElementById('stage').innerHTML = `
     <div class="card celebrate">
       <div class="big">😊</div>
@@ -114,13 +116,17 @@ function renderDone() {
   if (!done.review) { done.review = true; Store.addStar(1); }
   Store.save();
   confetti();
+  const nextBtn = FLOW && SRS.newList(1).length
+    ? `<button class="btn" onclick="location.href='learn.html?flow=1'">继续：学新字 🌱</button>
+       <button class="btn ghost" onclick="location.href='index.html'">先休息，回家 🏠</button>`
+    : `<button class="btn" onclick="location.href='learn.html'">去学新字 🌱</button>
+       <button class="btn ghost" onclick="location.href='index.html'">回家 🏠</button>`;
   document.getElementById('stage').innerHTML = `
     <div class="card celebrate">
       <div class="big">🌟</div>
       <h2>复习完成，得到一颗星星！</h2>
       <p>字宝宝们都记得你，明天再来看它们哦</p>
-      <button class="btn" onclick="location.href='learn.html'">去学新字 🌱</button>
-      <button class="btn ghost" onclick="location.href='index.html'">回家 🏠</button>
+      ${nextBtn}
     </div>`;
   document.getElementById('stars').textContent = Store.load().stars;
 }

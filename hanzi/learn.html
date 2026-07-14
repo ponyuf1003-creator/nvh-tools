@@ -21,9 +21,15 @@
 
 <script src="js/hanzi-writer.min.js"></script>
 <script src="data/chars.js"></script>
-<script src="data/strokes.js"></script>
+<script src="data/strokes.js" defer></script>
 <script src="js/core.js"></script>
 <script>
+function strokesReady() {
+  return new Promise(res => {
+    if (window.STROKES_DATA || document.readyState !== 'loading') return res();
+    document.addEventListener('DOMContentLoaded', () => res());
+  });
+}
 let queue = [], idx = 0, writer = null, quizChars = [], quizLock = false;
 
 async function init() {
@@ -96,11 +102,11 @@ function renderWrite() {
     showOutline: true,
     strokeColor: '#3D3B37', outlineColor: '#E5DCC8',
     drawingColor: '#FF9F43', drawingWidth: 22,
-    charDataLoader: (char, done) => {
+    charDataLoader: (char, done) => strokesReady().then(() => {
       if (window.STROKES_DATA && window.STROKES_DATA[char]) return done(window.STROKES_DATA[char]);
       fetch('data/strokes/' + char + '.json').then(r => r.json()).then(done)
         .catch(() => { toast('这个字的笔顺数据缺失，先跳过～'); setTimeout(finishChar, 1200); });
-    },
+    }),
   });
   playAnim();
 }

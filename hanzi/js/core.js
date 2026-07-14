@@ -155,7 +155,20 @@ const Speech = {
     pick();
     if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = pick;
   },
+  _audio: null,
+  /* 预录音频优先（各设备统一标准普通话），TTS 兜底 */
   speak(text, rate) {
+    if (this._audio) { try { this._audio.pause(); } catch (e) {} this._audio = null; }
+    try { speechSynthesis.cancel(); } catch (e) {}
+    const a = new Audio('audio/' + encodeURIComponent(text) + '.m4a');
+    // 语速设置映射为播放速率（音频本身已按慢速录制）
+    const r = (rate || Store.load().settings.speechRate || 0.6) / 0.6;
+    a.playbackRate = Math.max(0.8, Math.min(1.3, r));
+    this._audio = a;
+    a.onerror = () => { this._audio = null; this.tts(text, rate); };
+    a.play().catch(() => { this._audio = null; this.tts(text, rate); });
+  },
+  tts(text, rate) {
     try {
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);

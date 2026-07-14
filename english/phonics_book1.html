@@ -538,12 +538,16 @@ let _voiceCache = { en: null, zh: null, ready: false };
 
 // 常见系统/浏览器里音质较好的女声名单（按优先级）
 const FEMALE_EN_HINTS = ['Samantha','Google US English','Microsoft Zira','Ava','Susan','Karen','Moira','Tessa','Victoria','Allison','Female'];
-const FEMALE_ZH_HINTS = ['Ting-Ting','Tingting','Google 普通话','Microsoft Yaoyao','Microsoft Xiaoxiao','Mei-Jia','Female'];
+const FEMALE_ZH_HINTS = ['婷婷','Ting-Ting','Tingting','Google 普通话','Microsoft Yaoyao','Microsoft Xiaoxiao','Mei-Jia','Female'];
 
 function pickVoice(lang, hints){
   const voices = speechSynthesis.getVoices();
   if(!voices.length) return null;
-  const langVoices = voices.filter(v=>v.lang && v.lang.toLowerCase().startsWith(lang));
+  let langVoices = voices.filter(v=>v.lang && v.lang.toLowerCase().startsWith(lang));
+  if(lang==='zh'){                     // 严格限定普通话，避免 iOS 命中粤语(zh-HK)/台湾腔(zh-TW)
+    const cn = langVoices.filter(v=>/zh[-_]cn/i.test(v.lang)||/普通话/.test(v.name));
+    if(cn.length) langVoices = cn;
+  }
   if(!langVoices.length) return null;
   for(const hint of hints){
     const hit = langVoices.find(v=>v.name.includes(hint));

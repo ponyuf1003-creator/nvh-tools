@@ -88,7 +88,7 @@ body {
   color: var(--ink);
 }
 .pinyin-big { text-align: center; font-size: 1.6rem; color: var(--blue); font-weight: 700; letter-spacing: .05em; }
-.emoji-big { text-align: center; font-size: 3.2rem; margin: 6px 0; }
+.emoji-big { text-align: center; font-size: 5.4rem; line-height: 1.15; margin: 6px 0; }
 
 /* 词语胶囊 */
 .word-pills { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 14px; }

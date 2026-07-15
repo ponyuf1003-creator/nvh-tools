@@ -115,10 +115,13 @@ function startQuiz() {
   if (!writer) return;
   writer.quiz({
     showHintAfterMisses: 2,
+    markStrokeCorrectAfterMisses: 3,   // 同一笔错3次自动帮写，不卡关
+    leniency: 1.6,                      // 提高笔迹判定宽容度（鼠标也易过）
     onComplete: () => {
+      coinBurst(document.getElementById('writer-target'), 3);
       confetti();
       Speech.speak(queue[idx]);
-      setTimeout(finishChar, 1200);
+      setTimeout(finishChar, 1500);
     }
   });
 }

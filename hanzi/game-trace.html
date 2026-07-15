@@ -81,16 +81,19 @@ function renderLevel() {
   Speech.speak(c);
   writer.quiz({
     showHintAfterMisses: 2,
+    markStrokeCorrectAfterMisses: 3,
+    leniency: 1.6,
     onComplete: () => {
+      coinBurst(document.getElementById('writer-target'), 3);
       confetti();
       Speech.speak(c);
       idx++;
-      setTimeout(renderLevel, 1100);
+      setTimeout(renderLevel, 1400);
     }
   });
 }
 
-function hint() { if (writer) writer.animateCharacter({ onComplete: () => writer.quiz({ showHintAfterMisses: 2, onComplete: () => { confetti(); idx++; setTimeout(renderLevel, 1100); } }) }); }
+function hint() { if (writer) writer.animateCharacter({ onComplete: () => writer.quiz({ showHintAfterMisses: 2, markStrokeCorrectAfterMisses: 3, leniency: 1.6, onComplete: () => { coinBurst(document.getElementById('writer-target'), 3); confetti(); idx++; setTimeout(renderLevel, 1400); } }) }); }
 function skip() { idx++; renderLevel(); }
 
 function renderDone() {

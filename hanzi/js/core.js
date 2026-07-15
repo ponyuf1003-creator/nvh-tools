@@ -205,6 +205,45 @@ function toast(msg) {
   el.classList.add('show');
   setTimeout(() => el.classList.remove('show'), 1800);
 }
+/* 金币奖励特效：从 anchor 飞向右上角星星栏 */
+function coinDing(delay) {
+  try {
+    const ctx = coinDing._ctx || (coinDing._ctx = new (window.AudioContext || window.webkitAudioContext)());
+    [880, 1174].forEach((f, i) => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.value = f;
+      const t = ctx.currentTime + (delay || 0) + i * 0.09;
+      g.gain.setValueAtTime(0.22, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+      o.start(t); o.stop(t + 0.3);
+    });
+  } catch (e) {}
+}
+function coinBurst(anchor, n) {
+  n = n || 3;
+  const dst = document.querySelector('.stars-chip');
+  if (!anchor || !dst) return;
+  const s = anchor.getBoundingClientRect(), d = dst.getBoundingClientRect();
+  for (let i = 0; i < n; i++) {
+    setTimeout(() => {
+      coinDing(0);
+      const el = document.createElement('div');
+      el.className = 'coin-fly';
+      const sx = s.left + s.width / 2 - 24 + (Math.random() * 70 - 35);
+      const sy = s.top + s.height / 2 - 24 + (Math.random() * 30 - 15);
+      el.style.left = sx + 'px'; el.style.top = sy + 'px';
+      el.style.setProperty('--tx', (d.left + d.width / 2 - sx - 24) + 'px');
+      el.style.setProperty('--ty', (d.top + d.height / 2 - sy - 24) + 'px');
+      document.body.appendChild(el);
+      setTimeout(() => {
+        el.remove();
+        dst.classList.remove('pop'); void dst.offsetWidth; dst.classList.add('pop');
+      }, 830);
+    }, i * 170);
+  }
+}
+
 /* 简易彩带 */
 function confetti() {
   const colors = ['#FF9F43','#6BCB77','#4D96FF','#FF6B9D','#FFD93D'];

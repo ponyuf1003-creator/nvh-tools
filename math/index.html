@@ -2,22 +2,309 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>数学王国 · 建设中</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>数学王国</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔢</text></svg>">
 <style>
-body{font-family:-apple-system,"PingFang SC",sans-serif;background:#FFF6E9;min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0;user-select:none}
-.box{text-align:center;padding:40px}
-.big{font-size:5rem;animation:f 3s ease-in-out infinite}
-@keyframes f{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-h1{color:#3D3B37;margin:16px 0 8px}p{color:#8A8578;line-height:1.7}
-a{display:inline-block;margin-top:24px;background:#FF9F43;color:#fff;text-decoration:none;font-weight:800;padding:14px 32px;border-radius:18px;box-shadow:0 5px 0 #F3862A}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+:root { --bg:#F0FAF2; --ink:#2B3A2E; --muted:#7C8B7F; --green:#3FA25C; --green-d:#2E7D44;
+        --orange:#FF9F43; --blue:#4D96FF; --red:#FF6B6B; --radius:22px; }
+body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+       background:var(--bg); color:var(--ink); min-height:100vh; user-select:none; }
+.wrap { max-width:560px; margin:0 auto; padding:16px 16px 40px; }
+.topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.back { text-decoration:none; color:var(--muted); font-weight:700; font-size:1.1rem;
+        background:#fff; border-radius:999px; padding:10px 20px; box-shadow:0 3px 0 rgba(0,0,0,.07); }
+.title { font-weight:900; font-size:1.2rem; }
+.stars-chip { background:#fff; border-radius:999px; padding:8px 14px; font-weight:800;
+              box-shadow:0 2px 0 rgba(0,0,0,.06); color:#E8A100; }
+.stars-chip.pop { animation:chippop .4s cubic-bezier(.34,1.56,.64,1); }
+@keyframes chippop { 50% { transform:scale(1.35); } }
+.card { background:#fff; border-radius:var(--radius); padding:20px; margin-bottom:16px; box-shadow:0 4px 0 rgba(0,0,0,.05); }
+.btn { display:block; width:100%; border:none; cursor:pointer; border-radius:18px; padding:16px;
+       font-size:1.15rem; font-weight:800; color:#fff; background:var(--green);
+       box-shadow:0 5px 0 var(--green-d); transition:transform .06s; font-family:inherit; }
+.btn:active { transform:translateY(4px); box-shadow:0 1px 0 var(--green-d); }
+.btn.ghost { background:#E6F2E9; color:var(--green-d); box-shadow:0 5px 0 #C5DFCB; }
+.btn + .btn { margin-top:12px; }
+.btn-hero { display:flex; align-items:center; gap:18px; background:linear-gradient(135deg,#3FA25C,#6FCB88);
+            border-radius:var(--radius); padding:24px 22px; margin-bottom:14px; color:#fff;
+            box-shadow:0 6px 0 var(--green-d); transition:transform .08s; cursor:pointer; }
+.btn-hero:active { transform:translateY(4px); box-shadow:0 2px 0 var(--green-d); }
+.btn-hero .icon { font-size:3.2rem; line-height:1; }
+.btn-hero .t { font-size:1.4rem; font-weight:900; }
+.btn-hero .d { opacity:.96; font-size:.98rem; margin-top:5px; font-weight:600; }
+.skill-row { display:flex; align-items:center; gap:12px; padding:10px 0; }
+.skill-row .ic { font-size:1.7rem; width:40px; text-align:center; }
+.skill-row .nm { font-weight:700; flex:1; font-size:.98rem; }
+.skill-row .nm small { display:block; color:var(--muted); font-weight:600; }
+.sbar { width:110px; height:10px; background:#EAF3EC; border-radius:999px; overflow:hidden; }
+.sbar i { display:block; height:100%; background:var(--green); border-radius:999px; }
+.skill-row.locked { opacity:.45; }
+.skill-row.now .nm { color:var(--green-d); }
+.q-visual { text-align:center; font-size:2.9rem; line-height:1.5; margin:10px 0; letter-spacing:6px; }
+.q-visual .gone { opacity:.25; text-decoration:line-through; }
+.q-title { text-align:center; font-weight:800; font-size:1.25rem; }
+.q-formula { text-align:center; font-size:2.6rem; font-weight:900; margin:8px 0; letter-spacing:4px; }
+.q-formula .qm { color:var(--orange); }
+.opt-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:16px; }
+.opt { background:#fff; border:3px solid #E2EEE5; border-radius:20px; font-size:2.4rem; font-weight:900;
+       padding:18px 6px; text-align:center; cursor:pointer; box-shadow:0 4px 0 rgba(0,0,0,.05); }
+.opt:active { transform:scale(.97); }
+.opt.right { background:#E4F7E7; border-color:var(--green); animation:pop .35s; }
+.opt.wrong { background:#FDECEC; border-color:var(--red); animation:shake .4s; }
+.opt.row-opt { font-size:1.9rem; letter-spacing:4px; padding:14px 6px; }
+.opt-grid.rows { grid-template-columns:1fr; }
+@keyframes pop { 50% { transform:scale(1.1); } }
+@keyframes shake { 20%{transform:translateX(-7px)} 40%{transform:translateX(7px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+.pbar { height:12px; background:#EAF3EC; border-radius:999px; overflow:hidden; margin-bottom:14px; }
+.pbar > i { display:block; height:100%; background:linear-gradient(90deg,#3FA25C,#6FCB88); border-radius:999px; transition:width .4s; }
+.celebrate { text-align:center; padding:36px 10px; }
+.celebrate .big { font-size:4.5rem; animation:bounce 1s infinite alternate; }
+@keyframes bounce { to { transform:translateY(-12px); } }
+.celebrate h2 { margin:12px 0 6px; } .celebrate p { color:var(--muted); margin-bottom:22px; }
+.coin-fly { position:fixed; width:48px; height:48px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#FFE566,#F5A623 55%,#B45309);
+  box-shadow:0 0 0 3px #F5A623,0 6px 18px rgba(245,166,35,.6);
+  display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:250;
+  animation:coinfly .85s cubic-bezier(.4,0,.2,1) forwards; }
+.coin-fly::after { content:'★'; font-size:22px; color:#92400E; font-weight:900; }
+@keyframes coinfly { 0%{transform:translate(0,0) scale(1.3) rotate(-15deg);opacity:1}
+  40%{transform:translate(calc(var(--tx)*.4),calc(var(--ty)*.3)) scale(1.6) rotate(25deg);opacity:1}
+  100%{transform:translate(var(--tx),var(--ty)) scale(.3) rotate(360deg);opacity:0} }
+.muted { color:var(--muted); font-size:.9rem; }
+.fb { text-align:center; margin-top:14px; min-height:2rem; font-weight:700; }
 </style>
 </head>
-<body><div class="box">
-<div class="big">🔢</div>
-<h1>数学王国</h1>
-<p>数与量、加减法、图形游戏正在建设中<br>敬请期待！</p>
-<a href="../">← 回学习乐园</a>
-</div></body>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="back" href="../">🎪 学习乐园</a>
+    <div class="title">🔢 数学王国</div>
+    <div class="stars-chip">⭐ <span id="stars">0</span></div>
+  </div>
+  <div id="stage"></div>
+</div>
+
+<script>
+/* ============ 技能地图（对标一年级上册·M1-M3） ============ */
+const EMOJIS = ['🐱','🐶','🐰','🐸','🐥','🐟','🦋','🍎','🎈','⭐'];
+function rnd(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+function emo() { return EMOJIS[Math.floor(Math.random() * EMOJIS.length)]; }
+function row(e, n, gone) { let s = '';
+  for (let i = 0; i < n; i++) s += (gone && i >= n - gone) ? `<span class="gone">${e}</span>` : e;
+  return s; }
+
+const SKILLS = [
+  { id:'c5',  ic:'🐣', name:'数一数', sub:'5以内点数', need:12, gen:() => genCount(5) },
+  { id:'c10', ic:'🐥', name:'数一数', sub:'10以内点数', need:12, gen:() => genCount(10) },
+  { id:'cmp', ic:'⚖️', name:'比多少', sub:'哪边多，哪边少', need:10, gen:genCompare },
+  { id:'d5',  ic:'🦋', name:'分与合', sub:'5以内的组成', need:12, gen:() => genComp(5) },
+  { id:'d10', ic:'🦋', name:'分与合', sub:'10以内的组成', need:15, gen:() => genComp(10) },
+  { id:'a5',  ic:'➕', name:'加法', sub:'5以内', need:12, gen:() => genAdd(5) },
+  { id:'s5',  ic:'➖', name:'减法', sub:'5以内', need:12, gen:() => genSub(5) },
+  { id:'a10', ic:'➕', name:'加法', sub:'10以内', need:16, gen:() => genAdd(10) },
+  { id:'s10', ic:'➖', name:'减法', sub:'10以内', need:16, gen:() => genSub(10) },
+];
+const SMAP = {}; SKILLS.forEach(s => SMAP[s.id] = s);
+
+/* ---------- 题目生成器 ---------- */
+function numOpts(ans, max) {
+  const set = new Set([ans]);
+  let guard = 0;
+  while (set.size < 4 && guard++ < 50) { const v = Math.max(0, Math.min(max + 2, ans + rnd(-3, 3))); set.add(v); }
+  let extra = 0;
+  while (set.size < 4) set.add(max + 3 + extra++);
+  return shuffle([...set]);
+}
+function genCount(max) {
+  const n = rnd(max === 5 ? 1 : 5, max), e = emo();
+  return { sk: max === 5 ? 'c5' : 'c10', title: `数一数，有几个${e}？`,
+    visual: `<div class="q-visual">${row(e, n)}</div>`, opts: numOpts(n, max), ans: n };
+}
+function genCompare() {
+  const e1 = emo(); let e2 = emo(); while (e2 === e1) e2 = emo();
+  const a = rnd(2, 8); let b = rnd(2, 8); while (b === a) b = rnd(2, 8);
+  const more = Math.random() > 0.5;
+  const ansRow = more ? (a > b ? 0 : 1) : (a < b ? 0 : 1);
+  return { sk:'cmp', title: `哪一排${more ? '多' : '少'}？点它！`, rows: true,
+    visual: '', opts: [row(e1, a), row(e2, b)], ans: ansRow };
+}
+function genComp(max) {
+  const t = rnd(3, max), p = rnd(1, t - 1), missing = t - p;
+  return { sk: max === 5 ? 'd5' : 'd10', title: `${t} 可以分成 ${p} 和几？`,
+    visual: `<div class="q-formula">${t} = ${p} + <span class="qm">?</span></div>
+             <div class="q-visual" style="font-size:2rem">${row('🦋', p)}<span style="opacity:.35">${row('🦋', missing)}</span></div>`,
+    opts: numOpts(missing, max), ans: missing };
+}
+function genAdd(max) {
+  const a = rnd(1, max - 1), b = rnd(1, max - a), e = emo();
+  return { sk: max === 5 ? 'a5' : 'a10', title: '一共有几个？',
+    visual: `<div class="q-visual" style="font-size:2.2rem">${row(e, a)} <b style="color:var(--green)">+</b> ${row(e, b)}</div>
+             <div class="q-formula">${a} + ${b} = <span class="qm">?</span></div>`,
+    opts: numOpts(a + b, max), ans: a + b };
+}
+function genSub(max) {
+  const a = rnd(2, max), b = rnd(1, a - 1), e = emo();
+  return { sk: max === 5 ? 's5' : 's10', title: `划掉的${e}走掉了，还剩几个？`,
+    visual: `<div class="q-visual" style="font-size:2.2rem">${row(e, a, b)}</div>
+             <div class="q-formula">${a} − ${b} = <span class="qm">?</span></div>`,
+    opts: numOpts(a - b, max), ans: a - b };
+}
+
+/* ============ 存储 ============ */
+const KEY = 'math_kingdom_v1';
+let S = null;
+function load() { if (S) return S;
+  try { S = JSON.parse(localStorage.getItem(KEY)); } catch(e) {}
+  if (!S) S = {};
+  S.mastery = S.mastery || {};          // skillId -> 累计答对数
+  S.wrongQ = S.wrongQ || [];            // 错题重练队列 [{sk, due}]
+  S.stars = S.stars || 0; S.done = S.done || {};
+  return S; }
+function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
+function today() { const d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function tomorrow() { const d = new Date(); d.setDate(d.getDate()+1);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function curSkillIdx() { load();
+  for (let i = 0; i < SKILLS.length; i++) if ((S.mastery[SKILLS[i].id] || 0) < SKILLS[i].need) return i;
+  return SKILLS.length - 1; }
+
+/* ============ 特效 ============ */
+function shuffle(a) { a = a.slice(); for (let i = a.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; }
+function sfx(ok) { try { const ctx = sfx._c || (sfx._c = new (window.AudioContext||window.webkitAudioContext)());
+  (ok ? [[523,0],[659,.12],[784,.24]] : [[300,0],[240,.16]]).forEach(([f,d]) => {
+    const o = ctx.createOscillator(), g = ctx.createGain(); o.connect(g); g.connect(ctx.destination);
+    o.type = ok ? 'sine' : 'sawtooth'; o.frequency.value = f; const t = ctx.currentTime + d;
+    g.gain.setValueAtTime(ok ? .25 : .15, t); g.gain.exponentialRampToValueAtTime(.001, t+.25); o.start(t); o.stop(t+.3); });
+  } catch(e) {} }
+function coinBurst(anchor, n) { n = n||3; const dst = document.querySelector('.stars-chip'); if (!anchor || !dst) return;
+  const s = anchor.getBoundingClientRect(), d = dst.getBoundingClientRect();
+  for (let i = 0; i < n; i++) setTimeout(() => { sfx(true);
+    const el = document.createElement('div'); el.className = 'coin-fly';
+    const sx = s.left+s.width/2-24+(Math.random()*70-35), sy = s.top+s.height/2-24;
+    el.style.left = sx+'px'; el.style.top = sy+'px';
+    el.style.setProperty('--tx',(d.left+d.width/2-sx-24)+'px'); el.style.setProperty('--ty',(d.top+d.height/2-sy-24)+'px');
+    document.body.appendChild(el);
+    setTimeout(() => { el.remove(); dst.classList.remove('pop'); void dst.offsetWidth; dst.classList.add('pop'); }, 830);
+  }, i*170); }
+function confetti() { const cols = ['#3FA25C','#FF9F43','#4D96FF','#FF6B9D','#FFD93D'];
+  for (let i = 0; i < 30; i++) { const d = document.createElement('div');
+    d.style.cssText = `position:fixed;top:-12px;left:${Math.random()*100}vw;width:10px;height:10px;z-index:98;pointer-events:none;
+      background:${cols[i%cols.length]};border-radius:${Math.random()>.5?'50%':'2px'};transition:transform ${1.6+Math.random()}s ease-in,opacity 2.2s;`;
+    document.body.appendChild(d);
+    requestAnimationFrame(() => { d.style.transform = `translateY(${100+Math.random()*15}vh) rotate(${Math.random()*720}deg)`; d.style.opacity = '0'; });
+    setTimeout(() => d.remove(), 2600); } }
+
+/* ============ 界面 ============ */
+const stage = () => document.getElementById('stage');
+const N_PER_DAY = 10;
+let session = [], qIdx = 0, right = 0, lock = false, curQ = null;
+
+function home() {
+  load();
+  document.getElementById('stars').textContent = S.stars;
+  const ci = curSkillIdx(), cur = SKILLS[ci];
+  const doneToday = S.done[today()];
+  const hero = doneToday
+    ? `<div class="btn-hero" style="background:linear-gradient(135deg,#6FCB88,#A8E6B8);box-shadow:0 6px 0 #4CA866" onclick="startSession()">
+        <div class="icon">🎉</div><div><div class="t">今天练完啦！</div><div class="d">还想玩？点我再来一轮</div></div></div>`
+    : `<div class="btn-hero" onclick="startSession()">
+        <div class="icon">▶️</div><div><div class="t">开始今天的练习</div><div class="d">${cur.ic} ${cur.name}（${cur.sub}）· ${N_PER_DAY} 道题</div></div></div>`;
+  const rows = SKILLS.map((sk, i) => {
+    const m = Math.min(S.mastery[sk.id] || 0, sk.need);
+    const state = i === ci ? ' now' : i > ci ? ' locked' : '';
+    const done = m >= sk.need;
+    return `<div class="skill-row${state}">
+      <div class="ic">${done ? '✅' : sk.ic}</div>
+      <div class="nm">${sk.name}<small>${sk.sub}</small></div>
+      <div class="sbar"><i style="width:${(m/sk.need*100).toFixed(0)}%"></i></div>
+    </div>`; }).join('');
+  stage().innerHTML = `${hero}
+    <div class="card"><div style="font-weight:800;margin-bottom:6px">🗺️ 闯关地图</div>${rows}</div>
+    <p class="muted" style="text-align:center">练熟一关自动开下一关 · 做错的题明天会再出现</p>`;
+}
+
+function buildSession() {
+  load();
+  const t = today(), qs = [];
+  // 1) 到期错题（最多3道，按技能重新生成同类型题）
+  const due = S.wrongQ.filter(w => w.due <= t);
+  due.slice(0, 3).forEach(w => { if (SMAP[w.sk]) qs.push(SMAP[w.sk].gen()); });
+  S.wrongQ = S.wrongQ.filter(w => w.due > t).concat(due.slice(3));
+  save();
+  // 2) 当前技能为主
+  const ci = curSkillIdx();
+  while (qs.length < N_PER_DAY - 2) qs.push(SKILLS[ci].gen());
+  // 3) 混两道已掌握技能的巩固题
+  const mastered = SKILLS.slice(0, ci);
+  while (qs.length < N_PER_DAY) {
+    const sk = mastered.length ? mastered[Math.floor(Math.random()*mastered.length)] : SKILLS[ci];
+    qs.push(sk.gen());
+  }
+  return shuffle(qs);
+}
+
+function startSession() { session = buildSession(); qIdx = 0; right = 0; renderQ(); }
+
+function renderQ() {
+  lock = false;
+  if (qIdx >= session.length) return sessionDone();
+  curQ = session[qIdx];
+  const isRows = !!curQ.rows;
+  stage().innerHTML = `
+    <div class="pbar"><i style="width:${(qIdx/session.length*100)}%"></i></div>
+    <div class="card">
+      <div class="q-title">${curQ.title}</div>
+      ${curQ.visual}
+      <div class="opt-grid${isRows ? ' rows' : ''}">
+        ${curQ.opts.map((o, i) => `<div class="opt${isRows ? ' row-opt' : ''}" onclick="pick(this,${i})">${o}</div>`).join('')}
+      </div>
+      <div class="fb" id="fb"></div>
+    </div>`;
+}
+
+function pick(el, i) {
+  if (lock) return;
+  const ok = curQ.rows ? i === curQ.ans : curQ.opts[i] === curQ.ans;
+  if (ok) {
+    lock = true; el.classList.add('right'); sfx(true);
+    right++;
+    load(); S.mastery[curQ.sk] = (S.mastery[curQ.sk] || 0) + 1; save();
+    document.getElementById('fb').innerHTML = `<span style="color:var(--green-d)">答对啦！🎉</span>`;
+    qIdx++;
+    setTimeout(renderQ, 900);
+  } else {
+    el.classList.add('wrong'); sfx(false);
+    load();
+    if (!curQ.marked) { curQ.marked = true;
+      S.wrongQ.push({ sk: curQ.sk, due: tomorrow() });
+      save(); }
+    document.getElementById('fb').innerHTML = `<span style="color:var(--red)">再想想～数一数再点 👆</span>`;
+    setTimeout(() => el.classList.remove('wrong'), 500);
+  }
+}
+
+function sessionDone() {
+  load();
+  let starMsg = '';
+  if (!S.done[today()]) { S.done[today()] = true; S.stars++; starMsg = '得到一颗星星！'; }
+  save();
+  document.getElementById('stars').textContent = S.stars;
+  coinBurst(stage(), 3); confetti();
+  const pct = Math.round(right / session.length * 100);
+  stage().innerHTML = `
+    <div class="card celebrate">
+      <div class="big">${pct >= 90 ? '🏆' : '💪'}</div>
+      <h2>答对 ${right} / ${session.length} 题！${starMsg}</h2>
+      <p>${pct >= 90 ? '你是数学小天才！' : '做错的题明天会再考你哦'}</p>
+      <button class="btn" onclick="startSession()">再来一轮 🔁</button>
+      <button class="btn ghost" onclick="home()">回到王国 🏰</button>
+    </div>`;
+}
+
+home();
+</script>
+</body>
 </html>

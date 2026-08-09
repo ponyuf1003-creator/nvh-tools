@@ -57,12 +57,13 @@ body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaH
       <div class="pbar"><i id="bio-bar" style="width:0%"></i></div>
     </a>
 
-    <div class="mod soon" style="--accent:#C9862E" onclick="soon('历史展厅')">
-      <span class="badge soon">敬请期待</span>
+    <a class="mod" id="mod-history" href="history.html" style="--accent:#C9862E">
+      <span class="badge on">开放中</span>
       <div class="icon">🏛️</div>
       <h2>历史展厅</h2>
-      <p>建设中</p>
-    </div>
+      <p>人物 · 事件 · 发明</p>
+      <div class="pbar"><i id="history-bar" style="width:0%"></i></div>
+    </a>
 
     <div class="mod soon" style="--accent:#3E6FE0" onclick="soon('地理展厅')">
       <span class="badge soon">敬请期待</span>
@@ -82,9 +83,14 @@ function soon(name) {
 }
 (function () {
   try {
-    const s = JSON.parse(localStorage.getItem('museum_bio_v1'));
-    const read = s && s.read ? Object.keys(s.read).length : 0;
-    document.getElementById('bio-bar').style.width = (read / 10 * 100) + '%';
+    const bio = JSON.parse(localStorage.getItem('museum_bio_v1'));
+    const bioRead = bio && bio.read ? Object.keys(bio.read).length : 0;
+    document.getElementById('bio-bar').style.width = (bioRead / 10 * 100) + '%';
+  } catch (e) {}
+  try {
+    const hist = JSON.parse(localStorage.getItem('museum_history_v1'));
+    const histRead = hist && hist.read ? Object.keys(hist.read).length : 0;
+    document.getElementById('history-bar').style.width = (histRead / 10 * 100) + '%';
   } catch (e) {}
 })();
 </script>

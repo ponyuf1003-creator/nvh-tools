@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>探索博物馆</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔭</text></svg>">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+:root { --bg:#EEF3FB; --ink:#232B3D; --muted:#6B7690; --blue:#3E6FE0; --blue-d:#2C52B3; --radius:24px; }
+body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+       background:var(--bg); color:var(--ink); min-height:100vh; user-select:none; }
+.wrap { max-width:620px; margin:0 auto; padding:16px 16px 40px; }
+.topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.back { text-decoration:none; color:var(--muted); font-weight:700; font-size:1.1rem;
+        background:#fff; border-radius:999px; padding:10px 20px; box-shadow:0 3px 0 rgba(0,0,0,.06); }
+.hero { background:linear-gradient(135deg,#3E6FE0,#6C93F2); border-radius:var(--radius); color:#fff;
+        padding:26px 24px; display:flex; align-items:center; gap:18px; margin-bottom:22px;
+        box-shadow:0 8px 24px rgba(62,111,224,.32); }
+.hero .m { font-size:3.6rem; }
+.hero h1 { font-size:1.5rem; font-weight:900; } .hero p { margin-top:6px; opacity:.92; font-size:.92rem; }
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+@media (max-width:460px) { .grid { grid-template-columns:1fr; } }
+.mod { background:#fff; border-radius:var(--radius); padding:24px 20px; text-decoration:none; color:var(--ink);
+       box-shadow:0 5px 0 rgba(0,0,0,.05); text-align:center; position:relative; border-top:8px solid var(--accent); }
+.mod:active { transform:scale(.97); }
+.mod .icon { font-size:4.2rem; } .mod h2 { font-size:1.3rem; font-weight:900; margin:12px 0 6px; }
+.mod p { color:var(--muted); font-size:.88rem; }
+.mod .badge { position:absolute; top:16px; right:16px; font-size:.72rem; font-weight:800; padding:5px 12px; border-radius:999px; }
+.mod .badge.on { background:#E4F0E7; color:#2F8B3C; } .mod .badge.soon { background:#EDEFF5; color:#9096AB; }
+.mod.soon { opacity:.6; cursor:pointer; }
+.mod .pbar { height:8px; background:#EEF1F8; border-radius:999px; overflow:hidden; margin-top:12px; }
+.mod .pbar i { display:block; height:100%; background:var(--accent); border-radius:999px; }
+.toast { position:fixed; left:50%; bottom:34px; transform:translateX(-50%); background:#232B3D; color:#fff;
+         padding:12px 26px; border-radius:999px; font-weight:700; opacity:0; pointer-events:none;
+         transition:opacity .3s; z-index:99; }
+.toast.show { opacity:.92; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="back" href="../index.html">🎪 学习乐园</a>
+  </div>
+  <div class="hero">
+    <div class="m">🔭</div>
+    <div><h1>探索博物馆</h1><p>历史 · 地理 · 生物，一起来长知识！</p></div>
+  </div>
+
+  <div class="grid">
+    <a class="mod" id="mod-bio" href="bio.html" style="--accent:#3E9A62">
+      <span class="badge on">开放中</span>
+      <div class="icon">🦁</div>
+      <h2>生物世界</h2>
+      <p>动物 · 植物 · 身体</p>
+      <div class="pbar"><i id="bio-bar" style="width:0%"></i></div>
+    </a>
+
+    <div class="mod soon" style="--accent:#C9862E" onclick="soon('历史展厅')">
+      <span class="badge soon">敬请期待</span>
+      <div class="icon">🏛️</div>
+      <h2>历史展厅</h2>
+      <p>建设中</p>
+    </div>
+
+    <div class="mod soon" style="--accent:#3E6FE0" onclick="soon('地理展厅')">
+      <span class="badge soon">敬请期待</span>
+      <div class="icon">🌍</div>
+      <h2>地理展厅</h2>
+      <p>建设中</p>
+    </div>
+  </div>
+</div>
+<script>
+function soon(name) {
+  let el = document.querySelector('.toast');
+  if (!el) { el = document.createElement('div'); el.className = 'toast'; document.body.appendChild(el); }
+  el.textContent = '🚧 ' + name + '还在建设中，很快就开放啦！';
+  el.classList.add('show');
+  clearTimeout(soon._t); soon._t = setTimeout(() => el.classList.remove('show'), 2000);
+}
+(function () {
+  try {
+    const s = JSON.parse(localStorage.getItem('museum_bio_v1'));
+    const read = s && s.read ? Object.keys(s.read).length : 0;
+    document.getElementById('bio-bar').style.width = (read / 10 * 100) + '%';
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>

@@ -139,6 +139,7 @@ function question(r) {
 }
 
 function finish(r) {
+  if (window.StudyPlan) StudyPlan.cheer();
   const s = Store.load(), rd = reads(), d = Store.today();
   const first = !rd[r.id]; rd[r.id] = d;
   const done = Store.todayDone(); let star = '';

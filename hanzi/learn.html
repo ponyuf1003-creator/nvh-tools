@@ -181,6 +181,7 @@ function pickQuiz(el, picked, answer) {
 }
 
 function renderAllDone() {
+  if (window.StudyPlan) StudyPlan.cheer();
   const done = Store.todayDone();
   if (!done.learn) { done.learn = true; Store.addStar(1); }
   Store.save();

@@ -148,7 +148,7 @@ function render() {
   if ($('#go')) $('#go').onclick = () => location.href = M[next].url;
   $('#calBtn').onclick = () => calendar(d.slice(0, 7));
   $('#parentBtn').onclick = parentSheet;
-  if (allDone && !sessionStorage.getItem('stamped_' + d)) { sessionStorage.setItem('stamped_' + d, 1); confetti(); }
+  if (allDone && !sessionStorage.getItem('stamped_' + d)) { sessionStorage.setItem('stamped_' + d, 1); confetti(); SP.cheer(1200); }
 }
 
 function sheet(title, html) {
@@ -203,6 +203,12 @@ function parentSheet() {
       <div class="sec-h" style="margin-top:12px"><span>🎯 需要多练的内容</span></div>
       ${weakList('hanzi_island_v1', '🏝️ 识字') + weakList('pinyin_planet_v1', '🚀 拼音') + weakList('sight_words_v1', '🦉 英语') || '<p class="muted">暂时没有反复出错的内容，很棒！</p>'}
     </div>
+    <div class="card"><div class="sec-h"><span>🎙️ 爸爸妈妈的鼓励语音</span></div>
+      <p class="muted">孩子每完成一个学习或练习环节，会随机播放一句你录的鼓励。点数字可以试听。</p>
+      <div class="seg" style="margin:10px 0">${Array.from({ length: SP.CHEER_N }, (_, i) => `<button data-cheer="${i + 1}">▶ 第${i + 1}句</button>`).join('')}</div>
+      <div class="row" style="border:none"><div class="l">播放鼓励</div><div class="seg" style="flex:1">
+        <button data-cheeron="1" class="${set.cheer === false ? '' : 'on'}">开启</button><button data-cheeron="0" class="${set.cheer === false ? 'on' : ''}">关闭</button></div></div>
+    </div>
     <div class="card"><div class="sec-h"><span>✅ 今天手动打卡</span></div>
       <p class="muted">做了纸质练习、或在别处完成了任务，可以在这里手动打卡。</p>
       ${SP.planFor(d).map(k => `<div class="row"><div class="l">${M[k].icon} ${M[k].name}</div><div class="seg" style="flex:1">
@@ -231,6 +237,8 @@ function parentSheet() {
   });
   m.querySelectorAll('[data-min]').forEach(b => b.onclick = () => { set.mins[b.dataset.min] = +b.dataset.n; SP.save(); reopen(); });
   m.querySelectorAll('[data-cap]').forEach(b => b.onclick = () => { set.cap = +b.dataset.cap; SP.save(); reopen(); });
+  m.querySelectorAll('[data-cheer]').forEach(b => b.onclick = () => SP.cheer(0, +b.dataset.cheer));
+  m.querySelectorAll('[data-cheeron]').forEach(b => b.onclick = () => { set.cheer = b.dataset.cheeron === '1'; SP.save(); reopen(); });
   m.querySelectorAll('[data-man]').forEach(b => b.onclick = () => { SP.setManual(b.dataset.man, b.dataset.v === '1'); reopen(); });
   m.querySelector('#reset').onclick = () => { if (confirm('恢复默认的每周计划和时长吗？')) { P.settings = JSON.parse(JSON.stringify(SP.DEFAULT)); SP.save(); reopen(); } };
 }

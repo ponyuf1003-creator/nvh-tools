@@ -109,6 +109,7 @@ function challenge(rc) {
     });
   };
   const finish = () => {
+    if (window.StudyPlan) StudyPlan.cheer();
     const wk = read('museum_week_v1'), w = weekId();
     const best = wk.week === w ? Math.max(wk.best || 0, right) : right;
     localStorage.setItem('museum_week_v1', JSON.stringify({ week: w, done: true, best }));

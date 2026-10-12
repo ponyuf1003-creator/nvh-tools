@@ -119,8 +119,35 @@
   }
   function setHint(mod, text) { try { localStorage.setItem('plan_hint_' + mod, text); } catch (e) {} }
 
+  /* ---------- 爸爸妈妈录的鼓励语音：每完成一个环节随机播一句 ---------- */
+  const SELF = document.currentScript && document.currentScript.src;
+  const CHEER_N = 5;
+  const cheerUrl = k => (SELF ? new URL('cheer/', SELF).href : 'common/cheer/') + 'cheer_' + k + '.m4a';
+  const cheerAud = new Audio();
+  let lastCheer = 0, lastCheerAt = 0, pendingCheer = 0, cheerUnlocked = false;
+  function playCheer(k) {
+    try { cheerAud.src = cheerUrl(k); const p = cheerAud.play(); if (p && p.catch) p.catch(() => { pendingCheer = k; }); } catch (e) { pendingCheer = k; }
+  }
+  // iOS/安卓：在手指第一次点屏幕时解锁这个播放器，之后的鼓励语音才能自动播放；被拦下的语音在下一次点击时补播
+  function onTouch() {
+    if (!cheerUnlocked) { cheerUnlocked = true;
+      if (!pendingCheer) try { cheerAud.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA='; const p = cheerAud.play(); if (p && p.catch) p.catch(() => {}); } catch (e) {} }
+    if (pendingCheer) { const k = pendingCheer; pendingCheer = 0; playCheer(k); }
+  }
+  document.addEventListener('pointerdown', onTouch, true);
+  document.addEventListener('touchstart', onTouch, { capture: true, passive: true });
+  function cheer(delay, which) {
+    load(); if (P.settings.cheer === false && !which) return;
+    if (!which && Date.now() - lastCheerAt < 4000) return;      // 同一个庆祝画面只说一句
+    lastCheerAt = Date.now();
+    let k = which;
+    if (!k) { do { k = 1 + Math.floor(Math.random() * CHEER_N); } while (k === lastCheer && CHEER_N > 1); }
+    lastCheer = k;
+    setTimeout(() => playCheer(k), delay == null ? 900 : delay);   // 等金币"叮叮"声过去再说
+  }
+
   window.StudyPlan = { MODS, ORDER, DEFAULT, load, save, today, shift, parse, planFor, isDone, seconds, hint,
-                       syncToday, dayState, streak, setManual, setHint, addSeconds, reload: () => load(true), get data() { return load(); } };
+                       syncToday, dayState, streak, setManual, setHint, addSeconds, cheer, CHEER_N, reload: () => load(true), get data() { return load(); } };
 
   /* ================= 模块页：计时小标签 + 休息提醒 ================= */
   const me = document.currentScript && document.currentScript.dataset.module;

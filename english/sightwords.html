@@ -255,6 +255,7 @@ function pickReview(el, picked, answer) {
   }
 }
 function reviewDone() {
+  if (window.StudyPlan) StudyPlan.cheer();
   const done = todayDone();
   if (!done.review) { done.review = true; S.stars++; save(); }
   document.getElementById('stars').textContent = S.stars;
@@ -267,7 +268,7 @@ function reviewDone() {
       <button class="btn ghost" onclick="home()">回到首页</button>
     </div>`;
 }
-function freeDone() { confetti(); stage().innerHTML = `
+function freeDone() { if (window.StudyPlan) StudyPlan.cheer(); confetti(); stage().innerHTML = `
   <div class="card celebrate"><div class="big">💪</div><h2>练完啦，真棒！</h2><p></p>
   <button class="btn" onclick="home()">回到首页</button></div>`; }
 
@@ -322,6 +323,7 @@ function pickLearn(el, picked, answer) {
     setTimeout(() => el.classList.remove('wrong'), 500); }
 }
 function allDone() {
+  if (window.StudyPlan) StudyPlan.cheer();
   newWords.forEach(w => { onLearned(w); if (!todayLog().new.includes(w)) todayLog().new.push(w); });
   const done = todayDone();
   if (!done.learn && newWords.length) { done.learn = true; S.stars++; }

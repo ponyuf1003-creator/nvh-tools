@@ -322,6 +322,7 @@ function pickOpt(el, i) {
   }
 }
 function sessionDone() {
+  if (window.StudyPlan) StudyPlan.cheer();
   load(); let starMsg = '';
   if (!S.done[today()]) { S.done[today()] = true; S.stars++; starMsg = '得到一颗星星！'; }
   save(); document.getElementById('stars').textContent = S.stars;

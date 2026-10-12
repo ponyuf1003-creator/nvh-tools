@@ -97,6 +97,7 @@ function hint() { if (writer) writer.animateCharacter({ onComplete: () => writer
 function skip() { idx++; renderLevel(); }
 
 function renderDone() {
+  if (window.StudyPlan) StudyPlan.cheer();
   const done = Store.todayDone();
   let starMsg = '';
   if (!done.game) { done.game = true; Store.addStar(1); starMsg = '得到一颗星星！' }

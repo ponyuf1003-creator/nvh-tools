@@ -214,6 +214,7 @@ function nextCard(id, single) {
   renderCard();
 }
 function readingDone() {
+  if (window.StudyPlan) StudyPlan.cheer();
   confetti();
   const readCount = Object.keys(load().read).length;
   const allRead = readCount >= CARDS.length;
@@ -253,6 +254,7 @@ function pickQ(el, ok, label) {
   setTimeout(() => { qIdx++; renderQ(); }, ok ? 1100 : 1300);
 }
 function quizDone() {
+  if (window.StudyPlan) StudyPlan.cheer();
   museumDay('quiz');
   load();
   const pct = Math.round(qRight / quiz.length * 100);

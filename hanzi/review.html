@@ -112,6 +112,7 @@ function pick(el, picked, answer) {
 }
 
 function renderDone() {
+  if (window.StudyPlan) StudyPlan.cheer();
   const done = Store.todayDone();
   if (!done.review) { done.review = true; Store.addStar(1); }
   Store.save();

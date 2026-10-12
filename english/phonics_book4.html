@@ -791,6 +791,7 @@ function fbSpeak(){if(fbWord)speakBi(fbWord.word,fbWord.hint);}
 //  RESULT
 // ════════════════════════════════
 function showResult(){
+  if (window.StudyPlan) StudyPlan.cheer();
   const total=qWords.length;
   const pct=Math.round(qScore/total*100);
   const prev=S.units[CU.id]||{best:0,plays:0};
@@ -922,6 +923,7 @@ function wordDone(){
 }
 
 function buildResult(){
+  if (window.StudyPlan) StudyPlan.cheer();
   const total=bWords.length;
   const prev=S.units[CU.id]||{best:0,plays:0};
   S.units[CU.id]={best:Math.max(prev.best,100),plays:prev.plays+1};

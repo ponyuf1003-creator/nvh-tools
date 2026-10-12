@@ -361,6 +361,7 @@ function startDaily() {
   if (due.length) runReview(due, afterReview); else afterReview();
 }
 function dailyDone() {
+  if (window.StudyPlan) StudyPlan.cheer();
   const rec = todayRec();
   confetti();
   stage().innerHTML = `<div class="card celebrate"><div class="big">🌟</div><h2>今天的拼音完成啦！</h2>
@@ -368,6 +369,7 @@ function dailyDone() {
   $('#b1').onclick = home;
 }
 function lessonDone(i, then, daily) {
+  if (window.StudyPlan) StudyPlan.cheer();
   load();
   const first = !S.done[i];
   S.done[i] = true;
@@ -681,6 +683,7 @@ function gameTrain() {
   next();
 }
 function gameEnd(id, score, total) {
+  if (window.StudyPlan) StudyPlan.cheer();
   const rec = todayRec(); rec.games = rec.games || {};
   let msg = '';
   if (!rec.games[id]) { rec.games[id] = true; save(); addStar(); msg = '得到一颗星星！'; }

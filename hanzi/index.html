@@ -11,7 +11,8 @@
 <body>
 <div class="wrap">
   <div class="topbar">
-    <div class="title" style="font-size:1.4rem">🏝️ 小小识字岛</div>
+    <a class="back" href="../">🎪 学习乐园</a>
+    <div class="title">🏝️ 小小识字岛</div>
     <div class="stars-chip">⭐ <span id="stars">0</span></div>
   </div>
 
@@ -26,6 +27,12 @@
   <a class="btn-hero" id="main-btn" href="learn.html?flow=1">
     <div class="icon" id="main-icon">▶️</div>
     <div><div class="t" id="main-title">开始今天的学习</div><div class="d" id="main-desc">…</div></div>
+  </a>
+
+  <a class="task-card" href="read.html" id="read-card">
+    <div class="icon">📖</div>
+    <div><div class="t">每日一读</div><div class="d" id="read-desc">用认识的字读儿歌</div></div>
+    <div class="check" id="read-check"></div>
   </a>
 
   <a class="task-card" href="games.html">
@@ -47,8 +54,6 @@
   </div>
 
   <div style="text-align:center;margin-top:18px">
-    <a href="../" style="color:#B9B29F;text-decoration:none;font-size:.9rem">🎪 学习乐园</a>
-    &nbsp;·&nbsp;
     <a href="parent.html" style="color:#B9B29F;text-decoration:none;font-size:.9rem">⚙️ 家长中心</a>
   </div>
 </div>
@@ -87,6 +92,11 @@
   } else if (newChars.length) {
     btn.href = 'learn.html?flow=1';
     desc.textContent = `今天学 ${newChars.length} 个新字：${newChars.join('、')}`;
+  } else if (!done.read) {
+    btn.href = 'read.html';
+    icon.textContent = '📖';
+    title.textContent = '还差一步：每日一读';
+    desc.textContent = '用认识的字读一首儿歌';
   } else if (newLeft === 0 || !SRS.newList(1).length) {
     btn.href = 'games.html';
     icon.textContent = '🎉';
@@ -96,6 +106,7 @@
   }
 
   if (done.game) document.getElementById('game-check').textContent = '✅';
+  if (done.read) document.getElementById('read-check').textContent = '✅';
 
   // 进度
   const stats = SRS.stats();
@@ -118,5 +129,6 @@
     unlocked >= ANIMALS.length ? '全部集齐啦！' : `再得 ${need} 颗星星，新朋友就来啦`;
 })();
 </script>
+<script src="../common/plan.js" data-module="hanzi"></script>
 </body>
 </html>

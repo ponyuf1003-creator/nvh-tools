@@ -203,7 +203,11 @@ function renderCard(single) {
     <button class="btn" onclick="nextCard('${c.id}', ${!!single})">${single ? '回到列表' : (readIdx < readQueue.length - 1 ? '下一个知识 ➡️' : '读完啦，去下一步 ➡️')}</button>`;
   setTimeout(() => speak(c.id + '-narr'), 300);
 }
+function museumDay(kind) { try { const d = new Date(), t = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  let m = JSON.parse(localStorage.getItem('museum_day_v1')) || {}; if (m.date !== t) m = { date: t, cards: 0, quiz: false };
+  if (kind === 'card') m.cards++; else m.quiz = true; localStorage.setItem('museum_day_v1', JSON.stringify(m)); } catch (e) {} }
 function nextCard(id, single) {
+  museumDay('card');
   load(); S.read[id] = true; save();
   if (single) return home();
   readIdx++;
@@ -249,6 +253,7 @@ function pickQ(el, ok, label) {
   setTimeout(() => { qIdx++; renderQ(); }, ok ? 1100 : 1300);
 }
 function quizDone() {
+  museumDay('quiz');
   load();
   const pct = Math.round(qRight / quiz.length * 100);
   const passed = pct >= 80;
@@ -273,5 +278,6 @@ function quizDone() {
 
 home();
 </script>
+<script src="../common/plan.js" data-module="explore"></script>
 </body>
 </html>

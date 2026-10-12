@@ -8,118 +8,245 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎪</text></svg>">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-:root {
-  --bg: #FFF6E9; --card: #fff; --ink: #3D3B37; --muted: #8A8578;
-  --radius: 24px;
-}
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
-  background: var(--bg); color: var(--ink); min-height: 100vh; user-select: none;
-}
-.wrap { max-width: 620px; margin: 0 auto; padding: 24px 18px 40px; }
-
-.hero {
-  background: linear-gradient(135deg, #FF9F43, #FFC069);
-  border-radius: var(--radius); color: #fff;
-  padding: 26px 24px; display: flex; align-items: center; gap: 18px;
-  box-shadow: 0 8px 24px rgba(255, 159, 67, .35); margin-bottom: 24px;
-}
-.hero .mascot { font-size: 4rem; animation: float 3s ease-in-out infinite; }
-@keyframes float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-9px) } }
-.hero h1 { font-size: 1.6rem; font-weight: 900; letter-spacing: .04em; }
-.hero p { margin-top: 6px; opacity: .92; font-size: .95rem; }
-
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-@media (max-width: 460px) { .grid { grid-template-columns: 1fr; } }
-.mod {
-  background: var(--card); border-radius: var(--radius);
-  padding: 24px 20px; text-decoration: none; color: var(--ink);
-  box-shadow: 0 5px 0 rgba(0,0,0,.06);
-  position: relative; overflow: hidden; display: block;
-  transition: transform .15s;
-  border-top: 8px solid var(--accent);
-}
+:root { --bg: #FFF6E9; --card: #fff; --ink: #3D3B37; --muted: #8A8578; --orange: #FF9F43; --orange-d: #DC8228;
+        --green: #3FB27F; --green-d: #2A8A5F; --radius: 24px; }
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+       background: var(--bg); color: var(--ink); min-height: 100vh; user-select: none; -webkit-user-select: none; }
+.wrap { max-width: 620px; margin: 0 auto; padding: 18px 16px 44px; }
+.top { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.top .mascot { font-size: 3rem; animation: float 3s ease-in-out infinite; }
+@keyframes float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-7px) } }
+.top h1 { font-size: 1.5rem; font-weight: 900; } .top p { color: var(--muted); font-size: .92rem; margin-top: 2px; }
+.top .fire { margin-left: auto; background: #fff; border-radius: 999px; padding: 8px 14px; font-weight: 900; color: #E8620C;
+             box-shadow: 0 3px 0 rgba(0,0,0,.06); white-space: nowrap; }
+.card { background: var(--card); border-radius: var(--radius); padding: 18px; margin-bottom: 16px; box-shadow: 0 5px 0 rgba(0,0,0,.05); }
+.plan-h { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+.plan-h b { font-size: 1.2rem; font-weight: 900; } .plan-h span { color: var(--muted); font-weight: 700; font-size: .9rem; }
+.ring { display: flex; gap: 6px; margin-bottom: 12px; } .ring i { flex: 1; height: 10px; border-radius: 999px; background: #F1EADB; }
+.ring i.on { background: linear-gradient(90deg, #3FB27F, #79D9A8); }
+.task { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 18px; background: #FBF7EF; margin-bottom: 10px;
+        cursor: pointer; border: 3px solid transparent; text-decoration: none; color: inherit; }
+.task.next { border-color: var(--orange); background: #FFF3E3; }
+.task.done { background: #EAF8F0; }
+.task .ic { font-size: 2.3rem; width: 46px; text-align: center; }
+.task .nm { font-weight: 900; font-size: 1.08rem; }
+.task .ht { color: var(--muted); font-size: .84rem; margin-top: 2px; line-height: 1.4; }
+.task .tm { height: 6px; background: #EFE6D4; border-radius: 999px; margin-top: 6px; overflow: hidden; max-width: 210px; }
+.task .tm i { display: block; height: 100%; background: var(--c); border-radius: 999px; }
+.task .st { margin-left: auto; font-weight: 900; font-size: .9rem; white-space: nowrap; padding: 7px 11px; border-radius: 999px; background: #fff; }
+.task.done .st { color: var(--green-d); } .task.next .st { background: var(--orange); color: #fff; }
+.go { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; border: none; border-radius: 20px; padding: 18px;
+      font-size: 1.25rem; font-weight: 900; color: #fff; background: linear-gradient(135deg, #FF9F43, #FFBE63); box-shadow: 0 6px 0 var(--orange-d);
+      cursor: pointer; font-family: inherit; margin-top: 4px; }
+.go:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--orange-d); }
+.go.all { background: linear-gradient(135deg, #3FB27F, #79D9A8); box-shadow: 0 6px 0 var(--green-d); }
+.stamp { text-align: center; padding: 6px 0 2px; }
+.stamp .s { display: inline-block; font-size: 3.6rem; animation: stampin .6s cubic-bezier(.3,1.6,.5,1); }
+@keyframes stampin { 0% { transform: scale(2.4) rotate(-30deg); opacity: 0 } 100% { transform: scale(1) rotate(-8deg); opacity: 1 } }
+.week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
+.week .d { border-radius: 14px; padding: 6px 0; background: #FBF7EF; }
+.week .d.today { outline: 3px solid var(--orange); }
+.week .d small { display: block; color: var(--muted); font-size: .72rem; font-weight: 700; }
+.week .d b { font-size: 1.4rem; line-height: 1.5; }
+.sec-h { display: flex; justify-content: space-between; align-items: center; font-weight: 900; margin-bottom: 10px; }
+.sec-h button, .link-btn { border: none; background: #F1EADB; color: var(--muted); border-radius: 999px; padding: 6px 12px; font-weight: 800;
+       font-size: .82rem; cursor: pointer; font-family: inherit; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+@media (max-width: 460px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+.mod { background: var(--card); border-radius: 20px; padding: 14px 6px; text-decoration: none; color: var(--ink); text-align: center;
+       box-shadow: 0 4px 0 rgba(0,0,0,.05); border-top: 6px solid var(--accent); }
 .mod:active { transform: scale(.97); }
-.mod { text-align: center; }
-.mod .icon { font-size: 4.6rem; line-height: 1; }
-.mod h2 { font-size: 1.4rem; font-weight: 900; margin: 14px 0 6px; }
-.mod p { color: var(--muted); font-size: .9rem; line-height: 1.5; }
-.mod.soon { cursor: pointer; }
-.mod .badge {
-  position: absolute; top: 16px; right: 16px;
-  font-size: .75rem; font-weight: 800; padding: 5px 12px; border-radius: 999px;
-}
-.mod .badge.on { background: #E4F7E7; color: #2F8B3C; }
-.mod .badge.soon { background: #F1EADB; color: #A79F8C; }
-.mod.soon { opacity: .62; cursor: default; }
-.toast {
-  position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%);
-  background: #3D3B37; color: #fff; padding: 12px 26px; border-radius: 999px;
-  font-weight: 700; opacity: 0; pointer-events: none; transition: opacity .3s; z-index: 99;
-}
-.toast.show { opacity: .92; }
+.mod .icon { font-size: 2.4rem; line-height: 1.1; } .mod h2 { font-size: .98rem; font-weight: 900; margin-top: 6px; }
+.parent { text-align: center; margin-top: 18px; } .parent button { background: none; border: none; color: #B9B29F; font-size: .9rem; cursor: pointer; font-family: inherit; }
+/* 弹层 */
+.mask { position: fixed; inset: 0; background: rgba(40,36,30,.5); z-index: 200; display: flex; align-items: flex-end; justify-content: center; }
+.sheet { background: var(--bg); width: 100%; max-width: 620px; max-height: 92vh; overflow-y: auto; border-radius: 26px 26px 0 0; padding: 18px 16px 30px; }
+.sheet-h { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.sheet-h b { font-size: 1.2rem; font-weight: 900; }
+.x { border: none; background: #fff; border-radius: 999px; width: 40px; height: 40px; font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 0 rgba(0,0,0,.06); }
+.cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
+.cal .w { font-size: .75rem; color: var(--muted); font-weight: 800; padding: 4px 0; }
+.cal .c { background: #fff; border-radius: 12px; min-height: 52px; padding: 4px 0; font-size: .78rem; font-weight: 700; color: var(--muted); }
+.cal .c b { display: block; font-size: 1.35rem; line-height: 1.4; } .cal .c.t { outline: 3px solid var(--orange); } .cal .c.e { background: none; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0; }
+.stats div { background: #fff; border-radius: 14px; padding: 10px 4px; text-align: center; } .stats b { display: block; font-size: 1.4rem; }
+.stats span { font-size: .75rem; color: var(--muted); font-weight: 700; }
+.wk { width: 100%; border-collapse: separate; border-spacing: 4px; } .wk th { font-size: 1.3rem; } .wk td { text-align: center; }
+.wk td:first-child { font-weight: 800; font-size: .88rem; text-align: left; white-space: nowrap; }
+.tg { width: 38px; height: 34px; border-radius: 10px; border: 2px solid #E8DFC9; background: #fff; cursor: pointer; font-size: 1rem; }
+.tg.on { background: #FFE9CC; border-color: var(--orange); }
+.seg { display: flex; gap: 6px; } .seg button { flex: 1; padding: 8px 4px; border-radius: 10px; border: 2px solid #E8DFC9; background: #fff;
+       font-weight: 800; cursor: pointer; font-family: inherit; font-size: .85rem; color: var(--ink); }
+.seg button.on { border-color: var(--orange); background: #FFE9CC; }
+.row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px dashed #EADFCB; }
+.row .l { min-width: 96px; font-weight: 800; font-size: .92rem; }
+.muted { color: var(--muted); font-size: .85rem; line-height: 1.6; }
+.bar { height: 10px; background: #F1EADB; border-radius: 999px; overflow: hidden; flex: 1; } .bar i { display: block; height: 100%; border-radius: 999px; }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="hero">
-    <div class="mascot">🐻</div>
-    <div>
-      <h1>学习乐园</h1>
-      <p id="greet">今天想学点什么呀？选一个开始吧 👇</p>
-    </div>
-  </div>
-
-  <div class="grid">
-    <a class="mod" href="english/" style="--accent:#7C3AED">
-      <span class="badge on">开放中</span>
-      <div class="icon">🦉</div>
-      <h2>英语乐园</h2>
-      <p>单词 · 拼读</p>
-    </a>
-
-    <a class="mod" href="hanzi/" style="--accent:#FF9F43">
-      <span class="badge on">开放中</span>
-      <div class="icon">🏝️</div>
-      <h2>识字岛</h2>
-      <p>认字 · 写字 · 游戏</p>
-    </a>
-
-    <a class="mod" href="pinyin/" style="--accent:#7B61FF">
-      <span class="badge on">开放中</span>
-      <div class="icon">🚀</div>
-      <h2>拼音星球</h2>
-      <p>声调 · 拼读 · 直呼</p>
-    </a>
-
-    <a class="mod" href="math/" style="--accent:#6BCB77">
-      <span class="badge on">开放中</span>
-      <div class="icon">🔢</div>
-      <h2>数学王国</h2>
-      <p>数一数 · 加减法</p>
-    </a>
-
-    <a class="mod" href="explore/" style="--accent:#3E6FE0">
-      <span class="badge on">开放中</span>
-      <div class="icon">🔭</div>
-      <h2>探索博物馆</h2>
-      <p>历史 · 地理 · 生物</p>
-    </a>
-  </div>
-
-</div>
+<div class="wrap" id="app"></div>
+<script src="common/plan.js"></script>
 <script>
-const h = new Date().getHours();
-document.getElementById('greet').textContent =
-  (h < 12 ? '早上好！' : h < 18 ? '下午好！' : '晚上好！') + '今天想学点什么呀？👇';
-let _t;
-function soon(name) {
-  let el = document.querySelector('.toast');
-  if (!el) { el = document.createElement('div'); el.className = 'toast'; document.body.appendChild(el); }
-  el.textContent = '🚧 ' + name + '还在建设中，很快就开放啦！';
-  el.classList.add('show');
-  clearTimeout(_t); _t = setTimeout(() => el.classList.remove('show'), 2000);
+const SP = window.StudyPlan, M = SP.MODS;
+const WEEK = ['日', '一', '二', '三', '四', '五', '六'];
+const STAMP = { full: '⭐', part: '🌗', none: '·', rest: '😴', pre: '' };
+const $ = s => document.querySelector(s);
+
+function render() {
+  SP.reload();
+  const d = SP.today(), dt = SP.parse(d), plan = SP.planFor(d), rec = SP.syncToday();
+  const set = SP.data.settings, streak = SP.streak();
+  const h = new Date().getHours();
+  const greet = (h < 12 ? '早上好' : h < 18 ? '下午好' : '晚上好') + '！';
+  const doneN = rec.done.length, allDone = plan.length && doneN >= plan.length;
+  const next = plan.find(m => !rec.done.includes(m));
+
+  const tasks = plan.map(m => {
+    const done = rec.done.includes(m), sec = SP.seconds(m), mins = Math.round(sec / 60), goal = Math.min(set.mins[m], set.cap);
+    const st = done ? '✅ 完成' : m === next ? '▶ 开始' : mins ? `学了 ${mins} 分` : '待完成';
+    return `<a class="task ${done ? 'done' : m === next ? 'next' : ''}" href="${M[m].url}" style="--c:${M[m].color}">
+      <div class="ic">${M[m].icon}</div>
+      <div style="flex:1;min-width:0"><div class="nm">${M[m].name}</div><div class="ht">${SP.hint(m)}</div>
+        <div class="tm"><i style="width:${Math.min(100, sec / (goal * 60) * 100)}%"></i></div>
+        <div class="ht">已学 ${mins} 分钟 · 计划 ${goal} 分钟</div></div>
+      <div class="st">${st}</div></a>`;
+  }).join('');
+
+  const week = [];
+  const mon = SP.shift(d, -((dt.getDay() + 6) % 7));
+  for (let i = 0; i < 7; i++) {
+    const day = SP.shift(mon, i), future = day > d;
+    week.push(`<div class="d ${day === d ? 'today' : ''}"><small>周${WEEK[SP.parse(day).getDay()]}</small><b>${future ? '<span style="opacity:.25">○</span>' : STAMP[SP.dayState(day)]}</b></div>`);
+  }
+
+  $('#app').innerHTML = `
+    <div class="top"><div class="mascot">🐻</div>
+      <div><h1>学习乐园</h1><p>${greet}${allDone ? '今天的任务全部完成啦！' : '一起完成今天的计划吧～'}</p></div>
+      <div class="fire">🔥 ${streak} 天</div></div>
+
+    <div class="card">
+      <div class="plan-h"><b>📅 今天的学习计划</b><span>${dt.getMonth() + 1}月${dt.getDate()}日 周${WEEK[dt.getDay()]}</span></div>
+      ${plan.length ? `<div class="ring">${plan.map(m => `<i class="${rec.done.includes(m) ? 'on' : ''}"></i>`).join('')}</div>${tasks}
+        ${allDone ? `<div class="stamp"><span class="s">⭐</span><div style="font-weight:900;margin-top:4px">今天盖章啦！明天继续加油 💪</div></div>`
+          : `<button class="go" id="go">▶ 开始：${M[next].icon} ${M[next].name}</button>`}`
+        : `<div class="stamp"><span class="s">😴</span><div style="font-weight:900">今天是休息日，好好玩吧！</div></div>`}
+    </div>
+
+    <div class="card">
+      <div class="sec-h"><span>🗓️ 本周打卡</span><button id="calBtn">打卡日历 ›</button></div>
+      <div class="week">${week.join('')}</div>
+      <p class="muted" style="margin-top:8px;text-align:center">⭐ 全部完成　🌗 完成一部分　😴 休息日</p>
+    </div>
+
+    <div class="card">
+      <div class="sec-h"><span>🎈 自由选择</span></div>
+      <div class="grid">${SP.ORDER.map(m => `<a class="mod" href="${M[m].url === 'english/sightwords.html' ? 'english/' : M[m].url}" style="--accent:${M[m].color}">
+        <div class="icon">${M[m].icon}</div><h2>${M[m].name}</h2></a>`).join('')}</div>
+    </div>
+    <div class="parent"><button id="parentBtn">⚙️ 家长：学习计划设置 · 学习报告</button></div>`;
+  if ($('#go')) $('#go').onclick = () => location.href = M[next].url;
+  $('#calBtn').onclick = () => calendar(d.slice(0, 7));
+  $('#parentBtn').onclick = parentSheet;
+  if (allDone && !sessionStorage.getItem('stamped_' + d)) { sessionStorage.setItem('stamped_' + d, 1); confetti(); }
 }
+
+function sheet(title, html) {
+  const m = document.createElement('div'); m.className = 'mask';
+  m.innerHTML = `<div class="sheet"><div class="sheet-h"><b>${title}</b><button class="x">✕</button></div>${html}</div>`;
+  document.body.appendChild(m);
+  m.querySelector('.x').onclick = () => { m.remove(); render(); };
+  m.onclick = e => { if (e.target === m) { m.remove(); render(); } };
+  return m;
+}
+
+function calendar(ym) {
+  const [y, mo] = ym.split('-').map(Number), first = new Date(y, mo - 1, 1), days = new Date(y, mo, 0).getDate(), d0 = SP.today();
+  let cells = WEEK.map(w => `<div class="w">${w}</div>`).join('');
+  for (let i = 0; i < first.getDay(); i++) cells += '<div class="c e"></div>';
+  let full = 0, secs = 0; const P = SP.data;
+  for (let i = 1; i <= days; i++) {
+    const ds = `${y}-${String(mo).padStart(2, '0')}-${String(i).padStart(2, '0')}`, fut = ds > d0;
+    const st = fut ? '' : SP.dayState(ds); if (st === 'full') full++;
+    const t = P.time[ds]; if (t) secs += Object.values(t).reduce((a, b) => a + b, 0);
+    cells += `<div class="c ${ds === d0 ? 't' : ''}">${i}<b>${fut ? '' : STAMP[st]}</b></div>`;
+  }
+  const m = sheet(`📆 ${y}年${mo}月 打卡日历`, `
+    <div class="stats"><div><b>🔥 ${SP.streak()}</b><span>连续打卡(天)</span></div><div><b>⭐ ${full}</b><span>本月全部完成</span></div>
+      <div><b>${Math.round(secs / 60)}</b><span>本月学习(分钟)</span></div></div>
+    <div class="cal">${cells}</div>
+    <div style="display:flex;gap:10px;margin-top:14px"><button class="link-btn" id="pm" style="flex:1;padding:10px">‹ 上个月</button>
+      <button class="link-btn" id="nm" style="flex:1;padding:10px">下个月 ›</button></div>`);
+  const go = n => { m.remove(); const dd = new Date(y, mo - 1 + n, 1); calendar(`${dd.getFullYear()}-${String(dd.getMonth() + 1).padStart(2, '0')}`); };
+  m.querySelector('#pm').onclick = () => go(-1); m.querySelector('#nm').onclick = () => go(1);
+}
+
+function readJ(k) { try { return JSON.parse(localStorage.getItem(k)) || {}; } catch (e) { return {}; } }
+function weakList(key, label) {
+  const s = readJ(key); if (!s.srs) return '';
+  const w = Object.keys(s.srs).filter(k => (s.srs[k].wrong || 0) >= 2).map(k => k.replace(/^[LS]:/, '').replace(/v/g, 'ü'));
+  return w.length ? `<div class="row"><div class="l">${label}</div><div class="muted">${w.slice(0, 24).join('、')}</div></div>` : '';
+}
+function parentSheet() {
+  const P = SP.data, set = P.settings, d = SP.today();
+  const mon = SP.shift(d, -((SP.parse(d).getDay() + 6) % 7));
+  const wsec = {}; let wdays = 0;
+  for (let i = 0; i < 7; i++) { const ds = SP.shift(mon, i); if (ds > d) break; const t = P.time[ds] || {};
+    Object.keys(t).forEach(k => wsec[k] = (wsec[k] || 0) + t[k]); if (SP.dayState(ds) === 'full') wdays++; }
+  const maxS = Math.max(60, ...Object.values(wsec));
+  const order = [1, 2, 3, 4, 5, 6, 0];
+  const m = sheet('⚙️ 学习计划设置', `
+    <div class="card"><div class="sec-h"><span>📊 本周学习报告</span></div>
+      <p class="muted">本周全部完成 <b>${wdays}</b> 天 · 连续打卡 <b>${SP.streak()}</b> 天</p>
+      ${SP.ORDER.map(k => `<div class="row"><div class="l">${M[k].icon} ${M[k].name}</div><div class="bar"><i style="width:${(wsec[k] || 0) / maxS * 100}%;background:${M[k].color}"></i></div>
+        <div class="muted" style="min-width:52px;text-align:right">${Math.round((wsec[k] || 0) / 60)} 分钟</div></div>`).join('')}
+      <div class="sec-h" style="margin-top:12px"><span>🎯 需要多练的内容</span></div>
+      ${weakList('hanzi_island_v1', '🏝️ 识字') + weakList('pinyin_planet_v1', '🚀 拼音') + weakList('sight_words_v1', '🦉 英语') || '<p class="muted">暂时没有反复出错的内容，很棒！</p>'}
+    </div>
+    <div class="card"><div class="sec-h"><span>✅ 今天手动打卡</span></div>
+      <p class="muted">做了纸质练习、或在别处完成了任务，可以在这里手动打卡。</p>
+      ${SP.planFor(d).map(k => `<div class="row"><div class="l">${M[k].icon} ${M[k].name}</div><div class="seg" style="flex:1">
+        <button data-man="${k}" data-v="1" class="${P.manual[d] && P.manual[d][k] ? 'on' : ''}">已完成</button>
+        <button data-man="${k}" data-v="0" class="${P.manual[d] && P.manual[d][k] ? '' : 'on'}">自动判断</button></div></div>`).join('') || '<p class="muted">今天没有安排任务</p>'}
+    </div>
+    <div class="card"><div class="sec-h"><span>📅 每周计划</span><span class="muted">建议每天 2–3 项</span></div>
+      <table class="wk"><tr><td></td>${SP.ORDER.map(k => `<th title="${M[k].name}">${M[k].icon}</th>`).join('')}</tr>
+      ${order.map(w => `<tr><td>周${WEEK[w]}</td>${SP.ORDER.map(k => `<td><button class="tg ${set.week[w].includes(k) ? 'on' : ''}" data-w="${w}" data-k="${k}">${set.week[w].includes(k) ? '✓' : ''}</button></td>`).join('')}</tr>`).join('')}
+      </table>
+      <p class="muted" style="margin-top:6px">识字、拼音靠每天复习巩固记忆，建议每周至少安排 5 天。</p>
+    </div>
+    <div class="card"><div class="sec-h"><span>⏱️ 每项时长</span></div>
+      ${SP.ORDER.map(k => `<div class="row"><div class="l">${M[k].icon} ${M[k].name}</div><div class="seg" style="flex:1">
+        ${[10, 15, 20].map(n => `<button data-min="${k}" data-n="${n}" class="${set.mins[k] === n ? 'on' : ''}">${n} 分钟</button>`).join('')}</div></div>`).join('')}
+      <div class="row" style="border:none"><div class="l">单项上限</div><div class="seg" style="flex:1">
+        ${[15, 20].map(n => `<button data-cap="${n}" class="${set.cap === n ? 'on' : ''}">${n} 分钟</button>`).join('')}</div></div>
+      <p class="muted">到"计划时长"会提醒收尾，到"上限"会提示休息（家长可按住按钮再加 5 分钟）。</p>
+      <button class="link-btn" id="reset" style="margin-top:10px;width:100%;padding:12px">恢复默认计划</button>
+    </div>`);
+  const reopen = () => { m.remove(); parentSheet(); };
+  m.querySelectorAll('[data-w]').forEach(b => b.onclick = () => {
+    const w = b.dataset.w, k = b.dataset.k, a = set.week[w];
+    set.week[w] = a.includes(k) ? a.filter(x => x !== k) : SP.ORDER.filter(x => a.includes(x) || x === k);
+    SP.save(); reopen();
+  });
+  m.querySelectorAll('[data-min]').forEach(b => b.onclick = () => { set.mins[b.dataset.min] = +b.dataset.n; SP.save(); reopen(); });
+  m.querySelectorAll('[data-cap]').forEach(b => b.onclick = () => { set.cap = +b.dataset.cap; SP.save(); reopen(); });
+  m.querySelectorAll('[data-man]').forEach(b => b.onclick = () => { SP.setManual(b.dataset.man, b.dataset.v === '1'); reopen(); });
+  m.querySelector('#reset').onclick = () => { if (confirm('恢复默认的每周计划和时长吗？')) { P.settings = JSON.parse(JSON.stringify(SP.DEFAULT)); SP.save(); reopen(); } };
+}
+
+function confetti() {
+  const cols = ['#FF9F43', '#3FB27F', '#7B61FF', '#4D96FF', '#FF6B9D'];
+  for (let i = 0; i < 40; i++) { const e = document.createElement('div');
+    e.style.cssText = `position:fixed;top:-12px;left:${Math.random() * 100}vw;width:10px;height:10px;z-index:300;pointer-events:none;background:${cols[i % 5]};border-radius:${Math.random() > .5 ? '50%' : '2px'};transition:transform ${1.6 + Math.random()}s ease-in,opacity 2.2s;`;
+    document.body.appendChild(e);
+    requestAnimationFrame(() => { e.style.transform = `translateY(${100 + Math.random() * 15}vh) rotate(${Math.random() * 720}deg)`; e.style.opacity = '0'; });
+    setTimeout(() => e.remove(), 2600); }
+}
+render();
+// 从模块返回（含 iOS 返回缓存）时刷新状态
+window.addEventListener('pageshow', render);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') render(); });
 </script>
 </body>
 </html>

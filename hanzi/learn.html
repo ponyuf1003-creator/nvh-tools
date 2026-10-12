@@ -190,13 +190,14 @@ function renderAllDone() {
       <div class="big">🌟</div>
       <h2>太棒了！得到一颗星星！</h2>
       <p>今天认识了 ${queue.length} 个新字：${queue.join('、')}</p>
-      <button class="btn" onclick="location.href='index.html'">回家 🏠</button>
-      <button class="btn blue" onclick="location.href='games.html'">去游戏乐园 🎮</button>
+      <button class="btn" onclick="location.href='read.html'">下一步：每日一读 📖</button>
+      <button class="btn ghost" onclick="location.href='index.html'">回家 🏠</button>
     </div>`;
   document.getElementById('stars').textContent = Store.load().stars;
 }
 
 init();
 </script>
+<script src="../common/plan.js" data-module="hanzi"></script>
 </body>
 </html>

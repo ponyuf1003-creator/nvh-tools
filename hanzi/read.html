@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>每日一读 · 小小识字岛</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .poem { text-align: center; padding: 6px 0 4px; }
+  .pl { display: block; margin: 6px 0; padding: 4px 6px; border-radius: 12px; transition: background .3s; line-height: 1; }
+  .pl.on { background: #FFF1DC; }
+  ruby { font-family: var(--hanzi-font); font-size: 2.1rem; margin: 0 1px; cursor: pointer; ruby-position: over; }
+  ruby rt { font-family: "Avenir Next", "Helvetica Neue", Arial, sans-serif; font-size: .95rem; color: #4D96FF; font-weight: 600; }
+  ruby.u { color: #E8770C; } ruby.u rt { color: #E8770C; }
+  ruby.p rt { visibility: hidden; }
+  .poem.py-all ruby.p rt { visibility: visible; }
+  .poem.py-none ruby rt { visibility: hidden; }
+  .ptitle { text-align: center; font-weight: 900; font-size: 1.3rem; }
+  .pmeta { text-align: center; color: var(--ink-soft); font-size: .88rem; margin-top: 4px; }
+  .seg { display: flex; gap: 6px; margin-top: 12px; } .seg button { flex: 1; padding: 9px 4px; border-radius: 12px; border: 2px solid #EFE7D6;
+         background: #fff; font-weight: 800; font-family: inherit; font-size: .88rem; cursor: pointer; color: var(--ink); }
+  .seg button.on { border-color: var(--orange); background: #FFF1DC; }
+  .row2 { display: flex; gap: 10px; } .row2 .btn { flex: 1; margin-top: 0 !important; }
+  .shelf { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+  .book { background: #FBF7EF; border-radius: 14px; padding: 10px 4px; text-align: center; cursor: pointer; font-weight: 800; font-size: .88rem; border: 2px solid transparent; }
+  .book .e { font-size: 1.6rem; display: block; } .book small { display: block; color: var(--ink-soft); font-weight: 700; font-size: .72rem; margin-top: 2px; }
+  .book.read { background: #E8F8EC; } .book.now { border-color: var(--orange); }
+  .opt-row { display: grid; gap: 10px; margin-top: 14px; }
+  .qopt { background: #fff; border: 3px solid #EFE7D6; border-radius: 18px; padding: 14px; font-size: 1.25rem; font-weight: 800; cursor: pointer;
+          display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 0 rgba(0,0,0,.04); }
+  .qopt span { font-size: 1.8rem; } .qopt.right { background: #E8F8EC; border-color: var(--green); animation: pop .35s; }
+  .qopt.wrong { background: #FDECEC; border-color: var(--red); animation: shake .4s; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="back" href="index.html">🏠 回家</a>
+    <div class="title">📖 每日一读</div>
+    <div class="stars-chip">⭐ <span id="stars">0</span></div>
+  </div>
+  <div id="stage"></div>
+</div>
+<script src="data/chars.js"></script>
+<script src="data/reads.js"></script>
+<script src="js/core.js"></script>
+<script>
+const R = window.READS_DATA, stage = () => document.getElementById('stage');
+const isHan = c => /[一-鿿]/.test(c);
+let cur = null, playTok = 0;
+const AUD = new Audio();
+
+function known(c) { return SRS.isLearned(c); }
+function coverage(r) {
+  const cs = [...new Set(r.lines.join('').split('').filter(isHan))];
+  const k = cs.filter(known).length;
+  return { total: cs.length, known: k, pct: cs.length ? k / cs.length : 1 };
+}
+function reads() { const s = Store.load(); s.reads = s.reads || {}; return s.reads; }
+function pickToday() {
+  const rd = reads();
+  const unread = R.filter(r => !rd[r.id]);
+  const ok = unread.find(r => coverage(r).pct >= 0.75);
+  if (ok) return ok;
+  if (unread.length) return unread.slice().sort((a, b) => coverage(b).pct - coverage(a).pct)[0];
+  return R.slice().sort((a, b) => (rd[a.id] < rd[b.id] ? -1 : 1))[0];      // 都读过：复读最久没读的
+}
+function playSeq(keys, onLine) {
+  const tok = ++playTok; let i = 0;
+  const next = () => {
+    if (tok !== playTok) return;
+    if (i >= keys.length) { onLine && onLine(-1); return; }
+    const k = keys[i]; onLine && onLine(i); i++;
+    AUD.src = 'audio/' + k + '.m4a';
+    AUD.onended = () => setTimeout(next, 250); AUD.onerror = () => next();
+    const p = AUD.play(); if (p && p.catch) p.catch(() => {});
+  };
+  next();
+}
+function stop() { playTok++; try { AUD.pause(); } catch (e) {} }
+
+function show(r) {
+  stop(); cur = r;
+  const s = Store.load(); s.settings.readPy = s.settings.readPy || 'smart';
+  const cov = coverage(r), mode = s.settings.readPy;
+  const lines = r.lines.map((l, li) => `<span class="pl" data-li="${li}">${[...l].map((c, ci) => {
+    if (!isHan(c)) return `<ruby class="k p">${c}<rt>&nbsp;</rt></ruby>`;
+    const py = r.py[li][ci];
+    return `<ruby class="${known(c) ? 'k p' : 'u'}" data-c="${c}">${c}<rt>${py}</rt></ruby>`;
+  }).join('')}</span>`).join('');
+  const rd = reads();
+  stage().innerHTML = `
+    <div class="card">
+      <div class="ptitle">${r.e} ${r.t}</div>
+      <div class="pmeta">这篇有 ${cov.total} 个字，你认识 <b>${cov.known}</b> 个${cov.total - cov.known ? `，<span style="color:#E8770C">橙色的字</span>看拼音读` : ' 🎉'}</div>
+      <div class="poem py-${mode}" id="poem">${lines}</div>
+      <div class="seg" id="pym">
+        <button data-m="smart" class="${mode === 'smart' ? 'on' : ''}">生字标拼音</button>
+        <button data-m="all" class="${mode === 'all' ? 'on' : ''}">全部拼音</button>
+        <button data-m="none" class="${mode === 'none' ? 'on' : ''}">不要拼音</button>
+      </div>
+      <p class="muted" style="text-align:center;margin-top:8px">点一点不认识的字，可以听它的读音</p>
+    </div>
+    <div class="row2"><button class="btn blue" id="listen">🔊 听一听</button><button class="btn green" id="self">🙋 我来读</button></div>
+    <div class="card" style="margin-top:16px"><div style="font-weight:800">📚 我的书架 <span class="muted">（已读 ${Object.keys(rd).length} / ${R.length}）</span></div>
+      <div class="shelf">${R.map(x => { const c = coverage(x); return `<div class="book ${rd[x.id] ? 'read' : ''} ${x === r ? 'now' : ''}" data-id="${x.id}">
+        <span class="e">${x.e}</span>${x.t}<small>${rd[x.id] ? '✅ 读过' : `认识 ${Math.round(c.pct * 100)}%`}</small></div>`; }).join('')}</div></div>`;
+  document.querySelectorAll('ruby[data-c]').forEach(el => el.onclick = () => { stop(); Speech.speak(el.dataset.c); });
+  document.querySelectorAll('#pym button').forEach(b => b.onclick = () => { s.settings.readPy = b.dataset.m; Store.save(); show(r); });
+  document.querySelectorAll('.book').forEach(b => b.onclick = () => { show(R.find(x => x.id === b.dataset.id)); window.scrollTo(0, 0); });
+  const hl = i => document.querySelectorAll('.pl').forEach((p, k) => p.classList.toggle('on', k === i));
+  document.getElementById('listen').onclick = () => playSeq(r.lines.map((_, k) => `p_${r.id}_${k}`), hl);
+  document.getElementById('self').onclick = () => {
+    stop(); hl(-1);
+    stage().querySelector('.row2').outerHTML = `<div class="card" style="text-align:center"><div style="font-size:2.4rem">🙋</div>
+      <div style="font-weight:900;font-size:1.15rem;margin:6px 0">大声读一遍给爸爸妈妈听！</div>
+      <p class="muted">读不出来的字，看看上面的拼音，或者点一点听一听</p>
+      <button class="btn green" id="doneRead" style="margin-top:12px">✅ 我读完啦</button></div>`;
+    document.getElementById('doneRead').onclick = () => question(r);
+  };
+}
+
+function question(r) {
+  stop();
+  const opts = shuffle(r.q.opts);
+  stage().innerHTML = `<div class="card"><div class="ptitle">${r.e} 想一想</div>
+    <div style="text-align:center;font-weight:800;font-size:1.2rem;margin-top:12px">${r.q.q}</div>
+    <button class="speaker" id="spk">🔊</button>
+    <div class="opt-row">${opts.map((o, i) => `<div class="qopt" data-i="${i}"><span>${o[1]}</span>${o[0]}</div>`).join('')}</div></div>`;
+  const say = () => playSeq([`pq_${r.id}`]);
+  document.getElementById('spk').onclick = say; setTimeout(say, 300);
+  let lock = false;
+  document.querySelectorAll('.qopt').forEach(el => el.onclick = () => {
+    if (lock) return; const o = opts[+el.dataset.i];
+    if (o[2]) { lock = true; el.classList.add('right'); setTimeout(() => finish(r), 900); }
+    else { el.classList.add('wrong'); setTimeout(() => el.classList.remove('wrong'), 450); }
+  });
+}
+
+function finish(r) {
+  const s = Store.load(), rd = reads(), d = Store.today();
+  const first = !rd[r.id]; rd[r.id] = d;
+  const done = Store.todayDone(); let star = '';
+  if (!done.read) { done.read = true; Store.addStar(1); star = '得到一颗星星！'; }
+  Store.save();
+  document.getElementById('stars').textContent = Store.load().stars;
+  coinBurst(stage(), 3); confetti();
+  stage().innerHTML = `<div class="card celebrate"><div class="big">🌟</div><h2>读完《${r.t}》啦！${star}</h2>
+    <p>${first ? '书架上又多了一首～' : '温故而知新，真棒！'}</p>
+    <button class="btn" id="again">再读一首 📖</button><button class="btn ghost" onclick="location.href='index.html'">回家 🏠</button></div>`;
+  document.getElementById('again').onclick = () => show(pickToday());
+}
+
+(async function () {
+  await AppData.load();
+  document.getElementById('stars').textContent = Store.load().stars;
+  const want = new URLSearchParams(location.search).get('id');
+  show(want ? R.find(r => r.id === want) || pickToday() : pickToday());
+})();
+</script>
+<script src="../common/plan.js" data-module="hanzi"></script>
+</body>
+</html>

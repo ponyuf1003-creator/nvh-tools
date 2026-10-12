@@ -315,6 +315,7 @@ function home() {
     const d = due.length && L ? `先复习 ${Math.min(due.length, 12)} 个，再学${what}` : due.length ? `复习 ${Math.min(due.length, 12)} 个拼音` : `今天学${what}`;
     hero = `<div class="btn-hero" id="hero"><div class="icon">▶️</div><div><div class="t">${doneCount ? '开始今天的拼音' : '出发去拼音星球'}</div><div class="d">${d}</div></div></div>`;
   }
+  try { const L0 = nl.length ? D.lessons[nl[0]] : null; localStorage.setItem('plan_hint_pinyin', L0 ? `第 ${nl[0] + 1} 关「${L0.t === 'L' ? disp(L0.name) : L0.name}」` : (doneCount >= D.lessons.length ? '复习 + 直呼练习' : '复习 + 拼音游戏')); } catch (e) {}
   const toneOK = S.done[3] || S.settings.unlockAll, trainOK = S.done[10] || S.settings.unlockAll;
   let map = '';
   D.stages.forEach(st => {
@@ -719,5 +720,6 @@ function parentPanel() {
 
 home();
 </script>
+<script src="../common/plan.js" data-module="pinyin"></script>
 </body>
 </html>

@@ -21,7 +21,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaH
 .hero .m { font-size:3.6rem; }
 .hero h1 { font-size:1.5rem; font-weight:900; } .hero p { margin-top:6px; opacity:.92; font-size:.92rem; }
 .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-@media (max-width:460px) { .grid { grid-template-columns:1fr; } }
+@media (max-width:460px) { .grid { gap:12px; } .mod { padding:18px 10px 14px; } .mod .icon { font-size:3rem; } .mod h2 { font-size:1.1rem; margin:8px 0 4px; } .mod .badge { position:static; display:inline-block; margin-bottom:6px; } }
 .mod { background:#fff; border-radius:var(--radius); padding:24px 20px; text-decoration:none; color:var(--ink);
        box-shadow:0 5px 0 rgba(0,0,0,.05); text-align:center; position:relative; border-top:8px solid var(--accent); }
 .mod:active { transform:scale(.97); }
@@ -36,6 +36,20 @@ body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaH
          padding:12px 26px; border-radius:999px; font-weight:700; opacity:0; pointer-events:none;
          transition:opacity .3s; z-index:99; }
 .toast.show { opacity:.92; }
+.chal { display:flex; align-items:center; gap:16px; background:linear-gradient(135deg,#F5A623,#FFC860); color:#fff; border-radius:22px; padding:20px;
+        margin-bottom:16px; box-shadow:0 6px 0 #C98410; cursor:pointer; }
+.chal.done { background:linear-gradient(135deg,#3FB27F,#79D9A8); box-shadow:0 6px 0 #2A8A5F; }
+.chal .ci { font-size:2.8rem; } .chal .ct { font-size:1.25rem; font-weight:900; } .chal .cd { font-size:.9rem; margin-top:4px; font-weight:600; opacity:.95; }
+.qbar { height:12px; background:#DCE3F0; border-radius:999px; overflow:hidden; margin-bottom:12px; } .qbar i { display:block; height:100%; background:#3E6FE0; border-radius:999px; }
+.qcard { background:#fff; border-radius:22px; padding:20px; box-shadow:0 4px 0 rgba(0,0,0,.05); }
+.qh { color:#6B7690; font-weight:700; font-size:.88rem; text-align:center; } .qt { text-align:center; font-weight:900; font-size:1.2rem; margin-top:8px; }
+.spk { display:block; margin:12px auto 0; border:none; width:64px; height:64px; border-radius:50%; background:#3E6FE0; color:#fff; font-size:1.7rem; box-shadow:0 4px 0 #2C52B3; cursor:pointer; }
+.qgrid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; }
+.qo { border:3px solid #E3E8F2; border-radius:18px; padding:14px 6px; text-align:center; font-weight:800; font-size:1.1rem; cursor:pointer; }
+.qo span { display:block; font-size:1.7rem; } .qo.right { background:#E7F6EC; border-color:#3E9A62; } .qo.wrong { background:#FCEAEA; border-color:#E05555; animation:shake .4s; }
+@keyframes shake { 20%{transform:translateX(-7px)} 40%{transform:translateX(7px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+.cbtn { display:block; width:100%; border:none; border-radius:18px; padding:15px; font-size:1.1rem; font-weight:800; color:#fff; background:#3E6FE0; box-shadow:0 5px 0 #2C52B3; cursor:pointer; font-family:inherit; }
+.cbtn.ghost { background:#E6ECFA; color:#2C52B3; box-shadow:0 5px 0 #CCD7F2; margin-top:12px; }
 </style>
 </head>
 <body>
@@ -45,60 +59,71 @@ body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaH
   </div>
   <div class="hero">
     <div class="m">🔭</div>
-    <div><h1>探索博物馆</h1><p>历史 · 地理 · 生物，一起来长知识！</p></div>
+    <div><h1>探索博物馆</h1><p>生物 · 历史 · 地理 · 科学 · 太空</p></div>
   </div>
-
-  <div class="grid">
-    <a class="mod" id="mod-bio" href="bio.html" style="--accent:#3E9A62">
-      <span class="badge on">开放中</span>
-      <div class="icon">🦁</div>
-      <h2>生物世界</h2>
-      <p>动物 · 植物 · 身体</p>
-      <div class="pbar"><i id="bio-bar" style="width:0%"></i></div>
-    </a>
-
-    <a class="mod" id="mod-history" href="history.html" style="--accent:#C9862E">
-      <span class="badge on">开放中</span>
-      <div class="icon">🏛️</div>
-      <h2>历史展厅</h2>
-      <p>人物 · 事件 · 发明</p>
-      <div class="pbar"><i id="history-bar" style="width:0%"></i></div>
-    </a>
-
-    <a class="mod" id="mod-geo" href="geo.html" style="--accent:#1D8FA6">
-      <span class="badge on">开放中</span>
-      <div class="icon">🌍</div>
-      <h2>地理展厅</h2>
-      <p>中国山河 · 世界基础</p>
-      <div class="pbar"><i id="geo-bar" style="width:0%"></i></div>
-    </a>
-  </div>
+  <div id="stage"></div>
 </div>
+<script src="quizbank.js"></script>
 <script>
-function soon(name) {
-  let el = document.querySelector('.toast');
-  if (!el) { el = document.createElement('div'); el.className = 'toast'; document.body.appendChild(el); }
-  el.textContent = '🚧 ' + name + '还在建设中，很快就开放啦！';
-  el.classList.add('show');
-  clearTimeout(soon._t); soon._t = setTimeout(() => el.classList.remove('show'), 2000);
+const B = window.MUSEUM_BANK, $ = s => document.querySelector(s), stage = () => $('#stage');
+const read = k => { try { return JSON.parse(localStorage.getItem(k)) || {}; } catch (e) { return {}; } };
+const ymd = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+function weekId() { const d = new Date(); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return ymd(d); }   // 本周一
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const AUD = new Audio(); const say = k => { try { AUD.src = 'audio/' + encodeURIComponent(k) + '.m4a'; const p = AUD.play(); if (p && p.catch) p.catch(() => {}); } catch (e) {} };
+function museumDay(kind) { try { const t = ymd(new Date()); let m = read('museum_day_v1'); if (m.date !== t) m = { date: t, cards: 0, quiz: false };
+  if (kind === 'card') m.cards++; else m.quiz = true; localStorage.setItem('museum_day_v1', JSON.stringify(m)); } catch (e) {} }
+
+function readCards() { const ids = []; B.forEach(h => { const r = read(h.key).read || {}; Object.keys(r).forEach(id => ids.push(id)); }); return new Set(ids); }
+
+function home() {
+  const rc = readCards(), wk = read('museum_week_v1'), doneWk = wk.week === weekId() && wk.done;
+  const next = B.find(h => Object.keys(read(h.key).read || {}).length < h.cards.length);
+  try { localStorage.setItem('plan_hint_explore', next ? `${next.icon} ${next.name} · 还剩 ${next.cards.length - Object.keys(read(next.key).read || {}).length} 张卡` : '🎯 每周知识大挑战'); } catch (e) {}
+  stage().innerHTML = `
+    <div class="chal ${doneWk ? 'done' : ''}" id="chal"><div class="ci">${doneWk ? '🏆' : '🎯'}</div>
+      <div><div class="ct">每周知识大挑战</div><div class="cd">${rc.size < 5 ? `再读 ${5 - rc.size} 张知识卡就能挑战啦` : doneWk ? `本周已完成，答对 ${wk.best} / 10 · 可以再挑战` : `从你读过的 ${rc.size} 张卡里出 10 道题，看看还记得吗？`}</div></div></div>
+    <div class="grid">${B.map(h => { const n = Object.keys(read(h.key).read || {}).length, badge = read(h.key).badge;
+      return `<a class="mod" href="${h.file}" style="--accent:${h.color}">
+        <span class="badge on">${badge ? '🏅 已获勋章' : n >= h.cards.length ? '已读完' : '开放中'}</span>
+        <div class="icon">${h.icon}</div><h2>${h.name}</h2><p>已读 ${n} / ${h.cards.length}</p>
+        <div class="pbar"><i style="width:${n / h.cards.length * 100}%"></i></div></a>`; }).join('')}</div>`;
+  $('#chal').onclick = () => rc.size < 5 ? toast('先去展厅读几张知识卡吧～') : challenge(rc);
 }
-(function () {
-  try {
-    const bio = JSON.parse(localStorage.getItem('museum_bio_v1'));
-    const bioRead = bio && bio.read ? Object.keys(bio.read).length : 0;
-    document.getElementById('bio-bar').style.width = (bioRead / 10 * 100) + '%';
-  } catch (e) {}
-  try {
-    const hist = JSON.parse(localStorage.getItem('museum_history_v1'));
-    const histRead = hist && hist.read ? Object.keys(hist.read).length : 0;
-    document.getElementById('history-bar').style.width = (histRead / 10 * 100) + '%';
-  } catch (e) {}
-  try {
-    const geo = JSON.parse(localStorage.getItem('museum_geo_v1'));
-    const geoRead = geo && geo.read ? Object.keys(geo.read).length : 0;
-    document.getElementById('geo-bar').style.width = (geoRead / 10 * 100) + '%';
-  } catch (e) {}
-})();
+
+function challenge(rc) {
+  const pool = []; B.forEach(h => h.quiz.forEach(q => { if (rc.has(q.card)) pool.push(Object.assign({ hall: h }, q)); }));
+  const qs = shuffle(pool).slice(0, 10); let i = 0, right = 0;
+  const step = () => {
+    if (i >= qs.length) return finish();
+    const q = qs[i], opts = shuffle(q.opts); let lock = false, first = true;
+    stage().innerHTML = `<div class="qbar"><i style="width:${i / qs.length * 100}%"></i></div>
+      <div class="qcard"><div class="qh">${q.hall.icon} ${q.hall.name} · 第 ${i + 1} / ${qs.length} 题</div><div class="qt">${q.q}</div>
+      <button class="spk" id="spk">🔊</button>
+      <div class="qgrid">${opts.map((o, k) => `<div class="qo" data-k="${k}">${o[1] ? `<span>${o[1]}</span>` : ''}${o[0]}</div>`).join('')}</div></div>`;
+    $('#spk').onclick = () => say(q.id); setTimeout(() => say(q.id), 300);
+    document.querySelectorAll('.qo').forEach(el => el.onclick = () => {
+      if (lock) return; const o = opts[+el.dataset.k];
+      if (o[2]) { lock = true; if (first) right++; el.classList.add('right'); say(o[0]); i++; setTimeout(step, 1100); }
+      else { first = false; el.classList.add('wrong'); setTimeout(() => el.classList.remove('wrong'), 450); }
+    });
+  };
+  const finish = () => {
+    const wk = read('museum_week_v1'), w = weekId();
+    const best = wk.week === w ? Math.max(wk.best || 0, right) : right;
+    localStorage.setItem('museum_week_v1', JSON.stringify({ week: w, done: true, best }));
+    museumDay('quiz');
+    stage().innerHTML = `<div class="qcard" style="text-align:center;padding:30px 16px"><div style="font-size:4rem">${right >= 8 ? '🏆' : '💪'}</div>
+      <h2 style="margin:10px 0">答对 ${right} / ${qs.length} 题！</h2><p style="color:#6B7690;margin-bottom:18px">${right >= 8 ? '记得真牢，你是知识小博士！' : '答错的知识卡，再去展厅读一读吧～'}</p>
+      <button class="cbtn" id="again">再挑战一次 🔁</button><button class="cbtn ghost" id="back2">回到博物馆</button></div>`;
+    $('#again').onclick = () => challenge(readCards()); $('#back2').onclick = home;
+  };
+  step();
+}
+function toast(msg) { let el = $('.toast'); if (!el) { el = document.createElement('div'); el.className = 'toast'; document.body.appendChild(el); }
+  el.textContent = msg; el.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('show'), 2000); }
+home();
 </script>
+<script src="../common/plan.js" data-module="explore"></script>
 </body>
 </html>

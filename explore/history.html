@@ -81,6 +81,12 @@ body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaH
   40%{transform:translate(calc(var(--tx)*.4),calc(var(--ty)*.3)) scale(1.6) rotate(25deg);opacity:1}
   100%{transform:translate(var(--tx),var(--ty)) scale(.3) rotate(360deg);opacity:0} }
 .muted { color:var(--muted); font-size:.9rem; }
+.series { font-weight:900; color:var(--green-d); font-size:.95rem; margin:12px 2px 2px; }
+.series:first-child { margin-top:2px; }
+.series .new { background:#FFE7D6; color:#D9480F; border-radius:999px; padding:2px 10px; font-size:.75rem; margin-left:6px; }
+.bw { display:flex; flex-direction:column; align-items:center; gap:4px; min-width:84px; }
+.bw small { font-size:.78rem; font-weight:800; color:var(--muted); }
+.bw.locked span { filter:grayscale(1); opacity:.3; }
 </style>
 </head>
 <body>
@@ -94,9 +100,12 @@ body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaH
 </div>
 
 <script>
-const CARDS = [{"id": "h01", "emoji": "🌊", "title": "大禹为什么三次路过家门都不进去？", "narr": "很久很久以前，黄河发大水，淹没了很多村庄。大禹的爸爸治水没有成功，大禹接着治水，他带领大家挖河道，把洪水引到大海里去。治水的十三年里，大禹三次经过自己家门口，都没有进去看一眼，因为他一心想着早点把水治好，让大家过上安稳日子。", "fact": "大禹治水成功后，人们非常感激他，后来还推选他做了部落联盟的首领！"}, {"id": "h02", "emoji": "📜", "title": "汉字是谁发明的？", "narr": "传说很久以前，人们没有文字，什么事都要靠脑子记，很容易忘记或者搞错。有一个叫仓颉的人，他看着山川河流、鸟兽脚印的形状，从中得到启发，创造出了最早的文字。从此，人们的想法和知识就可以被记录下来，一代一代传下去了。", "fact": "你现在认识的\"人\"\"日\"\"月\"这些汉字，最早的样子就是照着它们的样子画出来的图画哦！"}, {"id": "h03", "emoji": "📚", "title": "孔子是一位什么样的老师？", "narr": "孔子是两千五百多年前的一位大老师，他一生教过三千多个学生。那个时候，只有有钱人家的孩子才能读书，孔子却觉得，不管穷人还是富人，只要想学习，他都愿意教，这叫\"有教无类\"。他说过的很多话，比如\"温故而知新\"，到现在大家还在学习呢。", "fact": "孔子的生日在每年的9月28日，很多地方到现在还会在这一天举行盛大的祭孔典礼！"}, {"id": "h04", "emoji": "👑", "title": "中国历史上第一位皇帝是谁？", "narr": "两千多年前，中国分成好几个国家，经常打仗。秦国的国王打败了其他国家，把中国统一了起来，他给自己起了一个新称号，叫\"皇帝\"，他就是秦始皇。统一之后，他规定全国用一样的文字、一样的钱币，还统一了道路的宽度，方便大家交流和做生意。", "fact": "秦始皇去世后，人们在他的陵墓旁边发现了成千上万个真人大小的兵马俑，非常壮观！"}, {"id": "h05", "emoji": "🧱", "title": "万里长城是用来做什么的？", "narr": "长城是古时候人们为了抵御北方敌人的进攻，沿着高山峻岭修建起来的一道高高的城墙。它一节一节地连起来，长度超过两万里，是世界上最长的建筑。很多朝代都修建过长城，我们现在看到的长城，大部分是明朝修建的。", "fact": "长城并不是直的一条线，而是弯弯曲曲的，因为它顺着山势修建，这样敌人更难爬上来！"}, {"id": "h06", "emoji": "🏺", "title": "司马光遇到危险时是怎么做的？", "narr": "司马光小时候，有一次和小伙伴在花园里玩，一个小朋友不小心掉进了装满水的大水缸里。别的小朋友都吓哭了，只有司马光冷静下来，捡起一块大石头，用力把水缸砸破，水一下子流了出来，掉进缸里的小朋友因此得救了。", "fact": "这个故事发生在差不多一千年前，直到今天，\"司马光砸缸\"还被写进课本，教大家遇到危险要冷静动脑筋！"}, {"id": "h07", "emoji": "🎋", "title": "花木兰为什么女扮男装去打仗？", "narr": "古时候，国家征兵打仗，花木兰家里没有成年的男子，只有年老的父亲。花木兰不忍心让父亲上战场，就女扮男装，替父亲去参军。她在军队里立下了很多功劳，打完仗回到家乡后，才让大家知道，原来这位勇敢的战士是位女孩子。", "fact": "花木兰的故事被写成了一首古老的诗，叫《木兰辞》，里面有一句\"谁说女子不如男\"，一直流传到现在！"}, {"id": "h08", "emoji": "🧭", "title": "中国古代有哪四大发明？", "narr": "中国古代人非常聪明，发明了四样对世界影响很大的东西，分别是造纸术、印刷术、指南针和火药。造纸术让人们能方便地写字记事；指南针能帮助人们在大海上找到方向；这四大发明后来传到了世界各地，帮助了很多国家的发展。", "fact": "在纸发明出来之前，古人是把字写在又重又占地方的竹简上，一本书要用一大捆竹子呢！"}, {"id": "h09", "emoji": "🐫", "title": "丝绸之路是谁开辟的？", "narr": "两千多年前，一个叫张骞的人奉命出使西域，也就是现在的中亚地区，路上经历了很多艰难险阻，还被抓住关了十几年，但他一直没有放弃。他回来后，打通了一条通往西方的道路，中国的丝绸、茶叶从这里运出去，西方的葡萄、核桃也传了进来，这条路后来被称为\"丝绸之路\"。", "fact": "丝绸之路上运送货物的主要交通工具是骆驼，因为骆驼能在沙漠里走很远的路还不用喝水！"}, {"id": "h10", "emoji": "⛵", "title": "郑和为什么要七次出海远航？", "narr": "六百多年前，明朝的郑和奉命率领庞大的船队出海，一共航行了七次，去过东南亚、印度，最远到过非洲。他的船队带去了中国的瓷器、丝绸，和沿途的国家友好地做生意、交朋友，这在当时是世界航海史上一次了不起的壮举。", "fact": "郑和第一次出海时，船队一共有两百多艘船、两万七千多人，是那个时代世界上最大的船队！"}];
-const QUIZ = [{"id": "hq01", "card": "h01", "q": "大禹治水时，几次经过家门都没进去？", "opts": [["一次", "", 0], ["两次", "", 0], ["三次", "", 1], ["四次", "", 0]]}, {"id": "hq02", "card": "h02", "q": "传说汉字是谁发明的？", "opts": [["孔子", "", 0], ["仓颉", "📜", 1], ["大禹", "", 0], ["秦始皇", "", 0]]}, {"id": "hq03", "card": "h03", "q": "孔子觉得教学生应该怎么样？", "opts": [["只教有钱人", "", 0], ["不管穷富都教", "📚", 1], ["只教男孩", "", 0], ["不收学生", "", 0]]}, {"id": "hq04", "card": "h04", "q": "中国历史上第一个皇帝是谁？", "opts": [["秦始皇", "👑", 1], ["孔子", "", 0], ["郑和", "", 0], ["张骞", "", 0]]}, {"id": "hq05", "card": "h05", "q": "长城当初主要是用来做什么的？", "opts": [["抵御敌人", "🧱", 1], ["做生意", "", 0], ["旅游观光", "", 0], ["种庄稼", "", 0]]}, {"id": "hq06", "card": "h06", "q": "司马光用什么方法救出掉进缸里的小朋友？", "opts": [["叫大人", "", 0], ["砸破水缸", "🏺", 1], ["跳进水缸", "", 0], ["找绳子", "", 0]]}, {"id": "hq07", "card": "h07", "q": "花木兰为什么女扮男装参军？", "opts": [["想当英雄", "", 0], ["替父亲去打仗", "🎋", 1], ["喜欢打仗", "", 0], ["被迫参军", "", 0]]}, {"id": "hq08", "card": "h08", "q": "下面哪个不属于四大发明？", "opts": [["造纸术", "", 0], ["指南针", "🧭", 0], ["印刷术", "", 0], ["电灯", "💡", 1]]}, {"id": "hq09", "card": "h09", "q": "丝绸之路上主要靠什么运送货物？", "opts": [["骆驼", "🐫", 1], ["汽车", "", 0], ["火车", "", 0], ["轮船", "", 0]]}, {"id": "hq10", "card": "h10", "q": "郑和下西洋一共航行了几次？", "opts": [["三次", "", 0], ["五次", "", 0], ["七次", "⛵", 1], ["十次", "", 0]]}];
+const CARDS = [{"id": "h01", "emoji": "🌊", "title": "大禹为什么三次路过家门都不进去？", "narr": "很久很久以前，黄河发大水，淹没了很多村庄。大禹的爸爸治水没有成功，大禹接着治水，他带领大家挖河道，把洪水引到大海里去。治水的十三年里，大禹三次经过自己家门口，都没有进去看一眼，因为他一心想着早点把水治好，让大家过上安稳日子。", "fact": "大禹治水成功后，人们非常感激他，后来还推选他做了部落联盟的首领！"}, {"id": "h02", "emoji": "📜", "title": "汉字是谁发明的？", "narr": "传说很久以前，人们没有文字，什么事都要靠脑子记，很容易忘记或者搞错。有一个叫仓颉的人，他看着山川河流、鸟兽脚印的形状，从中得到启发，创造出了最早的文字。从此，人们的想法和知识就可以被记录下来，一代一代传下去了。", "fact": "你现在认识的\"人\"\"日\"\"月\"这些汉字，最早的样子就是照着它们的样子画出来的图画哦！"}, {"id": "h03", "emoji": "📚", "title": "孔子是一位什么样的老师？", "narr": "孔子是两千五百多年前的一位大老师，他一生教过三千多个学生。那个时候，只有有钱人家的孩子才能读书，孔子却觉得，不管穷人还是富人，只要想学习，他都愿意教，这叫\"有教无类\"。他说过的很多话，比如\"温故而知新\"，到现在大家还在学习呢。", "fact": "孔子的生日在每年的9月28日，很多地方到现在还会在这一天举行盛大的祭孔典礼！"}, {"id": "h04", "emoji": "👑", "title": "中国历史上第一位皇帝是谁？", "narr": "两千多年前，中国分成好几个国家，经常打仗。秦国的国王打败了其他国家，把中国统一了起来，他给自己起了一个新称号，叫\"皇帝\"，他就是秦始皇。统一之后，他规定全国用一样的文字、一样的钱币，还统一了道路的宽度，方便大家交流和做生意。", "fact": "秦始皇去世后，人们在他的陵墓旁边发现了成千上万个真人大小的兵马俑，非常壮观！"}, {"id": "h05", "emoji": "🧱", "title": "万里长城是用来做什么的？", "narr": "长城是古时候人们为了抵御北方敌人的进攻，沿着高山峻岭修建起来的一道高高的城墙。它一节一节地连起来，长度超过两万里，是世界上最长的建筑。很多朝代都修建过长城，我们现在看到的长城，大部分是明朝修建的。", "fact": "长城并不是直的一条线，而是弯弯曲曲的，因为它顺着山势修建，这样敌人更难爬上来！"}, {"id": "h06", "emoji": "🏺", "title": "司马光遇到危险时是怎么做的？", "narr": "司马光小时候，有一次和小伙伴在花园里玩，一个小朋友不小心掉进了装满水的大水缸里。别的小朋友都吓哭了，只有司马光冷静下来，捡起一块大石头，用力把水缸砸破，水一下子流了出来，掉进缸里的小朋友因此得救了。", "fact": "这个故事发生在差不多一千年前，直到今天，\"司马光砸缸\"还被写进课本，教大家遇到危险要冷静动脑筋！"}, {"id": "h07", "emoji": "🎋", "title": "花木兰为什么女扮男装去打仗？", "narr": "古时候，国家征兵打仗，花木兰家里没有成年的男子，只有年老的父亲。花木兰不忍心让父亲上战场，就女扮男装，替父亲去参军。她在军队里立下了很多功劳，打完仗回到家乡后，才让大家知道，原来这位勇敢的战士是位女孩子。", "fact": "花木兰的故事被写成了一首古老的诗，叫《木兰辞》，里面有一句\"谁说女子不如男\"，一直流传到现在！"}, {"id": "h08", "emoji": "🧭", "title": "中国古代有哪四大发明？", "narr": "中国古代人非常聪明，发明了四样对世界影响很大的东西，分别是造纸术、印刷术、指南针和火药。造纸术让人们能方便地写字记事；指南针能帮助人们在大海上找到方向；这四大发明后来传到了世界各地，帮助了很多国家的发展。", "fact": "在纸发明出来之前，古人是把字写在又重又占地方的竹简上，一本书要用一大捆竹子呢！"}, {"id": "h09", "emoji": "🐫", "title": "丝绸之路是谁开辟的？", "narr": "两千多年前，一个叫张骞的人奉命出使西域，也就是现在的中亚地区，路上经历了很多艰难险阻，还被抓住关了十几年，但他一直没有放弃。他回来后，打通了一条通往西方的道路，中国的丝绸、茶叶从这里运出去，西方的葡萄、核桃也传了进来，这条路后来被称为\"丝绸之路\"。", "fact": "丝绸之路上运送货物的主要交通工具是骆驼，因为骆驼能在沙漠里走很远的路还不用喝水！"}, {"id": "h10", "emoji": "⛵", "title": "郑和为什么要七次出海远航？", "narr": "六百多年前，明朝的郑和奉命率领庞大的船队出海，一共航行了七次，去过东南亚、印度，最远到过非洲。他的船队带去了中国的瓷器、丝绸，和沿途的国家友好地做生意、交朋友，这在当时是世界航海史上一次了不起的壮举。", "fact": "郑和第一次出海时，船队一共有两百多艘船、两万七千多人，是那个时代世界上最大的船队！"}, {"id": "h11", "emoji": "🐢", "title": "最早的汉字写在哪里？", "narr": "三千多年前的商朝，人们把文字刻在乌龟的甲壳和牛的骨头上，这种文字叫甲骨文。甲骨文是目前发现的中国最早的成熟文字，很多字长得就像一幅画，比如\"日\"像一个太阳，\"山\"像三座山峰。", "fact": "一百多年前，有位学者在一种叫\"龙骨\"的中药上，发现了刻着的古老文字，这才找到了甲骨文！"}, {"id": "h12", "emoji": "🌿", "title": "神农为什么要尝百草？", "narr": "传说很久很久以前，人们不知道哪些植物能吃，哪些植物能治病。有一位叫神农的首领，亲自去尝各种各样的花草，有好几次都中了毒。他把尝过的草药记下来，教大家种庄稼、用草药治病。", "fact": "传说神农还发现了茶叶，中国是世界上最早种茶、喝茶的国家！"}, {"id": "h13", "emoji": "🌙", "title": "\"诗仙\"李白是谁？", "narr": "李白是唐朝的大诗人，人们叫他\"诗仙\"。他一生写了很多很多诗，想象力特别丰富。你一定会背他写的《静夜思》：床前明月光，疑是地上霜。举头望明月，低头思故乡。", "fact": "传说李白小时候不爱读书，看到一位老婆婆要把铁棒磨成针，从此用功学习，这就是\"只要功夫深，铁杵磨成针\"的故事！"}, {"id": "h14", "emoji": "⭕", "title": "祖冲之算出了什么？", "narr": "祖冲之是一千五百多年前南北朝时期的数学家。圆的一圈长度，总是它直径的三倍多一点，这个数叫圆周率。祖冲之经过非常非常多的计算，把圆周率算到了小数点后面第七位，在当时是全世界最精确的。", "fact": "祖冲之算出的圆周率，在世界上领先了将近一千年，月球上还有一座环形山是用他的名字命名的呢！"}, {"id": "h15", "emoji": "📜", "title": "唐僧取经是真的吗？", "narr": "《西游记》里唐僧取经的故事，原型是唐朝的一位高僧，名叫玄奘。为了学习佛经，他从长安出发，走过沙漠，翻过雪山，到了遥远的天竺，也就是现在的印度。十几年后，他带着六百多部经书回到了长安。", "fact": "玄奘把一路上的见闻写成了一本书，叫《大唐西域记》，到今天还是了解古代历史的宝贵资料！"}, {"id": "h16", "emoji": "🌱", "title": "李时珍写了一本什么书？", "narr": "李时珍是明朝的一位医生。他发现以前的医书里有不少错误，就决心写一本新的药书。他走遍了很多大山，亲自采草药、尝草药，还向农民和猎人请教，花了二十七年，终于写成了《本草纲目》。", "fact": "《本草纲目》里记录了一千八百多种药物，还被翻译成很多种外国文字，传到了世界各地！"}, {"id": "h17", "emoji": "🌉", "title": "赵州桥有多古老？", "narr": "河北有一座古老的石拱桥，叫赵州桥，是一千四百多年前隋朝的工匠李春设计建造的。大桥洞的两头，各有两个小桥洞，发大水的时候，水可以从小桥洞里流过去，减少对桥身的冲击，还让桥变得更轻。", "fact": "赵州桥经历了很多次洪水和地震，一千多年过去了，今天依然稳稳地立在河上！"}, {"id": "h18", "emoji": "🛡️", "title": "岳飞背上刺了什么字？", "narr": "岳飞是宋朝的一位大将军。他从小刻苦读书、练习武艺，长大后带领岳家军保卫国家，打了很多胜仗。传说岳飞的妈妈在他的背上刺了\"精忠报国\"四个字，提醒他一心一意报效国家。", "fact": "岳家军的纪律非常严明，就算天冷受冻，也不拆老百姓的房子取暖；就算饿着肚子，也不抢老百姓的粮食！"}, {"id": "h19", "emoji": "🐘", "title": "曹冲是怎么称大象的？", "narr": "三国时期，有人送给曹操一头大象。大家都想知道它有多重，可是没有那么大的秤。曹操的小儿子曹冲想了个好办法：把大象赶上船，在船身被水淹到的地方画一条线；再把大象牵下来，往船上装石头，装到船沉到线那里，再称一称这些石头，加起来就是大象的重量。", "fact": "曹冲称象的时候只有五六岁，和你现在差不多大，真是个爱动脑筋的孩子！"}, {"id": "h20", "emoji": "🎉", "title": "国庆节是怎么来的？", "narr": "1949年10月1日，在北京天安门城楼上举行了开国大典，宣告中华人民共和国成立了。五星红旗第一次在天安门广场升起，从那以后，每年的10月1日就是我们的国庆节。", "fact": "开国大典上升起的第一面五星红旗，现在珍藏在北京的中国国家博物馆里！"}];
+const QUIZ = [{"id": "hq01", "card": "h01", "q": "大禹治水时，几次经过家门都没进去？", "opts": [["一次", "", 0], ["两次", "", 0], ["三次", "", 1], ["四次", "", 0]]}, {"id": "hq02", "card": "h02", "q": "传说汉字是谁发明的？", "opts": [["孔子", "", 0], ["仓颉", "📜", 1], ["大禹", "", 0], ["秦始皇", "", 0]]}, {"id": "hq03", "card": "h03", "q": "孔子觉得教学生应该怎么样？", "opts": [["只教有钱人", "", 0], ["不管穷富都教", "📚", 1], ["只教男孩", "", 0], ["不收学生", "", 0]]}, {"id": "hq04", "card": "h04", "q": "中国历史上第一个皇帝是谁？", "opts": [["秦始皇", "👑", 1], ["孔子", "", 0], ["郑和", "", 0], ["张骞", "", 0]]}, {"id": "hq05", "card": "h05", "q": "长城当初主要是用来做什么的？", "opts": [["抵御敌人", "🧱", 1], ["做生意", "", 0], ["旅游观光", "", 0], ["种庄稼", "", 0]]}, {"id": "hq06", "card": "h06", "q": "司马光用什么方法救出掉进缸里的小朋友？", "opts": [["叫大人", "", 0], ["砸破水缸", "🏺", 1], ["跳进水缸", "", 0], ["找绳子", "", 0]]}, {"id": "hq07", "card": "h07", "q": "花木兰为什么女扮男装参军？", "opts": [["想当英雄", "", 0], ["替父亲去打仗", "🎋", 1], ["喜欢打仗", "", 0], ["被迫参军", "", 0]]}, {"id": "hq08", "card": "h08", "q": "下面哪个不属于四大发明？", "opts": [["造纸术", "", 0], ["指南针", "🧭", 0], ["印刷术", "", 0], ["电灯", "💡", 1]]}, {"id": "hq09", "card": "h09", "q": "丝绸之路上主要靠什么运送货物？", "opts": [["骆驼", "🐫", 1], ["汽车", "", 0], ["火车", "", 0], ["轮船", "", 0]]}, {"id": "hq10", "card": "h10", "q": "郑和下西洋一共航行了几次？", "opts": [["三次", "", 0], ["五次", "", 0], ["七次", "⛵", 1], ["十次", "", 0]]}, {"id": "hq11", "card": "h11", "q": "甲骨文刻在什么上面？", "opts": [["龟甲和兽骨", "🐢", 1], ["纸上", "", 0], ["衣服上", "", 0], ["玻璃上", "", 0]]}, {"id": "hq12", "card": "h12", "q": "神农为什么要尝百草？", "opts": [["找能治病的草药", "🌿", 1], ["因为太饿了", "", 0], ["为了好玩", "", 0], ["比赛吃草", "", 0]]}, {"id": "hq13", "card": "h13", "q": "《静夜思》是谁写的？", "opts": [["李白", "🌙", 1], ["孔子", "", 0], ["秦始皇", "", 0], ["司马光", "", 0]]}, {"id": "hq14", "card": "h14", "q": "祖冲之是一位什么家？", "opts": [["数学家", "⭕", 1], ["画家", "", 0], ["音乐家", "", 0], ["厨师", "", 0]]}, {"id": "hq15", "card": "h15", "q": "唐僧取经的故事，原型是哪位高僧？", "opts": [["玄奘", "📜", 1], ["孙悟空", "", 0], ["猪八戒", "", 0], ["李白", "", 0]]}, {"id": "hq16", "card": "h16", "q": "李时珍写的书叫什么？", "opts": [["本草纲目", "🌱", 1], ["西游记", "", 0], ["静夜思", "", 0], ["三字经", "", 0]]}, {"id": "hq17", "card": "h17", "q": "赵州桥两头的小桥洞有什么用？", "opts": [["让大水流过去", "🌉", 1], ["给小鱼住", "", 0], ["让大船通过", "", 0], ["只是为了好看", "", 0]]}, {"id": "hq18", "card": "h18", "q": "岳飞背上刺的是哪四个字？", "opts": [["精忠报国", "🛡️", 1], ["好好学习", "", 0], ["天天向上", "", 0], ["一路平安", "", 0]]}, {"id": "hq19", "card": "h19", "q": "曹冲用什么代替大象来称重量？", "opts": [["石头", "🪨", 1], ["木头", "", 0], ["小猪", "", 0], ["水", "", 0]]}, {"id": "hq20", "card": "h20", "q": "我们的国庆节是哪一天？", "opts": [["10月1日", "🎉", 1], ["1月1日", "", 0], ["6月1日", "", 0], ["5月1日", "", 0]]}];
+const HALL = {"badges": [{"n": 10, "name": "历史小达人", "icon": "🏛️🏅"}, {"n": 20, "name": "历史小博士", "icon": "🏛️🎓"}]};
 const CMAP = {}; CARDS.forEach(c => CMAP[c.id] = c);
+const SERIES = ['第一辑', '第二辑', '第三辑', '第四辑'];
+const MULTI = HALL.badges.length > 1;
 
 /* ============ 存储 ============ */
 const KEY = 'museum_history_v1';
@@ -106,10 +115,19 @@ function load() { if (S) return S;
   if (!S) S = {};
   S.read = S.read || {};           // cardId -> true
   S.stars = S.stars || 0;
-  S.badge = S.badge || false;      // 历史小达人
+  S.badge = S.badge || false;      // 第一辑勋章（第二辑勋章存 badge2）
   S.bestQuiz = S.bestQuiz || 0;
   return S; }
 function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
+
+/* ============ 分辑与勋章 ============ */
+const has = t => t === 0 ? !!load().badge : !!load()['badge' + (t + 1)];
+function give(t) { if (t === 0) S.badge = true; else S['badge' + (t + 1)] = true; }
+const tierCards = t => CARDS.slice(t ? HALL.badges[t - 1].n : 0, HALL.badges[t].n);
+const tierRead = t => tierCards(t).every(c => load().read[c.id]);
+const tierOf = id => { const i = CARDS.findIndex(c => c.id === id); return HALL.badges.findIndex(b => i < b.n); };
+function curTier() { for (let t = 0; t < HALL.badges.length; t++) if (!has(t)) return t; return -1; }
+const readNum = () => CARDS.filter(c => load().read[c.id]).length;
 
 /* ============ 语音（预录音频） ============ */
 let _audio = null;
@@ -152,37 +170,48 @@ let readIdx = 0, readQueue = [];
 function home() {
   load();
   document.getElementById('stars').textContent = S.stars;
-  const readCount = Object.keys(S.read).length;
-  const allRead = readCount >= CARDS.length;
+  const readCount = readNum(), t = curTier();
+  const unread = CARDS.filter(c => !S.read[c.id]);
 
   let hero;
-  if (S.badge) {
+  if (t >= 0 && tierRead(t)) {
     hero = `<div class="btn-hero gold" onclick="startQuiz()">
-      <div class="icon">🏆</div><div><div class="t">历史小达人</div><div class="d">再测一次，挑战满分！</div></div></div>`;
-  } else if (allRead) {
-    hero = `<div class="btn-hero gold" onclick="startQuiz()">
-      <div class="icon">🎯</div><div><div class="t">去挑战测验</div><div class="d">全部读完啦，来赢一枚勋章吧！</div></div></div>`;
-  } else {
-    hero = `<div class="btn-hero" onclick="startReading()">
+      <div class="icon">🎯</div><div><div class="t">去挑战测验</div><div class="d">${MULTI ? SERIES[t] : ''}全部读完啦，来赢「${HALL.badges[t].name}」勋章吧！</div></div></div>`;
+  } else if (unread.length) {
+    const ut = tierOf(unread[0].id), fresh = ut > 0 && !tierCards(ut).some(c => S.read[c.id]);
+    hero = fresh
+      ? `<div class="btn-hero" onclick="startReading()">
+      <div class="icon">🆕</div><div><div class="t">${SERIES[ut]}开放啦</div><div class="d">有 ${tierCards(ut).length} 张新知识卡，快来探索吧！</div></div></div>`
+      : `<div class="btn-hero" onclick="startReading()">
       <div class="icon">▶️</div><div><div class="t">${readCount ? '继续探索' : '开始探索'}</div><div class="d">已读 ${readCount} / ${CARDS.length} 个知识卡</div></div></div>`;
+  } else {
+    hero = `<div class="btn-hero gold" onclick="startQuiz()">
+      <div class="icon">🏆</div><div><div class="t">${HALL.badges[HALL.badges.length - 1].name}</div><div class="d">再测一次，挑战满分！</div></div></div>`;
   }
 
-  const rows = CARDS.map(c => `
+  const row = c => `
     <div class="topic-row" onclick="openCard('${c.id}')">
       <span class="e">${c.emoji}</span><span class="t">${c.title}</span>
       <span class="st">${S.read[c.id] ? '✅' : '⬜'}</span>
-    </div>`).join('');
+    </div>`;
+  const rows = HALL.badges.map((b, k) => (MULTI ? `<div class="series">${SERIES[k]}${k && !tierCards(k).some(c => S.read[c.id]) ? '<span class="new">新</span>' : ''}</div>` : '')
+    + tierCards(k).map(row).join('')).join('');
+  const wall = HALL.badges.map((b, k) => `<div class="bw ${has(k) ? '' : 'locked'}"><span>${b.icon}</span><small>${b.name}</small></div>`).join('');
 
   stage().innerHTML = `${hero}
     <div class="card">
       <div style="font-weight:800;margin-bottom:6px">📚 知识卡片（点击可单独复习）</div>
       <div class="topic-list">${rows}</div>
     </div>
-    ${S.badge ? `<div class="card" style="text-align:center"><div style="font-weight:800;margin-bottom:8px">🎖️ 我的勋章</div><div class="badge-wall"><span title="历史小达人">🏛️🏅</span></div></div>` : ''}`;
+    ${S.badge || MULTI ? `<div class="card" style="text-align:center"><div style="font-weight:800;margin-bottom:8px">🎖️ 我的勋章</div><div class="badge-wall">${wall}</div></div>` : ''}`;
 }
 
 /* —— 阅读流程 —— */
-function startReading() { readQueue = CARDS.filter(c => !load().read[c.id]); readIdx = 0; renderCard(); }
+function startReading() {
+  const unread = CARDS.filter(c => !load().read[c.id]);
+  const t = unread.length ? tierOf(unread[0].id) : 0;
+  readQueue = unread.filter(c => tierOf(c.id) === t); readIdx = 0; renderCard();
+}
 function openCard(id) { readQueue = [CMAP[id]]; readIdx = 0; renderCard(true); }
 
 function dots() { return `<div class="dots">${readQueue.map((_, i) =>
@@ -216,20 +245,31 @@ function nextCard(id, single) {
 function readingDone() {
   if (window.StudyPlan) StudyPlan.cheer();
   confetti();
-  const readCount = Object.keys(load().read).length;
-  const allRead = readCount >= CARDS.length;
+  const t = curTier(), ready = t >= 0 && tierRead(t);
+  const all = readNum() >= CARDS.length;
   stage().innerHTML = `
     <div class="card celebrate">
       <div class="big">🌟</div><h2>今天的探索完成啦！</h2>
-      <p>${allRead ? '十个知识卡都读完了，快去挑战测验吧！' : '明天再来读更多知识卡～'}</p>
-      ${allRead ? `<button class="btn" onclick="startQuiz()">去挑战测验 🎯</button>` : ''}
+      <p>${ready ? `${MULTI ? SERIES[t] + '的' : ''}知识卡都读完了，快去挑战测验吧！` : all ? '这个展厅的知识卡全读完啦，真了不起！' : '明天再来读更多知识卡～'}</p>
+      ${ready ? `<button class="btn" onclick="startQuiz()">去挑战测验 🎯</button>` : ''}
       <button class="btn ghost" onclick="home()">回到博物馆</button>
     </div>`;
 }
 
 /* —— 测验流程 —— */
-let quiz = [], qIdx = 0, qRight = 0, lock = false;
-function startQuiz() { quiz = shuffle(QUIZ.slice()).slice(0, 6); qIdx = 0; qRight = 0; renderQ(); }
+let quiz = [], qIdx = 0, qRight = 0, lock = false, quizTier = -1;
+function startQuiz() {
+  const t = curTier();
+  let pool;
+  if (t >= 0 && tierRead(t)) {           // 冲刺本辑勋章：只考这一辑
+    quizTier = t; const ids = new Set(tierCards(t).map(c => c.id));
+    pool = QUIZ.filter(q => ids.has(q.card));
+  } else {                                // 复测：从读过的卡里出题
+    quizTier = -1; pool = QUIZ.filter(q => load().read[q.card]);
+    if (pool.length < 6) pool = QUIZ.filter(q => tierOf(q.card) === 0);
+  }
+  quiz = shuffle(pool).slice(0, 6); qIdx = 0; qRight = 0; renderQ();
+}
 function renderQ() {
   lock = false;
   if (qIdx >= quiz.length) return quizDone();
@@ -259,21 +299,23 @@ function quizDone() {
   load();
   const pct = Math.round(qRight / quiz.length * 100);
   const passed = pct >= 80;
+  const b = quizTier >= 0 ? HALL.badges[quizTier] : null;
   let starMsg = '';
   if (passed) {
-    if (!S.badge) { S.badge = true; S.stars += 2; starMsg = '获得「历史小达人」勋章 + 2颗星星！'; }
+    if (b && !has(quizTier)) { give(quizTier); S.stars += 2; starMsg = `获得「${b.name}」勋章 + 2颗星星！`; }
     else { S.stars += 1; starMsg = '得到一颗星星！'; }
   }
   S.bestQuiz = Math.max(S.bestQuiz, pct);
   save();
   document.getElementById('stars').textContent = S.stars;
-  if (passed) { coinBurst(stage(), passed ? 3 : 1); confetti(); }
+  if (passed) { coinBurst(stage(), 3); confetti(); }
+  const more = passed && b && CARDS.some(c => !S.read[c.id]);
   stage().innerHTML = `
     <div class="card celebrate">
       <div class="big">${passed ? '🏆' : '💪'}</div>
       <h2>答对 ${qRight} / ${quiz.length} 题！${starMsg}</h2>
-      <p>${passed ? '你是真正的历史小达人！' : '再读一读知识卡，下次一定能拿到勋章～'}</p>
-      <button class="btn" onclick="startQuiz()">再测一次 🔁</button>
+      <p>${passed ? (b ? `你是真正的${b.name}！` : '知识记得真牢，太棒啦！') : '再读一读知识卡，下次一定能拿到勋章～'}</p>
+      ${more ? `<button class="btn" onclick="startReading()">去读新的知识卡 🆕</button>` : `<button class="btn" onclick="startQuiz()">再测一次 🔁</button>`}
       <button class="btn ghost" onclick="home()">回到博物馆</button>
     </div>`;
 }

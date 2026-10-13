@@ -81,6 +81,12 @@ body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaH
   40%{transform:translate(calc(var(--tx)*.4),calc(var(--ty)*.3)) scale(1.6) rotate(25deg);opacity:1}
   100%{transform:translate(var(--tx),var(--ty)) scale(.3) rotate(360deg);opacity:0} }
 .muted { color:var(--muted); font-size:.9rem; }
+.series { font-weight:900; color:var(--green-d); font-size:.95rem; margin:12px 2px 2px; }
+.series:first-child { margin-top:2px; }
+.series .new { background:#FFE7D6; color:#D9480F; border-radius:999px; padding:2px 10px; font-size:.75rem; margin-left:6px; }
+.bw { display:flex; flex-direction:column; align-items:center; gap:4px; min-width:84px; }
+.bw small { font-size:.78rem; font-weight:800; color:var(--muted); }
+.bw.locked span { filter:grayscale(1); opacity:.3; }
 </style>
 </head>
 <body>
@@ -96,7 +102,10 @@ body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaH
 <script>
 const CARDS = [{"id": "s01", "emoji": "☀️", "title": "太阳有多大？", "narr": "太阳是一颗会发光发热的恒星，它非常非常大，要一百多万个地球才能装满一个太阳。太阳表面的温度有五千多度，给地球送来光明和温暖，没有太阳，就没有我们。", "fact": "太阳光特别强，千万不能直接用眼睛盯着太阳看，会伤害眼睛！"}, {"id": "s02", "emoji": "🌍", "title": "为什么有白天和黑夜？", "narr": "地球像一个陀螺，一刻不停地自己转着圈，转一圈就是一天。地球朝着太阳的一面，就是白天；背着太阳的一面，就是黑夜。", "fact": "我们这里是白天的时候，地球另一边的美国小朋友正在睡觉呢！"}, {"id": "s03", "emoji": "🌙", "title": "月亮为什么会变样子？", "narr": "月亮自己不会发光，我们看到的月光，是它反射的太阳光。月亮绕着地球转，被太阳照亮的那一面，我们有时看到得多，有时看到得少，月亮就从弯弯的月牙，慢慢变成圆圆的满月。", "fact": "月亮从圆到弯再到圆，大约要一个月，这就是农历一个月的由来！"}, {"id": "s04", "emoji": "🪐", "title": "太阳系有哪些行星？", "narr": "太阳系一共有八颗行星围着太阳转，从里到外是：水星、金星、地球、火星、木星、土星、天王星和海王星。我们住的地球是第三颗，木星是其中最大的一颗。", "fact": "木星非常大，一千多个地球才能装满一个木星！"}, {"id": "s05", "emoji": "🔴", "title": "火星为什么是红色的？", "narr": "火星是离地球比较近的一颗行星，它的地面上有很多含铁的沙土，就像生锈的铁一样，所以看起来红红的。火星上很冷，也没有可以呼吸的空气。", "fact": "2021年，中国的火星车\"祝融号\"成功登上了火星，在那里拍了很多照片！"}, {"id": "s06", "emoji": "💍", "title": "土星的光环是什么？", "narr": "土星的身边围着一圈美丽的光环，像戴着一顶宽宽的帽子。这些光环是由数不清的冰块和石块组成的，它们一起绕着土星转，在阳光下闪闪发亮。", "fact": "土星个子很大，可是它很轻，如果有一个超级大的水池，土星能浮在水面上！"}, {"id": "s07", "emoji": "⭐", "title": "星星为什么一闪一闪？", "narr": "天上的星星大多是像太阳一样的恒星，只是离我们太远了，看起来才那么小。星光穿过地球外面厚厚的空气，空气一直在流动，星光被晃来晃去，看起来就一闪一闪的。", "fact": "晚上看到的星光，有的已经在太空里走了很多很多年才来到我们眼前！"}, {"id": "s08", "emoji": "🚀", "title": "谁是中国第一位航天员？", "narr": "2003年，航天员杨利伟乘坐神舟五号飞船飞上太空，他是中国第一位进入太空的航天员。现在，中国有了自己的天宫空间站，航天员们在太空里工作和生活，做了很多科学实验。", "fact": "每年的4月24日是\"中国航天日\"，用来纪念中国第一颗人造卫星发射成功！"}, {"id": "s09", "emoji": "👨‍🚀", "title": "航天员在太空怎么生活？", "narr": "在空间站里，人和东西都会飘起来。航天员喝水要用吸管，吃饭要把食物固定好，睡觉要钻进固定在墙上的睡袋里，不然就会飘来飘去。他们每天还要锻炼身体呢。", "fact": "在太空里，眼泪不会往下流，而是变成一个小水球贴在眼睛旁边！"}, {"id": "s10", "emoji": "☄️", "title": "流星是什么？", "narr": "太空里飘着很多小石块。它们冲进地球外面的空气里时，跑得太快，和空气摩擦，烧得发出亮光，就成了一闪而过的流星。大多数流星还没落到地面就烧完了。", "fact": "很多流星一起出现，就叫流星雨，像天上下起了闪光的雨！"}];
 const QUIZ = [{"id": "sq01", "card": "s01", "q": "太阳给地球送来了什么？", "opts": [["光和热", "☀️", 1], ["雨水", "🌧️", 0], ["雪花", "❄️", 0], ["黑夜", "🌙", 0]]}, {"id": "sq02", "card": "s02", "q": "为什么会有白天和黑夜？", "opts": [["地球在自转", "🌍", 1], ["太阳睡觉了", "😴", 0], ["月亮挡住了", "🌙", 0], ["云太多了", "☁️", 0]]}, {"id": "sq03", "card": "s03", "q": "月亮的光是从哪里来的？", "opts": [["反射太阳光", "☀️", 1], ["自己发光", "", 0], ["星星照的", "⭐", 0], ["路灯照的", "💡", 0]]}, {"id": "sq04", "card": "s04", "q": "太阳系里最大的行星是哪一颗？", "opts": [["木星", "🪐", 1], ["地球", "🌍", 0], ["水星", "", 0], ["火星", "🔴", 0]]}, {"id": "sq05", "card": "s05", "q": "火星为什么看起来红红的？", "opts": [["沙土里有铁", "🔴", 1], ["火星着火了", "🔥", 0], ["涂了颜色", "🎨", 0], ["太热了", "", 0]]}, {"id": "sq06", "card": "s06", "q": "土星的光环是由什么组成的？", "opts": [["冰块和石块", "🧊", 1], ["彩色的线", "🧵", 0], ["金子", "🥇", 0], ["云朵", "☁️", 0]]}, {"id": "sq07", "card": "s07", "q": "星星为什么看起来一闪一闪？", "opts": [["空气在流动", "🌬️", 1], ["星星在眨眼", "😉", 0], ["星星没电了", "", 0], ["星星在跳舞", "", 0]]}, {"id": "sq08", "card": "s08", "q": "中国第一位进入太空的航天员是谁？", "opts": [["杨利伟", "👨‍🚀", 1], ["孔子", "", 0], ["郑和", "⛵", 0], ["张骞", "🐫", 0]]}, {"id": "sq09", "card": "s09", "q": "航天员在太空里怎么睡觉？", "opts": [["钻进固定的睡袋", "🛌", 1], ["躺在床上", "🛏️", 0], ["坐在椅子上", "🪑", 0], ["不睡觉", "", 0]]}, {"id": "sq10", "card": "s10", "q": "流星为什么会发光？", "opts": [["和空气摩擦燃烧", "☄️", 1], ["里面有电灯", "💡", 0], ["被太阳照亮", "☀️", 0], ["它会眨眼", "", 0]]}];
+const HALL = {"badges": [{"n": 10, "name": "太空小达人", "icon": "🌌🏅"}]};
 const CMAP = {}; CARDS.forEach(c => CMAP[c.id] = c);
+const SERIES = ['第一辑', '第二辑', '第三辑', '第四辑'];
+const MULTI = HALL.badges.length > 1;
 
 /* ============ 存储 ============ */
 const KEY = 'museum_space_v1';
@@ -106,10 +115,19 @@ function load() { if (S) return S;
   if (!S) S = {};
   S.read = S.read || {};           // cardId -> true
   S.stars = S.stars || 0;
-  S.badge = S.badge || false;      // 太空小达人
+  S.badge = S.badge || false;      // 第一辑勋章（第二辑勋章存 badge2）
   S.bestQuiz = S.bestQuiz || 0;
   return S; }
 function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
+
+/* ============ 分辑与勋章 ============ */
+const has = t => t === 0 ? !!load().badge : !!load()['badge' + (t + 1)];
+function give(t) { if (t === 0) S.badge = true; else S['badge' + (t + 1)] = true; }
+const tierCards = t => CARDS.slice(t ? HALL.badges[t - 1].n : 0, HALL.badges[t].n);
+const tierRead = t => tierCards(t).every(c => load().read[c.id]);
+const tierOf = id => { const i = CARDS.findIndex(c => c.id === id); return HALL.badges.findIndex(b => i < b.n); };
+function curTier() { for (let t = 0; t < HALL.badges.length; t++) if (!has(t)) return t; return -1; }
+const readNum = () => CARDS.filter(c => load().read[c.id]).length;
 
 /* ============ 语音（预录音频） ============ */
 let _audio = null;
@@ -152,37 +170,48 @@ let readIdx = 0, readQueue = [];
 function home() {
   load();
   document.getElementById('stars').textContent = S.stars;
-  const readCount = Object.keys(S.read).length;
-  const allRead = readCount >= CARDS.length;
+  const readCount = readNum(), t = curTier();
+  const unread = CARDS.filter(c => !S.read[c.id]);
 
   let hero;
-  if (S.badge) {
+  if (t >= 0 && tierRead(t)) {
     hero = `<div class="btn-hero gold" onclick="startQuiz()">
-      <div class="icon">🏆</div><div><div class="t">太空小达人</div><div class="d">再测一次，挑战满分！</div></div></div>`;
-  } else if (allRead) {
-    hero = `<div class="btn-hero gold" onclick="startQuiz()">
-      <div class="icon">🎯</div><div><div class="t">去挑战测验</div><div class="d">全部读完啦，来赢一枚勋章吧！</div></div></div>`;
-  } else {
-    hero = `<div class="btn-hero" onclick="startReading()">
+      <div class="icon">🎯</div><div><div class="t">去挑战测验</div><div class="d">${MULTI ? SERIES[t] : ''}全部读完啦，来赢「${HALL.badges[t].name}」勋章吧！</div></div></div>`;
+  } else if (unread.length) {
+    const ut = tierOf(unread[0].id), fresh = ut > 0 && !tierCards(ut).some(c => S.read[c.id]);
+    hero = fresh
+      ? `<div class="btn-hero" onclick="startReading()">
+      <div class="icon">🆕</div><div><div class="t">${SERIES[ut]}开放啦</div><div class="d">有 ${tierCards(ut).length} 张新知识卡，快来探索吧！</div></div></div>`
+      : `<div class="btn-hero" onclick="startReading()">
       <div class="icon">▶️</div><div><div class="t">${readCount ? '继续探索' : '开始探索'}</div><div class="d">已读 ${readCount} / ${CARDS.length} 个知识卡</div></div></div>`;
+  } else {
+    hero = `<div class="btn-hero gold" onclick="startQuiz()">
+      <div class="icon">🏆</div><div><div class="t">${HALL.badges[HALL.badges.length - 1].name}</div><div class="d">再测一次，挑战满分！</div></div></div>`;
   }
 
-  const rows = CARDS.map(c => `
+  const row = c => `
     <div class="topic-row" onclick="openCard('${c.id}')">
       <span class="e">${c.emoji}</span><span class="t">${c.title}</span>
       <span class="st">${S.read[c.id] ? '✅' : '⬜'}</span>
-    </div>`).join('');
+    </div>`;
+  const rows = HALL.badges.map((b, k) => (MULTI ? `<div class="series">${SERIES[k]}${k && !tierCards(k).some(c => S.read[c.id]) ? '<span class="new">新</span>' : ''}</div>` : '')
+    + tierCards(k).map(row).join('')).join('');
+  const wall = HALL.badges.map((b, k) => `<div class="bw ${has(k) ? '' : 'locked'}"><span>${b.icon}</span><small>${b.name}</small></div>`).join('');
 
   stage().innerHTML = `${hero}
     <div class="card">
       <div style="font-weight:800;margin-bottom:6px">📚 知识卡片（点击可单独复习）</div>
       <div class="topic-list">${rows}</div>
     </div>
-    ${S.badge ? `<div class="card" style="text-align:center"><div style="font-weight:800;margin-bottom:8px">🎖️ 我的勋章</div><div class="badge-wall"><span title="太空小达人">🌌🏅</span></div></div>` : ''}`;
+    ${S.badge || MULTI ? `<div class="card" style="text-align:center"><div style="font-weight:800;margin-bottom:8px">🎖️ 我的勋章</div><div class="badge-wall">${wall}</div></div>` : ''}`;
 }
 
 /* —— 阅读流程 —— */
-function startReading() { readQueue = CARDS.filter(c => !load().read[c.id]); readIdx = 0; renderCard(); }
+function startReading() {
+  const unread = CARDS.filter(c => !load().read[c.id]);
+  const t = unread.length ? tierOf(unread[0].id) : 0;
+  readQueue = unread.filter(c => tierOf(c.id) === t); readIdx = 0; renderCard();
+}
 function openCard(id) { readQueue = [CMAP[id]]; readIdx = 0; renderCard(true); }
 
 function dots() { return `<div class="dots">${readQueue.map((_, i) =>
@@ -216,20 +245,31 @@ function nextCard(id, single) {
 function readingDone() {
   if (window.StudyPlan) StudyPlan.cheer();
   confetti();
-  const readCount = Object.keys(load().read).length;
-  const allRead = readCount >= CARDS.length;
+  const t = curTier(), ready = t >= 0 && tierRead(t);
+  const all = readNum() >= CARDS.length;
   stage().innerHTML = `
     <div class="card celebrate">
       <div class="big">🌟</div><h2>今天的探索完成啦！</h2>
-      <p>${allRead ? '十个知识卡都读完了，快去挑战测验吧！' : '明天再来读更多知识卡～'}</p>
-      ${allRead ? `<button class="btn" onclick="startQuiz()">去挑战测验 🎯</button>` : ''}
+      <p>${ready ? `${MULTI ? SERIES[t] + '的' : ''}知识卡都读完了，快去挑战测验吧！` : all ? '这个展厅的知识卡全读完啦，真了不起！' : '明天再来读更多知识卡～'}</p>
+      ${ready ? `<button class="btn" onclick="startQuiz()">去挑战测验 🎯</button>` : ''}
       <button class="btn ghost" onclick="home()">回到博物馆</button>
     </div>`;
 }
 
 /* —— 测验流程 —— */
-let quiz = [], qIdx = 0, qRight = 0, lock = false;
-function startQuiz() { quiz = shuffle(QUIZ.slice()).slice(0, 6); qIdx = 0; qRight = 0; renderQ(); }
+let quiz = [], qIdx = 0, qRight = 0, lock = false, quizTier = -1;
+function startQuiz() {
+  const t = curTier();
+  let pool;
+  if (t >= 0 && tierRead(t)) {           // 冲刺本辑勋章：只考这一辑
+    quizTier = t; const ids = new Set(tierCards(t).map(c => c.id));
+    pool = QUIZ.filter(q => ids.has(q.card));
+  } else {                                // 复测：从读过的卡里出题
+    quizTier = -1; pool = QUIZ.filter(q => load().read[q.card]);
+    if (pool.length < 6) pool = QUIZ.filter(q => tierOf(q.card) === 0);
+  }
+  quiz = shuffle(pool).slice(0, 6); qIdx = 0; qRight = 0; renderQ();
+}
 function renderQ() {
   lock = false;
   if (qIdx >= quiz.length) return quizDone();
@@ -259,21 +299,23 @@ function quizDone() {
   load();
   const pct = Math.round(qRight / quiz.length * 100);
   const passed = pct >= 80;
+  const b = quizTier >= 0 ? HALL.badges[quizTier] : null;
   let starMsg = '';
   if (passed) {
-    if (!S.badge) { S.badge = true; S.stars += 2; starMsg = '获得「太空小达人」勋章 + 2颗星星！'; }
+    if (b && !has(quizTier)) { give(quizTier); S.stars += 2; starMsg = `获得「${b.name}」勋章 + 2颗星星！`; }
     else { S.stars += 1; starMsg = '得到一颗星星！'; }
   }
   S.bestQuiz = Math.max(S.bestQuiz, pct);
   save();
   document.getElementById('stars').textContent = S.stars;
-  if (passed) { coinBurst(stage(), passed ? 3 : 1); confetti(); }
+  if (passed) { coinBurst(stage(), 3); confetti(); }
+  const more = passed && b && CARDS.some(c => !S.read[c.id]);
   stage().innerHTML = `
     <div class="card celebrate">
       <div class="big">${passed ? '🏆' : '💪'}</div>
       <h2>答对 ${qRight} / ${quiz.length} 题！${starMsg}</h2>
-      <p>${passed ? '你是真正的太空小达人！' : '再读一读知识卡，下次一定能拿到勋章～'}</p>
-      <button class="btn" onclick="startQuiz()">再测一次 🔁</button>
+      <p>${passed ? (b ? `你是真正的${b.name}！` : '知识记得真牢，太棒啦！') : '再读一读知识卡，下次一定能拿到勋章～'}</p>
+      ${more ? `<button class="btn" onclick="startReading()">去读新的知识卡 🆕</button>` : `<button class="btn" onclick="startQuiz()">再测一次 🔁</button>`}
       <button class="btn ghost" onclick="home()">回到博物馆</button>
     </div>`;
 }

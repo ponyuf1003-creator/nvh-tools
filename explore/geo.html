@@ -81,6 +81,12 @@ body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaH
   40%{transform:translate(calc(var(--tx)*.4),calc(var(--ty)*.3)) scale(1.6) rotate(25deg);opacity:1}
   100%{transform:translate(var(--tx),var(--ty)) scale(.3) rotate(360deg);opacity:0} }
 .muted { color:var(--muted); font-size:.9rem; }
+.series { font-weight:900; color:var(--green-d); font-size:.95rem; margin:12px 2px 2px; }
+.series:first-child { margin-top:2px; }
+.series .new { background:#FFE7D6; color:#D9480F; border-radius:999px; padding:2px 10px; font-size:.75rem; margin-left:6px; }
+.bw { display:flex; flex-direction:column; align-items:center; gap:4px; min-width:84px; }
+.bw small { font-size:.78rem; font-weight:800; color:var(--muted); }
+.bw.locked span { filter:grayscale(1); opacity:.3; }
 </style>
 </head>
 <body>
@@ -94,9 +100,12 @@ body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaH
 </div>
 
 <script>
-const CARDS = [{"id": "g01", "emoji": "🏯", "title": "中国的首都在哪里？", "narr": "首都是一个国家政治和文化的中心。中国的首都是北京，这里有雄伟的天安门广场、庄严的故宫，还有为奥运会修建的鸟巢体育馆。北京已经有三千多年的历史，是一座非常古老又充满活力的城市。", "fact": "故宫是世界上现存规模最大、保存最完整的木结构古代建筑群，一共有九千多个房间！"}, {"id": "g02", "emoji": "🏔️", "title": "什么是\"世界屋脊\"？", "narr": "青藏高原是中国最大的高原，平均海拔超过四千米，是世界上海拔最高的高原，所以被称为\"世界屋脊\"。这里雪山连绵，还有很多美丽的湖泊，是长江、黄河等大河的发源地。", "fact": "青藏高原上生活着藏羚羊、牦牛这些特别耐寒的动物，它们能适应又高又冷的环境！"}, {"id": "g03", "emoji": "🌊", "title": "中国最长的河流有多长？", "narr": "长江是中国第一长河，全长六千三百多公里，从青藏高原一路向东流入东海。长江流过很多美丽的城市，比如重庆、武汉、南京、上海，是中国重要的\"黄金水道\"。", "fact": "长江也是亚洲最长的河流，长度在全世界能排到第三名，仅次于非洲的尼罗河和南美洲的亚马孙河！"}, {"id": "g04", "emoji": "🐉", "title": "为什么黄河被称为\"母亲河\"？", "narr": "黄河是中国第二长河，因为河水中带着大量黄色的泥沙，所以叫黄河。几千年前，我们的祖先就在黄河两岸生活、种田，创造出了灿烂的中华文明，所以人们亲切地称黄河为\"母亲河\"。", "fact": "黄河携带的泥沙非常多，如果把一年冲下来的泥沙堆成一米见方的土墙，能绕地球赤道二十七圈呢！"}, {"id": "g05", "emoji": "🏜️", "title": "中国最大的沙漠是什么样的？", "narr": "塔克拉玛干沙漠在新疆，是中国面积最大的沙漠，也是世界第二大流动沙漠，这里的沙丘会随着风慢慢移动位置。沙漠里非常干燥，几乎没有雨水，但是沙漠边缘依然有绿洲，生活着骆驼和顽强的沙漠植物。", "fact": "\"塔克拉玛干\"在当地语言里的意思是\"进去出不来\"，不过现在已经修通了穿越沙漠的公路，一点都不可怕啦！"}, {"id": "g06", "emoji": "🏝️", "title": "中国最大的岛屿长什么样？", "narr": "台湾岛是中国面积最大的岛屿，四周被海水环绕，岛上有高高的山脉，也有肥沃的平原。这里气候温暖湿润，出产香甜的水果，比如凤梨、芒果，还有很多茂密美丽的森林。", "fact": "台湾岛上的玉山，是中国东部海拔最高的山峰，比日本的富士山还要高一些！"}, {"id": "g07", "emoji": "🌋", "title": "火山口里的湖长什么样？", "narr": "长白山是中国东北一座古老的火山，很久很久以前火山喷发过后，山顶凹下去的地方积满了水，形成了一个又深又蓝的湖泊，叫天池。天池被高高的山峰围绕着，湖水清澈，景色特别壮观。", "fact": "天池是中国最深的高山湖泊，最深的地方超过两百米，到了冬天，湖面还会结上厚厚的冰！"}, {"id": "g08", "emoji": "🌍", "title": "世界被分成了几块陆地和海洋？", "narr": "地球上的陆地被分成七个大洲，分别是亚洲、非洲、欧洲、北美洲、南美洲、大洋洲和南极洲，我们中国就在亚洲。陆地周围环绕着四大洋，分别是太平洋、大西洋、印度洋和北冰洋，海洋的面积比陆地还要大得多。", "fact": "亚洲是七大洲里面积最大、人口最多的一个洲，我们生活的中国就是亚洲的一部分！"}, {"id": "g09", "emoji": "🗻", "title": "世界最高的山有多高？", "narr": "珠穆朗玛峰坐落在中国和尼泊尔的边界上，海拔超过八千八百米，是世界上最高的山峰，山顶终年被冰雪覆盖。很多勇敢的登山家都梦想着登上珠峰的顶峰，一睹世界之巅的风光。", "fact": "珠穆朗玛峰其实每年都在慢慢\"长高\"，因为地底下的板块还在缓慢地互相挤压！"}, {"id": "g10", "emoji": "🌐", "title": "世界上最大的沙漠和最长的河流在哪里？", "narr": "世界上最大的沙漠是非洲的撒哈拉沙漠，面积和整个中国差不多大。世界上最长的河流是非洲的尼罗河，比我们中国的长江还要长一千多公里。地球真是又大又神奇，还有好多好玩的地方等着我们去了解呢！", "fact": "撒哈拉沙漠虽然现在又干又热，但科学家发现，几千年前这里曾经是水草丰美的绿洲！"}];
-const QUIZ = [{"id": "gq01", "card": "g01", "q": "中国的首都是哪里？", "opts": [["北京", "🏯", 1], ["上海", "", 0], ["广州", "", 0], ["西安", "", 0]]}, {"id": "gq02", "card": "g02", "q": "青藏高原为什么被称为\"世界屋脊\"？", "opts": [["离天最近", "", 0], ["平均海拔最高", "🏔️", 1], ["最古老", "", 0], ["最漂亮", "", 0]]}, {"id": "gq03", "card": "g03", "q": "长江是中国的什么？", "opts": [["最短的河", "", 0], ["最长的河", "🌊", 1], ["最大的湖", "", 0], ["最高的山", "", 0]]}, {"id": "gq04", "card": "g04", "q": "黄河为什么叫\"母亲河\"？", "opts": [["水最甜", "", 0], ["孕育了中华文明", "🐉", 1], ["离海最近", "", 0], ["鱼最多", "", 0]]}, {"id": "gq05", "card": "g05", "q": "塔克拉玛干沙漠在中国哪里？", "opts": [["新疆", "🏜️", 1], ["广东", "", 0], ["东北", "", 0], ["海南", "", 0]]}, {"id": "gq06", "card": "g06", "q": "台湾岛是中国的什么？", "opts": [["最大的山", "", 0], ["最大的岛屿", "🏝️", 1], ["最大的湖", "", 0], ["最大的沙漠", "", 0]]}, {"id": "gq07", "card": "g07", "q": "长白山天池是怎么形成的？", "opts": [["火山口积水", "🌋", 1], ["人工挖的", "", 0], ["陨石砸的", "", 0], ["河流改道", "", 0]]}, {"id": "gq08", "card": "g08", "q": "中国属于哪个大洲？", "opts": [["非洲", "", 0], ["欧洲", "", 0], ["亚洲", "🌏", 1], ["美洲", "", 0]]}, {"id": "gq09", "card": "g09", "q": "世界最高峰是哪座山？", "opts": [["黄山", "", 0], ["泰山", "", 0], ["珠穆朗玛峰", "🗻", 1], ["长白山", "", 0]]}, {"id": "gq10", "card": "g10", "q": "世界上最长的河流是哪一条？", "opts": [["长江", "", 0], ["黄河", "", 0], ["尼罗河", "🌊", 1], ["亚马孙河", "", 0]]}];
+const CARDS = [{"id": "g01", "emoji": "🏯", "title": "中国的首都在哪里？", "narr": "首都是一个国家政治和文化的中心。中国的首都是北京，这里有雄伟的天安门广场、庄严的故宫，还有为奥运会修建的鸟巢体育馆。北京已经有三千多年的历史，是一座非常古老又充满活力的城市。", "fact": "故宫是世界上现存规模最大、保存最完整的木结构古代建筑群，一共有九千多个房间！"}, {"id": "g02", "emoji": "🏔️", "title": "什么是\"世界屋脊\"？", "narr": "青藏高原是中国最大的高原，平均海拔超过四千米，是世界上海拔最高的高原，所以被称为\"世界屋脊\"。这里雪山连绵，还有很多美丽的湖泊，是长江、黄河等大河的发源地。", "fact": "青藏高原上生活着藏羚羊、牦牛这些特别耐寒的动物，它们能适应又高又冷的环境！"}, {"id": "g03", "emoji": "🌊", "title": "中国最长的河流有多长？", "narr": "长江是中国第一长河，全长六千三百多公里，从青藏高原一路向东流入东海。长江流过很多美丽的城市，比如重庆、武汉、南京、上海，是中国重要的\"黄金水道\"。", "fact": "长江也是亚洲最长的河流，长度在全世界能排到第三名，仅次于非洲的尼罗河和南美洲的亚马孙河！"}, {"id": "g04", "emoji": "🐉", "title": "为什么黄河被称为\"母亲河\"？", "narr": "黄河是中国第二长河，因为河水中带着大量黄色的泥沙，所以叫黄河。几千年前，我们的祖先就在黄河两岸生活、种田，创造出了灿烂的中华文明，所以人们亲切地称黄河为\"母亲河\"。", "fact": "黄河携带的泥沙非常多，如果把一年冲下来的泥沙堆成一米见方的土墙，能绕地球赤道二十七圈呢！"}, {"id": "g05", "emoji": "🏜️", "title": "中国最大的沙漠是什么样的？", "narr": "塔克拉玛干沙漠在新疆，是中国面积最大的沙漠，也是世界第二大流动沙漠，这里的沙丘会随着风慢慢移动位置。沙漠里非常干燥，几乎没有雨水，但是沙漠边缘依然有绿洲，生活着骆驼和顽强的沙漠植物。", "fact": "\"塔克拉玛干\"在当地语言里的意思是\"进去出不来\"，不过现在已经修通了穿越沙漠的公路，一点都不可怕啦！"}, {"id": "g06", "emoji": "🏝️", "title": "中国最大的岛屿长什么样？", "narr": "台湾岛是中国面积最大的岛屿，四周被海水环绕，岛上有高高的山脉，也有肥沃的平原。这里气候温暖湿润，出产香甜的水果，比如凤梨、芒果，还有很多茂密美丽的森林。", "fact": "台湾岛上的玉山，是中国东部海拔最高的山峰，比日本的富士山还要高一些！"}, {"id": "g07", "emoji": "🌋", "title": "火山口里的湖长什么样？", "narr": "长白山是中国东北一座古老的火山，很久很久以前火山喷发过后，山顶凹下去的地方积满了水，形成了一个又深又蓝的湖泊，叫天池。天池被高高的山峰围绕着，湖水清澈，景色特别壮观。", "fact": "天池是中国最深的高山湖泊，最深的地方超过两百米，到了冬天，湖面还会结上厚厚的冰！"}, {"id": "g08", "emoji": "🌍", "title": "世界被分成了几块陆地和海洋？", "narr": "地球上的陆地被分成七个大洲，分别是亚洲、非洲、欧洲、北美洲、南美洲、大洋洲和南极洲，我们中国就在亚洲。陆地周围环绕着四大洋，分别是太平洋、大西洋、印度洋和北冰洋，海洋的面积比陆地还要大得多。", "fact": "亚洲是七大洲里面积最大、人口最多的一个洲，我们生活的中国就是亚洲的一部分！"}, {"id": "g09", "emoji": "🗻", "title": "世界最高的山有多高？", "narr": "珠穆朗玛峰坐落在中国和尼泊尔的边界上，海拔超过八千八百米，是世界上最高的山峰，山顶终年被冰雪覆盖。很多勇敢的登山家都梦想着登上珠峰的顶峰，一睹世界之巅的风光。", "fact": "珠穆朗玛峰其实每年都在慢慢\"长高\"，因为地底下的板块还在缓慢地互相挤压！"}, {"id": "g10", "emoji": "🌐", "title": "世界上最大的沙漠和最长的河流在哪里？", "narr": "世界上最大的沙漠是非洲的撒哈拉沙漠，面积和整个中国差不多大。世界上最长的河流是非洲的尼罗河，比我们中国的长江还要长一千多公里。地球真是又大又神奇，还有好多好玩的地方等着我们去了解呢！", "fact": "撒哈拉沙漠虽然现在又干又热，但科学家发现，几千年前这里曾经是水草丰美的绿洲！"}, {"id": "g11", "emoji": "🐓", "title": "中国地图像什么？", "narr": "打开中国地图看一看，我们国家的形状，像一只昂首挺胸的大公鸡。中国的陆地面积大约有九百六十万平方千米，是世界上面积最大的国家之一，一共有三十四个省级行政区，就像一个大家庭里有三十四个成员。", "fact": "中国太大了！最东边的乌苏里江已经迎来了日出，最西边的帕米尔高原还是满天星星呢！"}, {"id": "g12", "emoji": "⛰️", "title": "\"桂林山水甲天下\"是什么意思？", "narr": "广西的桂林，有一座座拔地而起的奇特山峰，清清的漓江在山间弯弯曲曲地流淌。人们常说\"桂林山水甲天下\"，意思是桂林的山水是天下最美的。这些奇特的山，是石头被雨水冲刷、溶化了几百万年才形成的。", "fact": "二十元人民币的背面，印的就是桂林漓江的风景，下次拿到可以找一找！"}, {"id": "g13", "emoji": "🌲", "title": "黄山有哪\"四绝\"？", "narr": "安徽的黄山是中国最有名的大山之一。黄山有\"四绝\"：奇松、怪石、云海和温泉。松树从石头缝里长出来，样子千奇百怪；山上的石头，有的像猴子，有的像仙桃；云多的时候，山峰就像漂浮在白茫茫的大海上。", "fact": "黄山上有一棵迎客松，伸出长长的枝条，就像在热情地欢迎远方的客人，它已经好几百岁啦！"}, {"id": "g14", "emoji": "🐘", "title": "哪里有热带雨林和野象？", "narr": "云南的西双版纳，一年四季都很温暖，雨水也多，长着茂密的热带雨林。这里的大树又高又粗，藤蔓缠来缠去，生活着很多珍稀的动物和植物，是中国野生亚洲象的家园。", "fact": "2021年，云南有一群野生亚洲象一路向北\"旅行\"，走了五百多公里，全国的小朋友都在看它们的新闻呢！"}, {"id": "g15", "emoji": "❄️", "title": "中国最冷的地方在哪里？", "narr": "中国最北边的地方，是黑龙江的漠河，这里被叫作\"中国的北极\"。冬天特别长，最冷的时候能到零下五十多度，泼出去的热水一下子就变成了冰雾。运气好的话，晚上还能在天空中看到五彩的极光。", "fact": "东北的哈尔滨，每年冬天都会用冰块和白雪盖起一座\"冰雪大世界\"，有冰做的城堡，还有冰做的滑梯！"}, {"id": "g16", "emoji": "🥥", "title": "海南岛是什么样的？", "narr": "海南岛在中国的南边，是中国第二大岛，四周是蓝蓝的大海。这里属于热带，一年四季都像夏天，海边长着高高的椰子树，还出产香蕉、芒果和菠萝蜜。北方下大雪的时候，海南岛的小朋友还能在海边游泳呢。", "fact": "海南的文昌有一个航天发射场，嫦娥五号、天问一号都是从这里飞向太空的！"}, {"id": "g17", "emoji": "🌊", "title": "中国有哪四个海？", "narr": "中国的东边和南边靠着大海，从北往南，依次是渤海、黄海、东海和南海。渤海被陆地抱在怀里，像一个大海湾；南海是其中最大、最深的海，里面有很多美丽的岛屿和珊瑚礁。", "fact": "黄海为什么叫黄海？因为古时候黄河带着大量泥沙流进这片海，把海水染得黄黄的！"}, {"id": "g18", "emoji": "🦘", "title": "袋鼠住在哪个大洲？", "narr": "大洋洲是七大洲里面积最小的一个，最大的国家是澳大利亚。这里有很多别的地方没有的动物：用大尾巴撑着身子、一跳好几米远的袋鼠，整天抱着桉树睡觉的考拉，还有会下蛋的哺乳动物鸭嘴兽。", "fact": "袋鼠宝宝刚出生的时候，只有一颗花生那么大，要在妈妈的育儿袋里住好几个月才出来！"}, {"id": "g19", "emoji": "🧊", "title": "南极和北极有什么不一样？", "narr": "地球的最南边是南极，最北边是北极，都是冰天雪地的地方。南极是一块被厚厚冰层盖住的大陆，是最冷的大洲，那里住着企鹅；北极中间是一片结了冰的大海，那里住着北极熊。所以，企鹅和北极熊在野外是见不到面的！", "fact": "南极的冰层平均有两千米厚，如果南极的冰全部融化，海面会升高五十多米，所以保护地球非常重要！"}, {"id": "g20", "emoji": "🦜", "title": "世界上最大的雨林在哪里？", "narr": "南美洲有世界上最大的热带雨林，叫亚马孙雨林。这里的树木多得数不清，生活着数不清的动物和植物，像五颜六色的金刚鹦鹉，还有懒洋洋挂在树上的树懒。这么多树木能制造大量氧气，所以有人叫它\"地球之肺\"。", "fact": "流过雨林的亚马孙河，是世界上水量最大的河，河里还住着粉红色的河豚！"}];
+const QUIZ = [{"id": "gq01", "card": "g01", "q": "中国的首都是哪里？", "opts": [["北京", "🏯", 1], ["上海", "", 0], ["广州", "", 0], ["西安", "", 0]]}, {"id": "gq02", "card": "g02", "q": "青藏高原为什么被称为\"世界屋脊\"？", "opts": [["离天最近", "", 0], ["平均海拔最高", "🏔️", 1], ["最古老", "", 0], ["最漂亮", "", 0]]}, {"id": "gq03", "card": "g03", "q": "长江是中国的什么？", "opts": [["最短的河", "", 0], ["最长的河", "🌊", 1], ["最大的湖", "", 0], ["最高的山", "", 0]]}, {"id": "gq04", "card": "g04", "q": "黄河为什么叫\"母亲河\"？", "opts": [["水最甜", "", 0], ["孕育了中华文明", "🐉", 1], ["离海最近", "", 0], ["鱼最多", "", 0]]}, {"id": "gq05", "card": "g05", "q": "塔克拉玛干沙漠在中国哪里？", "opts": [["新疆", "🏜️", 1], ["广东", "", 0], ["东北", "", 0], ["海南", "", 0]]}, {"id": "gq06", "card": "g06", "q": "台湾岛是中国的什么？", "opts": [["最大的山", "", 0], ["最大的岛屿", "🏝️", 1], ["最大的湖", "", 0], ["最大的沙漠", "", 0]]}, {"id": "gq07", "card": "g07", "q": "长白山天池是怎么形成的？", "opts": [["火山口积水", "🌋", 1], ["人工挖的", "", 0], ["陨石砸的", "", 0], ["河流改道", "", 0]]}, {"id": "gq08", "card": "g08", "q": "中国属于哪个大洲？", "opts": [["非洲", "", 0], ["欧洲", "", 0], ["亚洲", "🌏", 1], ["美洲", "", 0]]}, {"id": "gq09", "card": "g09", "q": "世界最高峰是哪座山？", "opts": [["黄山", "", 0], ["泰山", "", 0], ["珠穆朗玛峰", "🗻", 1], ["长白山", "", 0]]}, {"id": "gq10", "card": "g10", "q": "世界上最长的河流是哪一条？", "opts": [["长江", "", 0], ["黄河", "", 0], ["尼罗河", "🌊", 1], ["亚马孙河", "", 0]]}, {"id": "gq11", "card": "g11", "q": "中国地图的形状像什么？", "opts": [["大公鸡", "🐓", 1], ["小兔子", "", 0], ["大象", "", 0], ["小鱼", "", 0]]}, {"id": "gq12", "card": "g12", "q": "\"桂林山水甲天下\"说的是哪里？", "opts": [["广西桂林", "⛰️", 1], ["北京", "", 0], ["新疆", "", 0], ["上海", "", 0]]}, {"id": "gq13", "card": "g13", "q": "黄山上云多的时候，山峰像漂在什么上面？", "opts": [["大海", "🌊", 1], ["沙漠", "", 0], ["森林", "", 0], ["草原", "", 0]]}, {"id": "gq14", "card": "g14", "q": "有野生亚洲象的西双版纳在哪个省？", "opts": [["云南", "🐘", 1], ["黑龙江", "", 0], ["新疆", "", 0], ["西藏", "", 0]]}, {"id": "gq15", "card": "g15", "q": "被叫作\"中国的北极\"的地方是哪里？", "opts": [["漠河", "❄️", 1], ["海南", "", 0], ["广州", "", 0], ["桂林", "", 0]]}, {"id": "gq16", "card": "g16", "q": "海南岛的天气是什么样的？", "opts": [["四季像夏天", "🥥", 1], ["一直下大雪", "", 0], ["总刮沙尘暴", "", 0], ["冬天很冷", "", 0]]}, {"id": "gq17", "card": "g17", "q": "中国最大、最深的海是哪个？", "opts": [["南海", "🌊", 1], ["渤海", "", 0], ["黄海", "", 0], ["东海", "", 0]]}, {"id": "gq18", "card": "g18", "q": "袋鼠生活在哪个国家？", "opts": [["澳大利亚", "🦘", 1], ["中国", "", 0], ["埃及", "", 0], ["巴西", "", 0]]}, {"id": "gq19", "card": "g19", "q": "北极熊生活在哪里？", "opts": [["北极", "🧊", 1], ["南极", "", 0], ["沙漠", "", 0], ["雨林", "", 0]]}, {"id": "gq20", "card": "g20", "q": "世界上最大的热带雨林在哪里？", "opts": [["亚马孙雨林", "🦜", 1], ["撒哈拉", "", 0], ["南极", "", 0], ["青藏高原", "", 0]]}];
+const HALL = {"badges": [{"n": 10, "name": "地理小达人", "icon": "🌍🏅"}, {"n": 20, "name": "地理小博士", "icon": "🌍🎓"}]};
 const CMAP = {}; CARDS.forEach(c => CMAP[c.id] = c);
+const SERIES = ['第一辑', '第二辑', '第三辑', '第四辑'];
+const MULTI = HALL.badges.length > 1;
 
 /* ============ 存储 ============ */
 const KEY = 'museum_geo_v1';
@@ -106,10 +115,19 @@ function load() { if (S) return S;
   if (!S) S = {};
   S.read = S.read || {};           // cardId -> true
   S.stars = S.stars || 0;
-  S.badge = S.badge || false;      // 地理小达人
+  S.badge = S.badge || false;      // 第一辑勋章（第二辑勋章存 badge2）
   S.bestQuiz = S.bestQuiz || 0;
   return S; }
 function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
+
+/* ============ 分辑与勋章 ============ */
+const has = t => t === 0 ? !!load().badge : !!load()['badge' + (t + 1)];
+function give(t) { if (t === 0) S.badge = true; else S['badge' + (t + 1)] = true; }
+const tierCards = t => CARDS.slice(t ? HALL.badges[t - 1].n : 0, HALL.badges[t].n);
+const tierRead = t => tierCards(t).every(c => load().read[c.id]);
+const tierOf = id => { const i = CARDS.findIndex(c => c.id === id); return HALL.badges.findIndex(b => i < b.n); };
+function curTier() { for (let t = 0; t < HALL.badges.length; t++) if (!has(t)) return t; return -1; }
+const readNum = () => CARDS.filter(c => load().read[c.id]).length;
 
 /* ============ 语音（预录音频） ============ */
 let _audio = null;
@@ -152,37 +170,48 @@ let readIdx = 0, readQueue = [];
 function home() {
   load();
   document.getElementById('stars').textContent = S.stars;
-  const readCount = Object.keys(S.read).length;
-  const allRead = readCount >= CARDS.length;
+  const readCount = readNum(), t = curTier();
+  const unread = CARDS.filter(c => !S.read[c.id]);
 
   let hero;
-  if (S.badge) {
+  if (t >= 0 && tierRead(t)) {
     hero = `<div class="btn-hero gold" onclick="startQuiz()">
-      <div class="icon">🏆</div><div><div class="t">地理小达人</div><div class="d">再测一次，挑战满分！</div></div></div>`;
-  } else if (allRead) {
-    hero = `<div class="btn-hero gold" onclick="startQuiz()">
-      <div class="icon">🎯</div><div><div class="t">去挑战测验</div><div class="d">全部读完啦，来赢一枚勋章吧！</div></div></div>`;
-  } else {
-    hero = `<div class="btn-hero" onclick="startReading()">
+      <div class="icon">🎯</div><div><div class="t">去挑战测验</div><div class="d">${MULTI ? SERIES[t] : ''}全部读完啦，来赢「${HALL.badges[t].name}」勋章吧！</div></div></div>`;
+  } else if (unread.length) {
+    const ut = tierOf(unread[0].id), fresh = ut > 0 && !tierCards(ut).some(c => S.read[c.id]);
+    hero = fresh
+      ? `<div class="btn-hero" onclick="startReading()">
+      <div class="icon">🆕</div><div><div class="t">${SERIES[ut]}开放啦</div><div class="d">有 ${tierCards(ut).length} 张新知识卡，快来探索吧！</div></div></div>`
+      : `<div class="btn-hero" onclick="startReading()">
       <div class="icon">▶️</div><div><div class="t">${readCount ? '继续探索' : '开始探索'}</div><div class="d">已读 ${readCount} / ${CARDS.length} 个知识卡</div></div></div>`;
+  } else {
+    hero = `<div class="btn-hero gold" onclick="startQuiz()">
+      <div class="icon">🏆</div><div><div class="t">${HALL.badges[HALL.badges.length - 1].name}</div><div class="d">再测一次，挑战满分！</div></div></div>`;
   }
 
-  const rows = CARDS.map(c => `
+  const row = c => `
     <div class="topic-row" onclick="openCard('${c.id}')">
       <span class="e">${c.emoji}</span><span class="t">${c.title}</span>
       <span class="st">${S.read[c.id] ? '✅' : '⬜'}</span>
-    </div>`).join('');
+    </div>`;
+  const rows = HALL.badges.map((b, k) => (MULTI ? `<div class="series">${SERIES[k]}${k && !tierCards(k).some(c => S.read[c.id]) ? '<span class="new">新</span>' : ''}</div>` : '')
+    + tierCards(k).map(row).join('')).join('');
+  const wall = HALL.badges.map((b, k) => `<div class="bw ${has(k) ? '' : 'locked'}"><span>${b.icon}</span><small>${b.name}</small></div>`).join('');
 
   stage().innerHTML = `${hero}
     <div class="card">
       <div style="font-weight:800;margin-bottom:6px">📚 知识卡片（点击可单独复习）</div>
       <div class="topic-list">${rows}</div>
     </div>
-    ${S.badge ? `<div class="card" style="text-align:center"><div style="font-weight:800;margin-bottom:8px">🎖️ 我的勋章</div><div class="badge-wall"><span title="地理小达人">🌍🏅</span></div></div>` : ''}`;
+    ${S.badge || MULTI ? `<div class="card" style="text-align:center"><div style="font-weight:800;margin-bottom:8px">🎖️ 我的勋章</div><div class="badge-wall">${wall}</div></div>` : ''}`;
 }
 
 /* —— 阅读流程 —— */
-function startReading() { readQueue = CARDS.filter(c => !load().read[c.id]); readIdx = 0; renderCard(); }
+function startReading() {
+  const unread = CARDS.filter(c => !load().read[c.id]);
+  const t = unread.length ? tierOf(unread[0].id) : 0;
+  readQueue = unread.filter(c => tierOf(c.id) === t); readIdx = 0; renderCard();
+}
 function openCard(id) { readQueue = [CMAP[id]]; readIdx = 0; renderCard(true); }
 
 function dots() { return `<div class="dots">${readQueue.map((_, i) =>
@@ -216,20 +245,31 @@ function nextCard(id, single) {
 function readingDone() {
   if (window.StudyPlan) StudyPlan.cheer();
   confetti();
-  const readCount = Object.keys(load().read).length;
-  const allRead = readCount >= CARDS.length;
+  const t = curTier(), ready = t >= 0 && tierRead(t);
+  const all = readNum() >= CARDS.length;
   stage().innerHTML = `
     <div class="card celebrate">
       <div class="big">🌟</div><h2>今天的探索完成啦！</h2>
-      <p>${allRead ? '十个知识卡都读完了，快去挑战测验吧！' : '明天再来读更多知识卡～'}</p>
-      ${allRead ? `<button class="btn" onclick="startQuiz()">去挑战测验 🎯</button>` : ''}
+      <p>${ready ? `${MULTI ? SERIES[t] + '的' : ''}知识卡都读完了，快去挑战测验吧！` : all ? '这个展厅的知识卡全读完啦，真了不起！' : '明天再来读更多知识卡～'}</p>
+      ${ready ? `<button class="btn" onclick="startQuiz()">去挑战测验 🎯</button>` : ''}
       <button class="btn ghost" onclick="home()">回到博物馆</button>
     </div>`;
 }
 
 /* —— 测验流程 —— */
-let quiz = [], qIdx = 0, qRight = 0, lock = false;
-function startQuiz() { quiz = shuffle(QUIZ.slice()).slice(0, 6); qIdx = 0; qRight = 0; renderQ(); }
+let quiz = [], qIdx = 0, qRight = 0, lock = false, quizTier = -1;
+function startQuiz() {
+  const t = curTier();
+  let pool;
+  if (t >= 0 && tierRead(t)) {           // 冲刺本辑勋章：只考这一辑
+    quizTier = t; const ids = new Set(tierCards(t).map(c => c.id));
+    pool = QUIZ.filter(q => ids.has(q.card));
+  } else {                                // 复测：从读过的卡里出题
+    quizTier = -1; pool = QUIZ.filter(q => load().read[q.card]);
+    if (pool.length < 6) pool = QUIZ.filter(q => tierOf(q.card) === 0);
+  }
+  quiz = shuffle(pool).slice(0, 6); qIdx = 0; qRight = 0; renderQ();
+}
 function renderQ() {
   lock = false;
   if (qIdx >= quiz.length) return quizDone();
@@ -259,21 +299,23 @@ function quizDone() {
   load();
   const pct = Math.round(qRight / quiz.length * 100);
   const passed = pct >= 80;
+  const b = quizTier >= 0 ? HALL.badges[quizTier] : null;
   let starMsg = '';
   if (passed) {
-    if (!S.badge) { S.badge = true; S.stars += 2; starMsg = '获得「地理小达人」勋章 + 2颗星星！'; }
+    if (b && !has(quizTier)) { give(quizTier); S.stars += 2; starMsg = `获得「${b.name}」勋章 + 2颗星星！`; }
     else { S.stars += 1; starMsg = '得到一颗星星！'; }
   }
   S.bestQuiz = Math.max(S.bestQuiz, pct);
   save();
   document.getElementById('stars').textContent = S.stars;
-  if (passed) { coinBurst(stage(), passed ? 3 : 1); confetti(); }
+  if (passed) { coinBurst(stage(), 3); confetti(); }
+  const more = passed && b && CARDS.some(c => !S.read[c.id]);
   stage().innerHTML = `
     <div class="card celebrate">
       <div class="big">${passed ? '🏆' : '💪'}</div>
       <h2>答对 ${qRight} / ${quiz.length} 题！${starMsg}</h2>
-      <p>${passed ? '你是真正的地理小达人！' : '再读一读知识卡，下次一定能拿到勋章～'}</p>
-      <button class="btn" onclick="startQuiz()">再测一次 🔁</button>
+      <p>${passed ? (b ? `你是真正的${b.name}！` : '知识记得真牢，太棒啦！') : '再读一读知识卡，下次一定能拿到勋章～'}</p>
+      ${more ? `<button class="btn" onclick="startReading()">去读新的知识卡 🆕</button>` : `<button class="btn" onclick="startQuiz()">再测一次 🔁</button>`}
       <button class="btn ghost" onclick="home()">回到博物馆</button>
     </div>`;
 }

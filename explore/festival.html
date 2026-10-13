@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>传统节日 · 探索博物馆</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏮</text></svg>">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+:root { --bg:#EEF3FB; --ink:#232B3D; --muted:#6B7690; --green:#D9473F; --green-d:#A8322C;
+        --blue:#3E6FE0; --gold:#D9A93A; --red:#E05555; --radius:22px; }
+body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+       background:var(--bg); color:var(--ink); min-height:100vh; user-select:none; }
+.wrap { max-width:560px; margin:0 auto; padding:16px 16px 40px; }
+.topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.back { text-decoration:none; color:var(--muted); font-weight:700; font-size:1.1rem;
+        background:#fff; border-radius:999px; padding:10px 20px; box-shadow:0 3px 0 rgba(0,0,0,.06); }
+.title { font-weight:900; font-size:1.15rem; }
+.stars-chip { background:#fff; border-radius:999px; padding:8px 14px; font-weight:800;
+              box-shadow:0 2px 0 rgba(0,0,0,.05); color:#E8A100; }
+.stars-chip.pop { animation:chippop .4s cubic-bezier(.34,1.56,.64,1); }
+@keyframes chippop { 50% { transform:scale(1.35); } }
+.card { background:#fff; border-radius:var(--radius); padding:20px; margin-bottom:16px; box-shadow:0 4px 0 rgba(0,0,0,.05); }
+.btn { display:block; width:100%; border:none; cursor:pointer; border-radius:18px; padding:16px;
+       font-size:1.15rem; font-weight:800; color:#fff; background:var(--green);
+       box-shadow:0 5px 0 var(--green-d); transition:transform .06s; font-family:inherit; }
+.btn:active { transform:translateY(4px); box-shadow:0 1px 0 var(--green-d); }
+.btn.ghost { background:#FCE7E5; color:var(--green-d); box-shadow:0 5px 0 #F5C6C1; }
+.btn.blue { background:var(--blue); box-shadow:0 5px 0 #2C52B3; }
+.btn + .btn { margin-top:12px; }
+.btn-hero { display:flex; align-items:center; gap:18px; background:linear-gradient(135deg,#D9473F,#F07A6E);
+            border-radius:var(--radius); padding:24px 22px; margin-bottom:14px; color:#fff;
+            box-shadow:0 6px 0 var(--green-d); transition:transform .08s; cursor:pointer; text-decoration:none; display:flex; }
+.btn-hero:active { transform:translateY(4px); box-shadow:0 2px 0 var(--green-d); }
+.btn-hero .icon { font-size:3.2rem; line-height:1; }
+.btn-hero .t { font-size:1.35rem; font-weight:900; }
+.btn-hero .d { opacity:.95; font-size:.94rem; margin-top:5px; font-weight:600; }
+.btn-hero.gold { background:linear-gradient(135deg,#D9A93A,#F0C563); box-shadow:0 6px 0 #B3862A; }
+.emoji-big { text-align:center; font-size:5.6rem; line-height:1.1; margin-bottom:4px; }
+.card-title { text-align:center; font-weight:900; font-size:1.35rem; margin-bottom:10px; }
+.narr-box { font-size:1.12rem; line-height:1.85; color:var(--ink); background:#F5F8FC; border-radius:16px;
+            padding:16px; cursor:pointer; }
+.fact-box { margin-top:12px; background:#FFF7E3; border-radius:16px; padding:14px 16px; font-size:1.02rem;
+            line-height:1.7; cursor:pointer; border:2px dashed #E9CE85; }
+.fact-box b { color:var(--gold); }
+.speaker { display:block; margin:14px auto 4px; border:none; cursor:pointer; width:78px; height:78px;
+           border-radius:50%; background:var(--blue); color:#fff; font-size:2rem; box-shadow:0 5px 0 #2C52B3; }
+.speaker:active { transform:translateY(3px); box-shadow:0 2px 0 #2C52B3; }
+.dots { display:flex; gap:7px; justify-content:center; margin:0 0 10px; flex-wrap:wrap; }
+.dot { width:11px; height:11px; border-radius:50%; background:#DCE3F0; }
+.dot.on { background:var(--green); } .dot.now { background:var(--blue); transform:scale(1.3); }
+.q-title { text-align:center; font-weight:800; font-size:1.2rem; margin-bottom:4px; }
+.opt-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
+.opt { background:#fff; border:3px solid #E3E8F2; border-radius:18px; font-size:1.2rem; font-weight:800;
+       padding:16px 8px; text-align:center; cursor:pointer; box-shadow:0 4px 0 rgba(0,0,0,.04); }
+.opt .oe { font-size:1.7rem; display:block; margin-bottom:2px; }
+.opt:active { transform:scale(.97); }
+.opt.right { background:#E7F6EC; border-color:var(--green); animation:pop .35s; }
+.opt.wrong { background:#FCEAEA; border-color:var(--red); animation:shake .4s; }
+@keyframes pop { 50% { transform:scale(1.08); } }
+@keyframes shake { 20%{transform:translateX(-7px)} 40%{transform:translateX(7px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+.pbar { height:12px; background:#E3E8F2; border-radius:999px; overflow:hidden; margin-bottom:14px; }
+.pbar > i { display:block; height:100%; background:linear-gradient(90deg,#D9473F,#F07A6E); border-radius:999px; transition:width .4s; }
+.celebrate { text-align:center; padding:34px 10px; }
+.celebrate .big { font-size:4.6rem; animation:bounce 1s infinite alternate; }
+@keyframes bounce { to { transform:translateY(-12px); } }
+.celebrate h2 { margin:12px 0 6px; } .celebrate p { color:var(--muted); margin-bottom:20px; }
+.badge-wall { display:flex; gap:10px; justify-content:center; margin-top:10px; font-size:2.4rem; }
+.badge-wall span.locked { filter:grayscale(1); opacity:.3; }
+.topic-list { display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+.topic-row { display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:14px; background:#F5F8FC; cursor:pointer; }
+.topic-row .e { font-size:1.6rem; } .topic-row .t { flex:1; font-size:.95rem; font-weight:700; }
+.topic-row .st { font-size:1.1rem; }
+.coin-fly { position:fixed; width:48px; height:48px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#FFE566,#F5A623 55%,#B45309);
+  box-shadow:0 0 0 3px #F5A623,0 6px 18px rgba(245,166,35,.6);
+  display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:250;
+  animation:coinfly .85s cubic-bezier(.4,0,.2,1) forwards; }
+.coin-fly::after { content:'★'; font-size:22px; color:#92400E; font-weight:900; }
+@keyframes coinfly { 0%{transform:translate(0,0) scale(1.3) rotate(-15deg);opacity:1}
+  40%{transform:translate(calc(var(--tx)*.4),calc(var(--ty)*.3)) scale(1.6) rotate(25deg);opacity:1}
+  100%{transform:translate(var(--tx),var(--ty)) scale(.3) rotate(360deg);opacity:0} }
+.muted { color:var(--muted); font-size:.9rem; }
+.series { font-weight:900; color:var(--green-d); font-size:.95rem; margin:12px 2px 2px; }
+.series:first-child { margin-top:2px; }
+.series .new { background:#FFE7D6; color:#D9480F; border-radius:999px; padding:2px 10px; font-size:.75rem; margin-left:6px; }
+.bw { display:flex; flex-direction:column; align-items:center; gap:4px; min-width:84px; }
+.bw small { font-size:.78rem; font-weight:800; color:var(--muted); }
+.bw.locked span { filter:grayscale(1); opacity:.3; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="back" href="index.html">⬅️ 博物馆</a>
+    <div class="title">🏮 传统节日</div>
+    <div class="stars-chip">⭐ <span id="stars">0</span></div>
+  </div>
+  <div id="stage"></div>
+</div>
+
+<script>
+const CARDS = [{"id": "f01", "emoji": "🧧", "title": "过年为什么要贴红对联、放鞭炮？", "narr": "春节是农历新年，是中国人最隆重的节日。传说古时候有一只叫\"年\"的怪兽，每到除夕就出来捣乱，可是它最怕红颜色、火光和响声。于是人们贴红对联、挂红灯笼、放鞭炮，把\"年\"吓跑，这就是\"过年\"的由来。", "fact": "过年的时候，长辈会给小朋友发压岁钱，祝福孩子平平安安、健康长大！"}, {"id": "f02", "emoji": "🏮", "title": "元宵节要做什么？", "narr": "农历正月十五是元宵节，是新年以后的第一个月圆之夜。这天晚上，人们会吃圆圆的汤圆，象征一家人团团圆圆；还会到街上看五颜六色的花灯，猜写在灯笼上的灯谜，热热闹闹的。", "fact": "南方很多地方叫\"汤圆\"，北方很多地方叫\"元宵\"：汤圆是用手包出来的，元宵是在糯米粉里滚出来的！"}, {"id": "f03", "emoji": "🪁", "title": "清明节是什么样的节日？", "narr": "清明节在每年的四月初，这时候天气变暖，花草树木都绿了。清明节，人们会去给已经去世的亲人扫墓，表达思念；也会到郊外踏青、放风筝，感受春天的美好。清明还是二十四节气之一呢。", "fact": "有句农谚叫\"清明前后，种瓜点豆\"，意思是清明时节正是播种的好时候！"}, {"id": "f04", "emoji": "🐲", "title": "端午节为什么要赛龙舟？", "narr": "农历五月初五是端午节。传说两千多年前，有一位爱国诗人叫屈原，他投江以后，人们划着船去救他，还把米团扔进江里，不让鱼虾伤害他。后来，就有了端午节赛龙舟、吃粽子的习俗。", "fact": "端午节，人们还会在门上插艾草，给小朋友戴上五彩绳，祝愿身体健康！"}, {"id": "f05", "emoji": "🌌", "title": "七夕节的鹊桥是怎么来的？", "narr": "农历七月初七是七夕节。传说天上的织女和人间的牛郎结了婚，可是王母娘娘用一条银河把他们分开了。只有每年七月初七这一天，许许多多的喜鹊飞来，搭成一座鹊桥，让牛郎和织女在桥上相会。", "fact": "夏天的夜晚，银河两边各有一颗很亮的星星，就是牛郎星和织女星，它们其实离得非常非常远！"}, {"id": "f06", "emoji": "🥮", "title": "中秋节为什么吃月饼？", "narr": "农历八月十五是中秋节，这天晚上的月亮又大又圆。一家人围坐在一起，吃圆圆的月饼，赏圆圆的月亮，所以中秋节也叫团圆节。传说，月亮上还住着嫦娥仙子和一只可爱的玉兔。", "fact": "中国的探月工程就叫\"嫦娥工程\"，月球车的名字叫\"玉兔号\"，都是从这个美丽的传说来的！"}, {"id": "f07", "emoji": "🌼", "title": "重阳节为什么要敬老？", "narr": "农历九月初九是重阳节。古人觉得\"九\"是一个吉祥的数字，九月九日，两个九重叠在一起，所以叫重阳。这一天，人们会登高望远、赏菊花，还要孝敬家里的爷爷奶奶、外公外婆，所以重阳节也是老人节。", "fact": "唐朝诗人王维写过\"独在异乡为异客，每逢佳节倍思亲\"，就是在重阳节想念家人时写下的！"}, {"id": "f08", "emoji": "🥣", "title": "腊八节喝什么粥？", "narr": "农历十二月初八是腊八节。这一天，家家户户要煮一锅腊八粥，用大米、小米、红豆、红枣、花生、桂圆等好多种粮食和果子一起熬，又香又甜。老人们常说：\"过了腊八就是年。\"腊八一过，大家就开始准备过春节啦！", "fact": "北方有的地方，腊八这天会泡腊八蒜：把大蒜泡进醋里，到过年的时候，蒜瓣会变成漂亮的绿色！"}, {"id": "f09", "emoji": "🐭", "title": "十二生肖谁排第一？", "narr": "中国人用十二种动物来记年份，叫十二生肖，顺序是：鼠、牛、虎、兔、龙、蛇、马、羊、猴、鸡、狗、猪。传说排名次比赛的时候，聪明的小老鼠跳到牛背上，快到终点时一跳，抢到了第一名。每过一年换一种动物，十二年转一圈。", "fact": "2026年是马年，今年出生的小宝宝都属马。问问爸爸妈妈，你属什么呀？"}, {"id": "f10", "emoji": "🌱", "title": "什么是二十四节气？", "narr": "古代的人们观察太阳和天气的变化，把一年分成了二十四个节气，用来提醒大家什么时候播种、什么时候收获。比如立春，春天开始了；夏至，白天最长；冬至，白天最短、黑夜最长。", "fact": "冬至这一天，北方很多地方吃饺子，南方很多地方吃汤圆，人们说\"冬至大如年\"！"}];
+const QUIZ = [{"id": "fq01", "card": "f01", "q": "传说中，\"年\"兽最怕什么？", "opts": [["红色和响声", "🧧", 1], ["下雨", "", 0], ["小猫", "", 0], ["音乐", "", 0]]}, {"id": "fq02", "card": "f02", "q": "元宵节要吃什么？", "opts": [["汤圆", "🏮", 1], ["粽子", "", 0], ["月饼", "", 0], ["腊八粥", "", 0]]}, {"id": "fq03", "card": "f03", "q": "清明节，人们会去郊外做什么？", "opts": [["踏青放风筝", "🪁", 1], ["堆雪人", "", 0], ["赏月亮", "", 0], ["吃月饼", "", 0]]}, {"id": "fq04", "card": "f04", "q": "端午节要吃什么？", "opts": [["粽子", "🐲", 1], ["月饼", "", 0], ["汤圆", "", 0], ["饺子", "", 0]]}, {"id": "fq05", "card": "f05", "q": "七夕节，是谁搭起了鹊桥？", "opts": [["喜鹊", "🐦", 1], ["燕子", "", 0], ["老鹰", "", 0], ["鸽子", "", 0]]}, {"id": "fq06", "card": "f06", "q": "中秋节要吃什么？", "opts": [["月饼", "🥮", 1], ["粽子", "", 0], ["汤圆", "", 0], ["腊八粥", "", 0]]}, {"id": "fq07", "card": "f07", "q": "重阳节，我们要特别关心谁？", "opts": [["爷爷奶奶", "👵", 1], ["小狗", "", 0], ["自己", "", 0], ["玩具", "", 0]]}, {"id": "fq08", "card": "f08", "q": "腊八节要喝什么？", "opts": [["腊八粥", "🥣", 1], ["牛奶", "", 0], ["果汁", "", 0], ["豆浆", "", 0]]}, {"id": "fq09", "card": "f09", "q": "十二生肖里，排第一的是谁？", "opts": [["老鼠", "🐭", 1], ["老虎", "", 0], ["龙", "", 0], ["猪", "", 0]]}, {"id": "fq10", "card": "f10", "q": "一年里，白天最短的是哪一天？", "opts": [["冬至", "❄️", 1], ["夏至", "", 0], ["立春", "", 0], ["清明", "", 0]]}];
+const HALL = {"badges": [{"n": 10, "name": "节日小达人", "icon": "🏮🏅"}]};
+const CMAP = {}; CARDS.forEach(c => CMAP[c.id] = c);
+const SERIES = ['第一辑', '第二辑', '第三辑', '第四辑'];
+const MULTI = HALL.badges.length > 1;
+
+/* ============ 存储 ============ */
+const KEY = 'museum_fest_v1';
+let S = null;
+function load() { if (S) return S;
+  try { S = JSON.parse(localStorage.getItem(KEY)); } catch(e) {}
+  if (!S) S = {};
+  S.read = S.read || {};           // cardId -> true
+  S.stars = S.stars || 0;
+  S.badge = S.badge || false;      // 第一辑勋章（第二辑勋章存 badge2）
+  S.bestQuiz = S.bestQuiz || 0;
+  return S; }
+function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
+
+/* ============ 分辑与勋章 ============ */
+const has = t => t === 0 ? !!load().badge : !!load()['badge' + (t + 1)];
+function give(t) { if (t === 0) S.badge = true; else S['badge' + (t + 1)] = true; }
+const tierCards = t => CARDS.slice(t ? HALL.badges[t - 1].n : 0, HALL.badges[t].n);
+const tierRead = t => tierCards(t).every(c => load().read[c.id]);
+const tierOf = id => { const i = CARDS.findIndex(c => c.id === id); return HALL.badges.findIndex(b => i < b.n); };
+function curTier() { for (let t = 0; t < HALL.badges.length; t++) if (!has(t)) return t; return -1; }
+const readNum = () => CARDS.filter(c => load().read[c.id]).length;
+
+/* ============ 语音（预录音频） ============ */
+let _audio = null;
+function speak(id) {
+  if (_audio) { try { _audio.pause(); } catch(e) {} _audio = null; }
+  const a = new Audio('audio/' + encodeURIComponent(id) + '.m4a');
+  _audio = a; a.play().catch(() => {});
+}
+
+/* ============ 特效 ============ */
+function shuffle(a) { a = a.slice(); for (let i = a.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; }
+function sfx(ok) { try { const ctx = sfx._c || (sfx._c = new (window.AudioContext||window.webkitAudioContext)());
+  (ok ? [[523,0],[659,.12],[784,.24]] : [[300,0],[240,.16]]).forEach(([f,d]) => {
+    const o = ctx.createOscillator(), g = ctx.createGain(); o.connect(g); g.connect(ctx.destination);
+    o.type = ok ? 'sine' : 'sawtooth'; o.frequency.value = f; const t = ctx.currentTime + d;
+    g.gain.setValueAtTime(ok ? .25 : .15, t); g.gain.exponentialRampToValueAtTime(.001, t+.25); o.start(t); o.stop(t+.3); });
+  } catch(e) {} }
+function coinBurst(anchor, n) { n = n||3; const dst = document.querySelector('.stars-chip'); if (!anchor || !dst) return;
+  const s = anchor.getBoundingClientRect(), d = dst.getBoundingClientRect();
+  for (let i = 0; i < n; i++) setTimeout(() => { sfx(true);
+    const el = document.createElement('div'); el.className = 'coin-fly';
+    const sx = s.left+s.width/2-24+(Math.random()*70-35), sy = s.top+s.height/2-24;
+    el.style.left = sx+'px'; el.style.top = sy+'px';
+    el.style.setProperty('--tx',(d.left+d.width/2-sx-24)+'px'); el.style.setProperty('--ty',(d.top+d.height/2-sy-24)+'px');
+    document.body.appendChild(el);
+    setTimeout(() => { el.remove(); dst.classList.remove('pop'); void dst.offsetWidth; dst.classList.add('pop'); }, 830);
+  }, i*170); }
+function confetti() { const cols = ['#D9473F','#3E6FE0','#D9A93A','#E05555','#F07A6E'];
+  for (let i = 0; i < 30; i++) { const d = document.createElement('div');
+    d.style.cssText = `position:fixed;top:-12px;left:${Math.random()*100}vw;width:10px;height:10px;z-index:98;pointer-events:none;
+      background:${cols[i%cols.length]};border-radius:${Math.random()>.5?'50%':'2px'};transition:transform ${1.6+Math.random()}s ease-in,opacity 2.2s;`;
+    document.body.appendChild(d);
+    requestAnimationFrame(() => { d.style.transform = `translateY(${100+Math.random()*15}vh) rotate(${Math.random()*720}deg)`; d.style.opacity = '0'; });
+    setTimeout(() => d.remove(), 2600); } }
+
+/* ============ 界面 ============ */
+const stage = () => document.getElementById('stage');
+let readIdx = 0, readQueue = [];
+
+function home() {
+  load();
+  document.getElementById('stars').textContent = S.stars;
+  const readCount = readNum(), t = curTier();
+  const unread = CARDS.filter(c => !S.read[c.id]);
+
+  let hero;
+  if (t >= 0 && tierRead(t)) {
+    hero = `<div class="btn-hero gold" onclick="startQuiz()">
+      <div class="icon">🎯</div><div><div class="t">去挑战测验</div><div class="d">${MULTI ? SERIES[t] : ''}全部读完啦，来赢「${HALL.badges[t].name}」勋章吧！</div></div></div>`;
+  } else if (unread.length) {
+    const ut = tierOf(unread[0].id), fresh = ut > 0 && !tierCards(ut).some(c => S.read[c.id]);
+    hero = fresh
+      ? `<div class="btn-hero" onclick="startReading()">
+      <div class="icon">🆕</div><div><div class="t">${SERIES[ut]}开放啦</div><div class="d">有 ${tierCards(ut).length} 张新知识卡，快来探索吧！</div></div></div>`
+      : `<div class="btn-hero" onclick="startReading()">
+      <div class="icon">▶️</div><div><div class="t">${readCount ? '继续探索' : '开始探索'}</div><div class="d">已读 ${readCount} / ${CARDS.length} 个知识卡</div></div></div>`;
+  } else {
+    hero = `<div class="btn-hero gold" onclick="startQuiz()">
+      <div class="icon">🏆</div><div><div class="t">${HALL.badges[HALL.badges.length - 1].name}</div><div class="d">再测一次，挑战满分！</div></div></div>`;
+  }
+
+  const row = c => `
+    <div class="topic-row" onclick="openCard('${c.id}')">
+      <span class="e">${c.emoji}</span><span class="t">${c.title}</span>
+      <span class="st">${S.read[c.id] ? '✅' : '⬜'}</span>
+    </div>`;
+  const rows = HALL.badges.map((b, k) => (MULTI ? `<div class="series">${SERIES[k]}${k && !tierCards(k).some(c => S.read[c.id]) ? '<span class="new">新</span>' : ''}</div>` : '')
+    + tierCards(k).map(row).join('')).join('');
+  const wall = HALL.badges.map((b, k) => `<div class="bw ${has(k) ? '' : 'locked'}"><span>${b.icon}</span><small>${b.name}</small></div>`).join('');
+
+  stage().innerHTML = `${hero}
+    <div class="card">
+      <div style="font-weight:800;margin-bottom:6px">📚 知识卡片（点击可单独复习）</div>
+      <div class="topic-list">${rows}</div>
+    </div>
+    ${S.badge || MULTI ? `<div class="card" style="text-align:center"><div style="font-weight:800;margin-bottom:8px">🎖️ 我的勋章</div><div class="badge-wall">${wall}</div></div>` : ''}`;
+}
+
+/* —— 阅读流程 —— */
+function startReading() {
+  const unread = CARDS.filter(c => !load().read[c.id]);
+  const t = unread.length ? tierOf(unread[0].id) : 0;
+  readQueue = unread.filter(c => tierOf(c.id) === t); readIdx = 0; renderCard();
+}
+function openCard(id) { readQueue = [CMAP[id]]; readIdx = 0; renderCard(true); }
+
+function dots() { return `<div class="dots">${readQueue.map((_, i) =>
+  `<span class="dot${i < readIdx ? ' on' : i === readIdx ? ' now' : ''}"></span>`).join('')}</div>`; }
+
+function renderCard(single) {
+  if (readIdx >= readQueue.length) return single ? home() : readingDone();
+  const c = readQueue[readIdx];
+  stage().innerHTML = `
+    ${!single ? dots() : ''}
+    <div class="card">
+      <div class="emoji-big">${c.emoji}</div>
+      <div class="card-title">${c.title}</div>
+      <button class="speaker" onclick="speak('${c.id}-narr')">🔊</button>
+      <div class="narr-box" onclick="speak('${c.id}-narr')">${c.narr}</div>
+      <div class="fact-box" onclick="speak('${c.id}-fact')"><b>💡 你知道吗？</b>${c.fact} 🔊</div>
+    </div>
+    <button class="btn" onclick="nextCard('${c.id}', ${!!single})">${single ? '回到列表' : (readIdx < readQueue.length - 1 ? '下一个知识 ➡️' : '读完啦，去下一步 ➡️')}</button>`;
+  setTimeout(() => speak(c.id + '-narr'), 300);
+}
+function museumDay(kind) { try { const d = new Date(), t = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  let m = JSON.parse(localStorage.getItem('museum_day_v1')) || {}; if (m.date !== t) m = { date: t, cards: 0, quiz: false };
+  if (kind === 'card') m.cards++; else m.quiz = true; localStorage.setItem('museum_day_v1', JSON.stringify(m)); } catch (e) {} }
+function nextCard(id, single) {
+  museumDay('card');
+  load(); S.read[id] = true; save();
+  if (single) return home();
+  readIdx++;
+  renderCard();
+}
+function readingDone() {
+  if (window.StudyPlan) StudyPlan.cheer();
+  confetti();
+  const t = curTier(), ready = t >= 0 && tierRead(t);
+  const all = readNum() >= CARDS.length;
+  stage().innerHTML = `
+    <div class="card celebrate">
+      <div class="big">🌟</div><h2>今天的探索完成啦！</h2>
+      <p>${ready ? `${MULTI ? SERIES[t] + '的' : ''}知识卡都读完了，快去挑战测验吧！` : all ? '这个展厅的知识卡全读完啦，真了不起！' : '明天再来读更多知识卡～'}</p>
+      ${ready ? `<button class="btn" onclick="startQuiz()">去挑战测验 🎯</button>` : ''}
+      <button class="btn ghost" onclick="home()">回到博物馆</button>
+    </div>`;
+}
+
+/* —— 测验流程 —— */
+let quiz = [], qIdx = 0, qRight = 0, lock = false, quizTier = -1;
+function startQuiz() {
+  const t = curTier();
+  let pool;
+  if (t >= 0 && tierRead(t)) {           // 冲刺本辑勋章：只考这一辑
+    quizTier = t; const ids = new Set(tierCards(t).map(c => c.id));
+    pool = QUIZ.filter(q => ids.has(q.card));
+  } else {                                // 复测：从读过的卡里出题
+    quizTier = -1; pool = QUIZ.filter(q => load().read[q.card]);
+    if (pool.length < 6) pool = QUIZ.filter(q => tierOf(q.card) === 0);
+  }
+  quiz = shuffle(pool).slice(0, 6); qIdx = 0; qRight = 0; renderQ();
+}
+function renderQ() {
+  lock = false;
+  if (qIdx >= quiz.length) return quizDone();
+  const q = quiz[qIdx];
+  const opts = shuffle(q.opts.slice());
+  stage().innerHTML = `
+    <div class="pbar"><i style="width:${(qIdx/quiz.length*100)}%"></i></div>
+    <div class="card">
+      <div class="q-title">${q.q}</div>
+      <button class="speaker" onclick="speak('${q.id}')">🔊</button>
+      <div class="opt-grid">
+        ${opts.map(([label, emoji, ok]) => `<div class="opt" onclick="pickQ(this,${ok},'${label}')">${emoji ? `<span class="oe">${emoji}</span>` : ''}${label}</div>`).join('')}
+      </div>
+    </div>`;
+  setTimeout(() => speak(q.id), 300);
+}
+function pickQ(el, ok, label) {
+  if (lock) return;
+  lock = true;
+  if (ok) { el.classList.add('right'); sfx(true); qRight++; speak(label); }
+  else { el.classList.add('wrong'); sfx(false); }
+  setTimeout(() => { qIdx++; renderQ(); }, ok ? 1100 : 1300);
+}
+function quizDone() {
+  if (window.StudyPlan) StudyPlan.cheer();
+  museumDay('quiz');
+  load();
+  const pct = Math.round(qRight / quiz.length * 100);
+  const passed = pct >= 80;
+  const b = quizTier >= 0 ? HALL.badges[quizTier] : null;
+  let starMsg = '';
+  if (passed) {
+    if (b && !has(quizTier)) { give(quizTier); S.stars += 2; starMsg = `获得「${b.name}」勋章 + 2颗星星！`; }
+    else { S.stars += 1; starMsg = '得到一颗星星！'; }
+  }
+  S.bestQuiz = Math.max(S.bestQuiz, pct);
+  save();
+  document.getElementById('stars').textContent = S.stars;
+  if (passed) { coinBurst(stage(), 3); confetti(); }
+  const more = passed && b && CARDS.some(c => !S.read[c.id]);
+  stage().innerHTML = `
+    <div class="card celebrate">
+      <div class="big">${passed ? '🏆' : '💪'}</div>
+      <h2>答对 ${qRight} / ${quiz.length} 题！${starMsg}</h2>
+      <p>${passed ? (b ? `你是真正的${b.name}！` : '知识记得真牢，太棒啦！') : '再读一读知识卡，下次一定能拿到勋章～'}</p>
+      ${more ? `<button class="btn" onclick="startReading()">去读新的知识卡 🆕</button>` : `<button class="btn" onclick="startQuiz()">再测一次 🔁</button>`}
+      <button class="btn ghost" onclick="home()">回到博物馆</button>
+    </div>`;
+}
+
+home();
+</script>
+<script src="../common/plan.js" data-module="explore"></script>
+</body>
+</html>

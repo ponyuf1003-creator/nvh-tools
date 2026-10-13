@@ -81,6 +81,12 @@ body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaH
   40%{transform:translate(calc(var(--tx)*.4),calc(var(--ty)*.3)) scale(1.6) rotate(25deg);opacity:1}
   100%{transform:translate(var(--tx),var(--ty)) scale(.3) rotate(360deg);opacity:0} }
 .muted { color:var(--muted); font-size:.9rem; }
+.series { font-weight:900; color:var(--green-d); font-size:.95rem; margin:12px 2px 2px; }
+.series:first-child { margin-top:2px; }
+.series .new { background:#FFE7D6; color:#D9480F; border-radius:999px; padding:2px 10px; font-size:.75rem; margin-left:6px; }
+.bw { display:flex; flex-direction:column; align-items:center; gap:4px; min-width:84px; }
+.bw small { font-size:.78rem; font-weight:800; color:var(--muted); }
+.bw.locked span { filter:grayscale(1); opacity:.3; }
 </style>
 </head>
 <body>
@@ -94,9 +100,12 @@ body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaH
 </div>
 
 <script>
-const CARDS = [{"id": "c01", "emoji": "🐘", "title": "什么是哺乳动物？", "narr": "哺乳动物是用奶喂宝宝的动物，它们身上大多长着毛发，用肺来呼吸。猫、狗、大象，还有我们人类，都是哺乳动物哦！", "fact": "蓝鲸也是哺乳动物，它是世界上最大的动物，比恐龙还要大！"}, {"id": "c02", "emoji": "🦅", "title": "鸟儿为什么会飞？", "narr": "鸟类的身上长着轻飘飘的羽毛，前肢变成了翅膀，骨头里面是空心的，这样才能飞得又高又远。大部分鸟妈妈会生蛋，孵出小鸟。", "fact": "鸵鸟是世界上最大的鸟，但是它的翅膀太小了不会飞，只能用长腿飞快地跑！"}, {"id": "c03", "emoji": "🐟", "title": "鱼儿在水里怎么呼吸？", "narr": "鱼儿的头两侧长着鳃，水流过鳃的时候，鱼就能吸到水里的氧气，就像我们用鼻子呼吸空气一样。鱼身上还盖着一层滑滑的鳞片保护自己。", "fact": "海马其实是一种鱼，它们是唯一由爸爸来生宝宝的动物！"}, {"id": "c04", "emoji": "🐜", "title": "昆虫有几条腿？", "narr": "昆虫的身体分成头、胸、腹三部分，它们都有六条腿，大多数昆虫还长着一对或两对翅膀。蚂蚁、蝴蝶、蜜蜂，都是昆虫。", "fact": "蚂蚁虽然很小，但是能举起比自己重五十倍的东西！"}, {"id": "c05", "emoji": "🌱", "title": "种子是怎么长成大树的？", "narr": "一颗小小的种子被埋进泥土里，喝饱了水，晒到阳光，就会慢慢发芽，先长出小小的根，再长出嫩绿的芽，一点一点长成大树。", "fact": "世界上最大的种子是海椰子，一颗就有二十多公斤重，比一个小朋友还要重！"}, {"id": "c06", "emoji": "🌳", "title": "树叶为什么是绿色的？", "narr": "树叶里藏着一个绿色的小工厂，它能用阳光、空气和水，帮大树制造养分，这个过程还会放出我们呼吸需要的氧气，所以树叶大多是绿色的。", "fact": "地球上大部分的氧气，都是森林和海里的小植物制造出来的！"}, {"id": "c07", "emoji": "❤️", "title": "心脏在忙什么？", "narr": "心脏是身体里的小水泵，它一刻不停地跳动，把血液送到全身每一个地方，血液会带着营养和氧气，给身体各处送去能量。", "fact": "你的心脏一天大约要跳十万次，一辈子都不会停下来休息！"}, {"id": "c08", "emoji": "🦴", "title": "骨头有什么用？", "narr": "我们身体里有两百多块骨头，它们连在一起，撑起了我们的身体，让我们能站立、能走路，还能保护心脏和大脑这些重要的器官。", "fact": "你身体里最长的骨头在大腿里，最小的骨头却藏在耳朵里！"}, {"id": "c09", "emoji": "🦕", "title": "恐龙生活在什么时候？", "narr": "恐龙生活在很久很久以前，那时候还没有人类。它们在地球上生活了超过一亿六千万年，后来因为环境发生了巨大变化，恐龙就渐渐灭绝了。科学家是通过挖出的化石，才知道恐龙的样子。", "fact": "鸟类是恐龙的近亲，很多科学家认为，鸟类就是恐龙的后代！"}, {"id": "c10", "emoji": "🐼", "title": "为什么要保护大熊猫？", "narr": "大熊猫是我们中国特有的珍稀动物，因为森林减少、食物变少，野外的大熊猫曾经只剩下很少很少。经过大家一起努力保护，大熊猫的数量已经渐渐变多了。", "fact": "大熊猫每天要吃十几个小时的竹子，一天能吃掉将近二十公斤！"}];
-const QUIZ = [{"id": "q01", "card": "c01", "q": "下面哪个是哺乳动物？", "opts": [["大象", "🐘", 1], ["金鱼", "🐟", 0], ["老鹰", "🦅", 0], ["蚂蚁", "🐜", 0]]}, {"id": "q02", "card": "c03", "q": "鱼儿用什么呼吸？", "opts": [["鼻子", "👃", 0], ["肺", "🫁", 0], ["鳃", "🐟", 1], ["嘴巴", "👄", 0]]}, {"id": "q03", "card": "c04", "q": "昆虫一般有几条腿？", "opts": [["4条", "", 0], ["6条", "", 1], ["8条", "", 0], ["2条", "", 0]]}, {"id": "q04", "card": "c05", "q": "种子发芽先长出什么？", "opts": [["叶子", "🍃", 0], ["花朵", "🌸", 0], ["根", "🌱", 1], ["果实", "🍎", 0]]}, {"id": "q05", "card": "c06", "q": "树叶为什么大多是绿色的？", "opts": [["好看", "", 0], ["制造养分", "🌿", 1], ["怕被吃掉", "", 0], ["反光", "", 0]]}, {"id": "q06", "card": "c07", "q": "心脏最重要的工作是什么？", "opts": [["呼吸空气", "", 0], ["运送血液", "❤️", 1], ["消化食物", "", 0], ["思考问题", "", 0]]}, {"id": "q07", "card": "c08", "q": "我们身体里大约有多少块骨头？", "opts": [["10块", "", 0], ["50块", "", 0], ["200多块", "🦴", 1], ["1000块", "", 0]]}, {"id": "q08", "card": "c09", "q": "恐龙是怎么灭绝的？", "opts": [["被人捕杀", "", 0], ["环境变化", "🌋", 1], ["生病了", "", 0], ["被打败", "", 0]]}, {"id": "q09", "card": "c09", "q": "科学家怎么知道恐龙的样子？", "opts": [["看照片", "", 0], ["挖化石", "🦴", 1], ["读日记", "", 0], ["靠猜测", "", 0]]}, {"id": "q10", "card": "c10", "q": "大熊猫数量为什么曾经变少？", "opts": [["森林减少", "🌲", 1], ["不爱运动", "", 0], ["太懒惰", "", 0], ["天气冷", "", 0]]}];
+const CARDS = [{"id": "c01", "emoji": "🐘", "title": "什么是哺乳动物？", "narr": "哺乳动物是用奶喂宝宝的动物，它们身上大多长着毛发，用肺来呼吸。猫、狗、大象，还有我们人类，都是哺乳动物哦！", "fact": "蓝鲸也是哺乳动物，它是世界上最大的动物，比恐龙还要大！"}, {"id": "c02", "emoji": "🦅", "title": "鸟儿为什么会飞？", "narr": "鸟类的身上长着轻飘飘的羽毛，前肢变成了翅膀，骨头里面是空心的，这样才能飞得又高又远。大部分鸟妈妈会生蛋，孵出小鸟。", "fact": "鸵鸟是世界上最大的鸟，但是它的翅膀太小了不会飞，只能用长腿飞快地跑！"}, {"id": "c03", "emoji": "🐟", "title": "鱼儿在水里怎么呼吸？", "narr": "鱼儿的头两侧长着鳃，水流过鳃的时候，鱼就能吸到水里的氧气，就像我们用鼻子呼吸空气一样。鱼身上还盖着一层滑滑的鳞片保护自己。", "fact": "海马其实是一种鱼，它们是唯一由爸爸来生宝宝的动物！"}, {"id": "c04", "emoji": "🐜", "title": "昆虫有几条腿？", "narr": "昆虫的身体分成头、胸、腹三部分，它们都有六条腿，大多数昆虫还长着一对或两对翅膀。蚂蚁、蝴蝶、蜜蜂，都是昆虫。", "fact": "蚂蚁虽然很小，但是能举起比自己重五十倍的东西！"}, {"id": "c05", "emoji": "🌱", "title": "种子是怎么长成大树的？", "narr": "一颗小小的种子被埋进泥土里，喝饱了水，晒到阳光，就会慢慢发芽，先长出小小的根，再长出嫩绿的芽，一点一点长成大树。", "fact": "世界上最大的种子是海椰子，一颗就有二十多公斤重，比一个小朋友还要重！"}, {"id": "c06", "emoji": "🌳", "title": "树叶为什么是绿色的？", "narr": "树叶里藏着一个绿色的小工厂，它能用阳光、空气和水，帮大树制造养分，这个过程还会放出我们呼吸需要的氧气，所以树叶大多是绿色的。", "fact": "地球上大部分的氧气，都是森林和海里的小植物制造出来的！"}, {"id": "c07", "emoji": "❤️", "title": "心脏在忙什么？", "narr": "心脏是身体里的小水泵，它一刻不停地跳动，把血液送到全身每一个地方，血液会带着营养和氧气，给身体各处送去能量。", "fact": "你的心脏一天大约要跳十万次，一辈子都不会停下来休息！"}, {"id": "c08", "emoji": "🦴", "title": "骨头有什么用？", "narr": "我们身体里有两百多块骨头，它们连在一起，撑起了我们的身体，让我们能站立、能走路，还能保护心脏和大脑这些重要的器官。", "fact": "你身体里最长的骨头在大腿里，最小的骨头却藏在耳朵里！"}, {"id": "c09", "emoji": "🦕", "title": "恐龙生活在什么时候？", "narr": "恐龙生活在很久很久以前，那时候还没有人类。它们在地球上生活了超过一亿六千万年，后来因为环境发生了巨大变化，恐龙就渐渐灭绝了。科学家是通过挖出的化石，才知道恐龙的样子。", "fact": "鸟类是恐龙的近亲，很多科学家认为，鸟类就是恐龙的后代！"}, {"id": "c10", "emoji": "🐼", "title": "为什么要保护大熊猫？", "narr": "大熊猫是我们中国特有的珍稀动物，因为森林减少、食物变少，野外的大熊猫曾经只剩下很少很少。经过大家一起努力保护，大熊猫的数量已经渐渐变多了。", "fact": "大熊猫每天要吃十几个小时的竹子，一天能吃掉将近二十公斤！"}, {"id": "c11", "emoji": "🐘", "title": "大象的鼻子有什么用？", "narr": "大象的长鼻子，是它的鼻子和上嘴唇连在一起长成的。这个鼻子本领可大了：能闻气味，能卷起树枝和青草送进嘴里，还能吸满一鼻子水，喷进嘴里喝，或者喷到身上洗个凉水澡。", "fact": "大象的鼻子里没有一块骨头，却有成千上万束小肌肉，所以特别灵活，连一颗花生都能捡起来！"}, {"id": "c12", "emoji": "🦒", "title": "长颈鹿的脖子为什么那么长？", "narr": "长颈鹿是世界上最高的动物，站起来差不多有两层楼那么高。长长的脖子能帮它吃到大树顶上的嫩叶子，别的动物都够不着。它站得高、看得远，狮子还在很远的地方，它就能发现。", "fact": "长颈鹿的脖子那么长，可是脖子里的骨头和我们人一样，都只有七块，只不过每一块都特别长！"}, {"id": "c13", "emoji": "🐧", "title": "企鹅是鸟吗？", "narr": "企鹅身上长着羽毛，是从蛋里孵出来的，它真的是一种鸟。可是企鹅的翅膀变得像船桨一样，不能在天上飞，却能在海里飞快地游泳，捉小鱼和小虾吃。大部分企鹅生活在地球的南边，特别是寒冷的南极。", "fact": "帝企鹅的蛋是爸爸孵的：企鹅爸爸把蛋放在脚背上，用肚皮盖住，在寒风里一动不动地孵两个多月！"}, {"id": "c14", "emoji": "🦋", "title": "毛毛虫怎么变成蝴蝶？", "narr": "蝴蝶妈妈把卵产在叶子上，卵里钻出来的是一条小毛毛虫。毛毛虫每天不停地吃叶子，长得胖胖的，然后把自己包起来，变成一个蛹。过了一段时间，蛹裂开了，一只美丽的蝴蝶就飞了出来。", "fact": "卵、毛毛虫、蛹、蝴蝶，一只蝴蝶的一生要换四次样子，就像变魔术一样！"}, {"id": "c15", "emoji": "🐸", "title": "小蝌蚪是怎么变成青蛙的？", "narr": "青蛙妈妈在水里产下一团团卵，卵里孵出了黑黑的小蝌蚪，它们拖着长长的尾巴，在水里游来游去。小蝌蚪先长出两条后腿，再长出两条前腿，接着尾巴慢慢变短、不见了，就变成了一只小青蛙。", "fact": "青蛙是捉害虫的能手，一只青蛙一年能吃掉一万多只害虫，是农民伯伯的好朋友！"}, {"id": "c16", "emoji": "🐫", "title": "骆驼为什么不怕渴？", "narr": "骆驼生活在沙漠里，被人们叫作\"沙漠之舟\"。它一次能喝下很多很多水，然后好多天不喝水也没关系。骆驼背上的驼峰里装的不是水，而是脂肪，找不到东西吃的时候，驼峰里的脂肪就能变成力气。", "fact": "骆驼有长长的睫毛，鼻孔还能关起来，刮大风沙的时候，沙子就钻不进眼睛和鼻子啦！"}, {"id": "c17", "emoji": "🦎", "title": "变色龙为什么会变颜色？", "narr": "变色龙是一种爬行动物，它的皮肤里有特别的细胞，能让身体的颜色变来变去。天气冷了热了，心情高兴还是生气，它的颜色都会跟着变化，变色龙还能用颜色和同伴\"说话\"呢。", "fact": "变色龙的两只眼睛能各转各的，一只看前面，一只看后面；舌头一弹出去，就能把虫子粘回来！"}, {"id": "c18", "emoji": "🐝", "title": "蜜蜂是怎么酿蜜的？", "narr": "小蜜蜂飞到花朵上，吸取甜甜的花蜜，带回蜂巢。蜜蜂们把花蜜存进一个个六边形的小蜂房里，扇动翅膀，让里面的水分慢慢变少，花蜜就变成了又香又浓的蜂蜜。蜜蜂采蜜的时候，还帮花朵传播了花粉，让它们结出果实。", "fact": "蜜蜂会跳舞！找到花的蜜蜂回到家，会跳起\"8字舞\"，告诉同伴花在哪个方向、有多远！"}, {"id": "c19", "emoji": "🪵", "title": "树的年轮是怎么回事？", "narr": "把一棵大树锯开，能看到树干上有一圈一圈的花纹，这就是年轮。树木每年都在长粗，春天和夏天长得快，颜色浅；秋天和冬天长得慢，颜色深，一年就留下一圈。数一数有多少圈，就知道这棵树有几岁了。", "fact": "世界上有一些狐尾松已经活了四千多岁，比孔子爷爷出生的时候还要早得多！"}, {"id": "c20", "emoji": "🦇", "title": "蝙蝠在黑夜里怎么飞？", "narr": "蝙蝠是唯一真正会飞的哺乳动物。它们白天倒挂着睡觉，晚上才出来捉虫子。天那么黑，蝙蝠靠的是耳朵：它一边飞一边发出人听不见的叫声，声音碰到东西弹回来，蝙蝠一听，就知道前面有什么了。", "fact": "轮船上的声呐，也是靠发出声音、听回声来找到水下的东西，和蝙蝠的本领一模一样！"}];
+const QUIZ = [{"id": "q01", "card": "c01", "q": "下面哪个是哺乳动物？", "opts": [["大象", "🐘", 1], ["金鱼", "🐟", 0], ["老鹰", "🦅", 0], ["蚂蚁", "🐜", 0]]}, {"id": "q02", "card": "c03", "q": "鱼儿用什么呼吸？", "opts": [["鼻子", "👃", 0], ["肺", "🫁", 0], ["鳃", "🐟", 1], ["嘴巴", "👄", 0]]}, {"id": "q03", "card": "c04", "q": "昆虫一般有几条腿？", "opts": [["4条", "", 0], ["6条", "", 1], ["8条", "", 0], ["2条", "", 0]]}, {"id": "q04", "card": "c05", "q": "种子发芽先长出什么？", "opts": [["叶子", "🍃", 0], ["花朵", "🌸", 0], ["根", "🌱", 1], ["果实", "🍎", 0]]}, {"id": "q05", "card": "c06", "q": "树叶为什么大多是绿色的？", "opts": [["好看", "", 0], ["制造养分", "🌿", 1], ["怕被吃掉", "", 0], ["反光", "", 0]]}, {"id": "q06", "card": "c07", "q": "心脏最重要的工作是什么？", "opts": [["呼吸空气", "", 0], ["运送血液", "❤️", 1], ["消化食物", "", 0], ["思考问题", "", 0]]}, {"id": "q07", "card": "c08", "q": "我们身体里大约有多少块骨头？", "opts": [["10块", "", 0], ["50块", "", 0], ["200多块", "🦴", 1], ["1000块", "", 0]]}, {"id": "q08", "card": "c09", "q": "恐龙是怎么灭绝的？", "opts": [["被人捕杀", "", 0], ["环境变化", "🌋", 1], ["生病了", "", 0], ["被打败", "", 0]]}, {"id": "q09", "card": "c09", "q": "科学家怎么知道恐龙的样子？", "opts": [["看照片", "", 0], ["挖化石", "🦴", 1], ["读日记", "", 0], ["靠猜测", "", 0]]}, {"id": "q10", "card": "c10", "q": "大熊猫数量为什么曾经变少？", "opts": [["森林减少", "🌲", 1], ["不爱运动", "", 0], ["太懒惰", "", 0], ["天气冷", "", 0]]}, {"id": "q11", "card": "c11", "q": "大象用什么把青草送进嘴里？", "opts": [["长鼻子", "🐘", 1], ["尾巴", "", 0], ["耳朵", "", 0], ["大脚", "", 0]]}, {"id": "q12", "card": "c12", "q": "长颈鹿长长的脖子有什么用？", "opts": [["吃到高处的树叶", "🦒", 1], ["在水里游泳", "", 0], ["挖洞", "", 0], ["唱歌", "", 0]]}, {"id": "q13", "card": "c13", "q": "企鹅的翅膀主要用来做什么？", "opts": [["游泳", "🐧", 1], ["在天上飞", "", 0], ["挖土", "", 0], ["打架", "", 0]]}, {"id": "q14", "card": "c14", "q": "毛毛虫变成蝴蝶之前，要先变成什么？", "opts": [["蛹", "🦋", 1], ["小鸟", "", 0], ["蝌蚪", "", 0], ["种子", "", 0]]}, {"id": "q15", "card": "c15", "q": "小蝌蚪长大以后变成什么？", "opts": [["青蛙", "🐸", 1], ["小鱼", "", 0], ["乌龟", "", 0], ["螃蟹", "", 0]]}, {"id": "q16", "card": "c16", "q": "骆驼的驼峰里装的是什么？", "opts": [["脂肪", "🐫", 1], ["水", "", 0], ["石头", "", 0], ["空气", "", 0]]}, {"id": "q17", "card": "c17", "q": "变色龙最厉害的本领是什么？", "opts": [["改变身体颜色", "🦎", 1], ["在天上飞", "", 0], ["在水里呼吸", "", 0], ["发出亮光", "", 0]]}, {"id": "q18", "card": "c18", "q": "蜜蜂从哪里采来花蜜？", "opts": [["花朵", "🌸", 1], ["石头", "", 0], ["河水", "", 0], ["泥土", "", 0]]}, {"id": "q19", "card": "c19", "q": "数一数树的年轮，可以知道什么？", "opts": [["树有几岁", "🪵", 1], ["树有多高", "", 0], ["明天下不下雨", "", 0], ["树叶有几片", "", 0]]}, {"id": "q20", "card": "c20", "q": "蝙蝠在黑夜里靠什么飞？", "opts": [["耳朵听回声", "🦇", 1], ["眼睛", "", 0], ["手电筒", "", 0], ["鼻子", "", 0]]}];
+const HALL = {"badges": [{"n": 10, "name": "生物小达人", "icon": "🦁🏅"}, {"n": 20, "name": "生物小博士", "icon": "🦁🎓"}]};
 const CMAP = {}; CARDS.forEach(c => CMAP[c.id] = c);
+const SERIES = ['第一辑', '第二辑', '第三辑', '第四辑'];
+const MULTI = HALL.badges.length > 1;
 
 /* ============ 存储 ============ */
 const KEY = 'museum_bio_v1';
@@ -106,10 +115,19 @@ function load() { if (S) return S;
   if (!S) S = {};
   S.read = S.read || {};           // cardId -> true
   S.stars = S.stars || 0;
-  S.badge = S.badge || false;      // 生物小达人
+  S.badge = S.badge || false;      // 第一辑勋章（第二辑勋章存 badge2）
   S.bestQuiz = S.bestQuiz || 0;
   return S; }
 function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
+
+/* ============ 分辑与勋章 ============ */
+const has = t => t === 0 ? !!load().badge : !!load()['badge' + (t + 1)];
+function give(t) { if (t === 0) S.badge = true; else S['badge' + (t + 1)] = true; }
+const tierCards = t => CARDS.slice(t ? HALL.badges[t - 1].n : 0, HALL.badges[t].n);
+const tierRead = t => tierCards(t).every(c => load().read[c.id]);
+const tierOf = id => { const i = CARDS.findIndex(c => c.id === id); return HALL.badges.findIndex(b => i < b.n); };
+function curTier() { for (let t = 0; t < HALL.badges.length; t++) if (!has(t)) return t; return -1; }
+const readNum = () => CARDS.filter(c => load().read[c.id]).length;
 
 /* ============ 语音（预录音频） ============ */
 let _audio = null;
@@ -152,37 +170,48 @@ let readIdx = 0, readQueue = [];
 function home() {
   load();
   document.getElementById('stars').textContent = S.stars;
-  const readCount = Object.keys(S.read).length;
-  const allRead = readCount >= CARDS.length;
+  const readCount = readNum(), t = curTier();
+  const unread = CARDS.filter(c => !S.read[c.id]);
 
   let hero;
-  if (S.badge) {
+  if (t >= 0 && tierRead(t)) {
     hero = `<div class="btn-hero gold" onclick="startQuiz()">
-      <div class="icon">🏆</div><div><div class="t">生物小达人</div><div class="d">再测一次，挑战满分！</div></div></div>`;
-  } else if (allRead) {
-    hero = `<div class="btn-hero gold" onclick="startQuiz()">
-      <div class="icon">🎯</div><div><div class="t">去挑战测验</div><div class="d">全部读完啦，来赢一枚勋章吧！</div></div></div>`;
-  } else {
-    hero = `<div class="btn-hero" onclick="startReading()">
+      <div class="icon">🎯</div><div><div class="t">去挑战测验</div><div class="d">${MULTI ? SERIES[t] : ''}全部读完啦，来赢「${HALL.badges[t].name}」勋章吧！</div></div></div>`;
+  } else if (unread.length) {
+    const ut = tierOf(unread[0].id), fresh = ut > 0 && !tierCards(ut).some(c => S.read[c.id]);
+    hero = fresh
+      ? `<div class="btn-hero" onclick="startReading()">
+      <div class="icon">🆕</div><div><div class="t">${SERIES[ut]}开放啦</div><div class="d">有 ${tierCards(ut).length} 张新知识卡，快来探索吧！</div></div></div>`
+      : `<div class="btn-hero" onclick="startReading()">
       <div class="icon">▶️</div><div><div class="t">${readCount ? '继续探索' : '开始探索'}</div><div class="d">已读 ${readCount} / ${CARDS.length} 个知识卡</div></div></div>`;
+  } else {
+    hero = `<div class="btn-hero gold" onclick="startQuiz()">
+      <div class="icon">🏆</div><div><div class="t">${HALL.badges[HALL.badges.length - 1].name}</div><div class="d">再测一次，挑战满分！</div></div></div>`;
   }
 
-  const rows = CARDS.map(c => `
+  const row = c => `
     <div class="topic-row" onclick="openCard('${c.id}')">
       <span class="e">${c.emoji}</span><span class="t">${c.title}</span>
       <span class="st">${S.read[c.id] ? '✅' : '⬜'}</span>
-    </div>`).join('');
+    </div>`;
+  const rows = HALL.badges.map((b, k) => (MULTI ? `<div class="series">${SERIES[k]}${k && !tierCards(k).some(c => S.read[c.id]) ? '<span class="new">新</span>' : ''}</div>` : '')
+    + tierCards(k).map(row).join('')).join('');
+  const wall = HALL.badges.map((b, k) => `<div class="bw ${has(k) ? '' : 'locked'}"><span>${b.icon}</span><small>${b.name}</small></div>`).join('');
 
   stage().innerHTML = `${hero}
     <div class="card">
       <div style="font-weight:800;margin-bottom:6px">📚 知识卡片（点击可单独复习）</div>
       <div class="topic-list">${rows}</div>
     </div>
-    ${S.badge ? `<div class="card" style="text-align:center"><div style="font-weight:800;margin-bottom:8px">🎖️ 我的勋章</div><div class="badge-wall"><span title="生物小达人">🦁🏅</span></div></div>` : ''}`;
+    ${S.badge || MULTI ? `<div class="card" style="text-align:center"><div style="font-weight:800;margin-bottom:8px">🎖️ 我的勋章</div><div class="badge-wall">${wall}</div></div>` : ''}`;
 }
 
 /* —— 阅读流程 —— */
-function startReading() { readQueue = CARDS.filter(c => !load().read[c.id]); readIdx = 0; renderCard(); }
+function startReading() {
+  const unread = CARDS.filter(c => !load().read[c.id]);
+  const t = unread.length ? tierOf(unread[0].id) : 0;
+  readQueue = unread.filter(c => tierOf(c.id) === t); readIdx = 0; renderCard();
+}
 function openCard(id) { readQueue = [CMAP[id]]; readIdx = 0; renderCard(true); }
 
 function dots() { return `<div class="dots">${readQueue.map((_, i) =>
@@ -216,20 +245,31 @@ function nextCard(id, single) {
 function readingDone() {
   if (window.StudyPlan) StudyPlan.cheer();
   confetti();
-  const readCount = Object.keys(load().read).length;
-  const allRead = readCount >= CARDS.length;
+  const t = curTier(), ready = t >= 0 && tierRead(t);
+  const all = readNum() >= CARDS.length;
   stage().innerHTML = `
     <div class="card celebrate">
       <div class="big">🌟</div><h2>今天的探索完成啦！</h2>
-      <p>${allRead ? '十个知识卡都读完了，快去挑战测验吧！' : '明天再来读更多知识卡～'}</p>
-      ${allRead ? `<button class="btn" onclick="startQuiz()">去挑战测验 🎯</button>` : ''}
+      <p>${ready ? `${MULTI ? SERIES[t] + '的' : ''}知识卡都读完了，快去挑战测验吧！` : all ? '这个展厅的知识卡全读完啦，真了不起！' : '明天再来读更多知识卡～'}</p>
+      ${ready ? `<button class="btn" onclick="startQuiz()">去挑战测验 🎯</button>` : ''}
       <button class="btn ghost" onclick="home()">回到博物馆</button>
     </div>`;
 }
 
 /* —— 测验流程 —— */
-let quiz = [], qIdx = 0, qRight = 0, lock = false;
-function startQuiz() { quiz = shuffle(QUIZ.slice()).slice(0, 6); qIdx = 0; qRight = 0; renderQ(); }
+let quiz = [], qIdx = 0, qRight = 0, lock = false, quizTier = -1;
+function startQuiz() {
+  const t = curTier();
+  let pool;
+  if (t >= 0 && tierRead(t)) {           // 冲刺本辑勋章：只考这一辑
+    quizTier = t; const ids = new Set(tierCards(t).map(c => c.id));
+    pool = QUIZ.filter(q => ids.has(q.card));
+  } else {                                // 复测：从读过的卡里出题
+    quizTier = -1; pool = QUIZ.filter(q => load().read[q.card]);
+    if (pool.length < 6) pool = QUIZ.filter(q => tierOf(q.card) === 0);
+  }
+  quiz = shuffle(pool).slice(0, 6); qIdx = 0; qRight = 0; renderQ();
+}
 function renderQ() {
   lock = false;
   if (qIdx >= quiz.length) return quizDone();
@@ -259,21 +299,23 @@ function quizDone() {
   load();
   const pct = Math.round(qRight / quiz.length * 100);
   const passed = pct >= 80;
+  const b = quizTier >= 0 ? HALL.badges[quizTier] : null;
   let starMsg = '';
   if (passed) {
-    if (!S.badge) { S.badge = true; S.stars += 2; starMsg = '获得「生物小达人」勋章 + 2颗星星！'; }
+    if (b && !has(quizTier)) { give(quizTier); S.stars += 2; starMsg = `获得「${b.name}」勋章 + 2颗星星！`; }
     else { S.stars += 1; starMsg = '得到一颗星星！'; }
   }
   S.bestQuiz = Math.max(S.bestQuiz, pct);
   save();
   document.getElementById('stars').textContent = S.stars;
-  if (passed) { coinBurst(stage(), passed ? 3 : 1); confetti(); }
+  if (passed) { coinBurst(stage(), 3); confetti(); }
+  const more = passed && b && CARDS.some(c => !S.read[c.id]);
   stage().innerHTML = `
     <div class="card celebrate">
       <div class="big">${passed ? '🏆' : '💪'}</div>
       <h2>答对 ${qRight} / ${quiz.length} 题！${starMsg}</h2>
-      <p>${passed ? '你是真正的生物小达人！' : '再读一读知识卡，下次一定能拿到勋章～'}</p>
-      <button class="btn" onclick="startQuiz()">再测一次 🔁</button>
+      <p>${passed ? (b ? `你是真正的${b.name}！` : '知识记得真牢，太棒啦！') : '再读一读知识卡，下次一定能拿到勋章～'}</p>
+      ${more ? `<button class="btn" onclick="startReading()">去读新的知识卡 🆕</button>` : `<button class="btn" onclick="startQuiz()">再测一次 🔁</button>`}
       <button class="btn ghost" onclick="home()">回到博物馆</button>
     </div>`;
 }

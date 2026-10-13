@@ -28,7 +28,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaH
 .mod .icon { font-size:4.2rem; } .mod h2 { font-size:1.3rem; font-weight:900; margin:12px 0 6px; }
 .mod p { color:var(--muted); font-size:.88rem; }
 .mod .badge { position:absolute; top:16px; right:16px; font-size:.72rem; font-weight:800; padding:5px 12px; border-radius:999px; }
-.mod .badge.on { background:#E4F0E7; color:#2F8B3C; } .mod .badge.soon { background:#EDEFF5; color:#9096AB; }
+.mod .badge.on { background:#E4F0E7; color:#2F8B3C; } .mod .badge.new { background:#FFE7D6; color:#D9480F; } .mod .badge.soon { background:#EDEFF5; color:#9096AB; }
 .mod.soon { opacity:.6; cursor:pointer; }
 .mod .pbar { height:8px; background:#EEF1F8; border-radius:999px; overflow:hidden; margin-top:12px; }
 .mod .pbar i { display:block; height:100%; background:var(--accent); border-radius:999px; }
@@ -59,7 +59,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaH
   </div>
   <div class="hero">
     <div class="m">🔭</div>
-    <div><h1>探索博物馆</h1><p>生物 · 历史 · 地理 · 科学 · 太空</p></div>
+    <div><h1>探索博物馆</h1><p id="sub">生物 · 历史 · 地理 · 科学 · 太空 · 海洋 · 恐龙 · 节日</p></div>
   </div>
   <div id="stage"></div>
 </div>
@@ -76,16 +76,29 @@ function museumDay(kind) { try { const t = ymd(new Date()); let m = read('museum
 
 function readCards() { const ids = []; B.forEach(h => { const r = read(h.key).read || {}; Object.keys(r).forEach(id => ids.push(id)); }); return new Set(ids); }
 
+// 展厅进度：已读张数、已获勋章数（第一辑 badge，第二辑 badge2）
+function hallState(h) { const st = read(h.key), r = st.read || {};
+  const n = h.cards.filter(c => r[c.id]).length, tiers = h.tiers || [h.cards.length];
+  const earned = tiers.filter((_, t) => t ? st['badge' + (t + 1)] : st.badge).length;
+  return { n, earned, all: earned === tiers.length }; }
+function hallLabel(h) { const s = hallState(h);
+  if (s.n === 0 && h.isNew) return ['new', '🆕 新展厅'];
+  if (s.earned && s.n < h.cards.length) return ['new', '🆕 新卡片'];
+  if (s.all) return ['on', '🏅'.repeat(s.earned) + ' 已获勋章'];
+  return ['on', s.n >= h.cards.length ? '已读完' : '开放中']; }
+
 function home() {
   const rc = readCards(), wk = read('museum_week_v1'), doneWk = wk.week === weekId() && wk.done;
-  const next = B.find(h => Object.keys(read(h.key).read || {}).length < h.cards.length);
-  try { localStorage.setItem('plan_hint_explore', next ? `${next.icon} ${next.name} · 还剩 ${next.cards.length - Object.keys(read(next.key).read || {}).length} 张卡` : '🎯 每周知识大挑战'); } catch (e) {}
+  const left = h => h.cards.length - hallState(h).n;
+  const next = B.find(h => left(h) && hallState(h).n && !(h.tiers && h.tiers.some(n => n === hallState(h).n))) || B.find(left);   // 先读完读了一半的展厅
+  try { localStorage.setItem('plan_hint_explore', next ? `${next.icon} ${next.name} · 还剩 ${left(next)} 张卡` : '🎯 每周知识大挑战'); } catch (e) {}
+  $('#sub').textContent = `${B.length} 个展厅 · ${B.reduce((a, h) => a + h.cards.length, 0)} 张知识卡`;
   stage().innerHTML = `
     <div class="chal ${doneWk ? 'done' : ''}" id="chal"><div class="ci">${doneWk ? '🏆' : '🎯'}</div>
       <div><div class="ct">每周知识大挑战</div><div class="cd">${rc.size < 5 ? `再读 ${5 - rc.size} 张知识卡就能挑战啦` : doneWk ? `本周已完成，答对 ${wk.best} / 10 · 可以再挑战` : `从你读过的 ${rc.size} 张卡里出 10 道题，看看还记得吗？`}</div></div></div>
-    <div class="grid">${B.map(h => { const n = Object.keys(read(h.key).read || {}).length, badge = read(h.key).badge;
+    <div class="grid">${B.map(h => { const n = hallState(h).n, [cls, lab] = hallLabel(h);
       return `<a class="mod" href="${h.file}" style="--accent:${h.color}">
-        <span class="badge on">${badge ? '🏅 已获勋章' : n >= h.cards.length ? '已读完' : '开放中'}</span>
+        <span class="badge ${cls}">${lab}</span>
         <div class="icon">${h.icon}</div><h2>${h.name}</h2><p>已读 ${n} / ${h.cards.length}</p>
         <div class="pbar"><i style="width:${n / h.cards.length * 100}%"></i></div></a>`; }).join('')}</div>`;
   $('#chal').onclick = () => rc.size < 5 ? toast('先去展厅读几张知识卡吧～') : challenge(rc);
